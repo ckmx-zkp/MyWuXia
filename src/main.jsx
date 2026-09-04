@@ -60,23 +60,65 @@ function bgmSwitch(zoneIdx, mute) {
   } catch (e) { /* 忽略 */ }
 }
 
-/* ================= 语音（docs/gdd/05：对白期间 BGM duck） ================= */
+/* ================= 语音（docs/gdd/05：对白期间 BGM duck；多句按序连播） ================= */
 let voiceCur = null;
+let voiceGen = 0;
+let voiceLineCb = null;
+const VOICE_GAP = 420;
+function setVoiceLine(i) { if (voiceLineCb) voiceLineCb(i); }
+function haltVoice() {
+  voiceGen += 1;
+  if (voiceCur) {
+    try { voiceCur.onended = null; voiceCur.onerror = null; voiceCur.pause(); } catch (e) { /* 忽略 */ }
+    voiceCur = null;
+  }
+}
 function stopVoice() {
-  if (voiceCur) { try { voiceCur.pause(); } catch (e) { /* 忽略 */ } voiceCur = null; }
+  haltVoice();
+  setVoiceLine(-1);
   if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 600);
 }
+function playVoiceQueue(srcs, mute, lineAt) {
+  const list = (srcs || []).filter(Boolean);
+  if (mute || !list.length) return;
+  haltVoice();
+  const gen = voiceGen;
+  setVoiceLine(-1);
+  if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME * 0.3, 300);
+  let i = 0;
+  const next = () => {
+    if (gen !== voiceGen) return;
+    if (i >= list.length) {
+      voiceCur = null;
+      setVoiceLine(-1);
+      if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 800);
+      return;
+    }
+    const idx = i;
+    const src = list[i];
+    i += 1;
+    if (lineAt) setVoiceLine(lineAt[idx]);
+    try {
+      const a = new Audio(src);
+      a.volume = 1.0;
+      a.onended = () => { if (gen === voiceGen) setTimeout(next, VOICE_GAP); };
+      a.onerror = () => { if (gen === voiceGen) setTimeout(next, 80); };
+      a.play().catch(() => { if (gen === voiceGen) next(); });
+      voiceCur = a;
+    } catch (e) { next(); }
+  };
+  next();
+}
 function playVoice(src, mute) {
-  if (mute || !src) return;
-  try {
-    stopVoice();
-    const a = new Audio(src);
-    a.volume = 1.0;
-    if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME * 0.3, 300);
-    a.onended = () => { voiceCur = null; if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 800); };
-    a.play().catch(() => { if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 600); });
-    voiceCur = a;
-  } catch (e) { /* 忽略 */ }
+  playVoiceQueue(src ? [src] : [], mute);
+}
+function playDialogues(dialogues, mute, from = 0) {
+  const seq = [];
+  const at = [];
+  (dialogues || []).forEach((d, i) => {
+    if (d[2] && i >= from) { seq.push(d[2]); at.push(i); }
+  });
+  playVoiceQueue(seq, mute, at);
 }
 /* ================= 世界数据 ================= */
 const ZONES = [
@@ -1264,6 +1306,7 @@ function App() {
   const [outcome, setOutcome] = useState(null); // 抉择回响文本
   const [panel, setPanel] = useState(null);     // attr | ach | let | rank | set
   const [questCard, setQuestCard] = useState(null); // 普通任务的剧情卡（任务索引）
+  const [speakI, setSpeakI] = useState(-1);        // 当前连播到的对白行
   const [creating, setCreating] = useState(() => !load()); // 无存档则先创角
   const [cName, setCName] = useState('');
   const [origin, setOrigin] = useState('hunter');
@@ -1277,6 +1320,7 @@ function App() {
 
   const sRef = useRef(s);
   sRef.current = s;
+  useEffect(() => { voiceLineCb = setSpeakI; return () => { voiceLineCb = null; }; }, []);
   useEffect(() => { const t = setInterval(() => setS(tick), 1000); return () => clearInterval(t); }, []);
   useEffect(() => {
     const t = setTimeout(() => persist(s), 2500);
@@ -1293,7 +1337,7 @@ function App() {
     };
   }, []);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.mute); }, [s.fx, s.mute]);
-  useEffect(() => { bgmSwitch(s.loc, s.mute); }, [s.loc, s.mute]);
+  useEffect(() => { bgmSwitch(s.loc, s.mute); if (s.mute) stopVoice(); }, [s.loc, s.mute]);
 
   const click = () => { play(SOUND.click, s.mute); bgmSwitch(s.loc, s.mute); };
   const go = i => {
@@ -1352,8 +1396,7 @@ function App() {
     click();
     setStory({ zone: s.loc, ti, ni });
     setOutcome(null);
-    const first = ZONES[s.loc].trees[ti].nodes[ni].dialogues.find(d => d[2]);
-    if (first) playVoice(first[2], s.mute);
+    playDialogues(ZONES[s.loc].trees[ti].nodes[ni].dialogues, s.mute, 0);
   };
   /* 剧情抉择：检定（能力不足走软失败，主线不断），结算回响（docs/gdd/07） */
   const choose = c => {
@@ -1713,7 +1756,7 @@ function App() {
         <small className="st-tag">【{st.name}】第{['一', '二', '三', '四', '五', '六', '七'][story.ni] || story.ni + 1}回 · {st.where}</small>
         <h2>{stNode.name}</h2>
         <p className="scene">{stNode.scene}</p>
-        {stNode.dialogues.map(([who, line, voice]) => <p className="dlg" key={who + line.slice(0, 8)}>{voice && <button className="vbtn" title="播放语音" onClick={() => playVoice(voice, s.mute)}>♪</button>}<b>{who}</b>{line}</p>)}
+        {stNode.dialogues.map(([who, line, voice], di) => <p className={`dlg${speakI === di ? ' speak' : ''}`} key={who + line.slice(0, 8)}>{voice && <button className={`vbtn${speakI === di ? ' on' : ''}`} title="从此句连播" onClick={() => playDialogues(stNode.dialogues, s.mute, di)}>♪</button>}<b>{who}</b>{line}</p>)}
         {outcome ? <>
           <p className="outcome">{outcome}</p>
           <button className="go-on" onClick={() => { click(); stopVoice(); setStory(null); setOutcome(null); }}>继续</button>

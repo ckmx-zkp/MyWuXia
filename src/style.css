@@ -225,7 +225,8 @@ footer button{align-self:end;background:transparent;border:0;color:#d5b262;font:
 .story .st-tag{color:#94744c;font-size:12px}
 .story h2{font:32px 'ZCOOL XiaoWei','STKaiti','KaiTi','LiSu',serif;color:#5a3d1e;margin:8px 0 12px}
 .story .scene{font-size:14px;line-height:2;border-left:3px solid #9b7544;padding-left:12px;margin:0 0 14px}
-.story .dlg{font-size:13.5px;line-height:1.9;margin:8px 0}
+.story .dlg{font-size:13.5px;line-height:1.9;margin:8px 0;padding:2px 6px;border-radius:4px;transition:background .25s}
+.story .dlg.speak{background:#7a4a2a18;box-shadow:inset 3px 0 #aa4639}
 .story .dlg b{display:inline-block;color:#aa4639;margin-right:8px}
 .story .outcome{margin:16px 0;padding:13px 15px;background:#5a3d1e14;border:1px dashed #87683f85;font-size:13.5px;line-height:2;white-space:pre-wrap}
 .choices{display:grid;gap:9px;margin-top:14px}
@@ -327,6 +328,7 @@ footer{height:150px;display:grid;grid-template-columns:82px 1fr 100px;gap:22px;p
 /* ===== 语音按钮 ===== */
 .vbtn{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:8px;vertical-align:-4px;background:#76532f;border:1px solid #9b7544;border-radius:50%;color:#f5dfab;font-size:11px;cursor:pointer}
 .vbtn:hover{background:#8a6238}
+.vbtn.on{background:#aa4639;border-color:#d4a05a;box-shadow:0 0 0 2px #aa463955}
 
 /* ===== UI 素材切片接入（装饰层，文案仍由代码渲染；docs/ui/UI-ASSET-GUIDE.md） ===== */
 /* 顶栏资源徽记 */

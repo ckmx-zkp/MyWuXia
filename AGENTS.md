@@ -18,6 +18,7 @@
 | 江南六城生活支线与循环日常 | `docs/gdd/08-jiangnan-daily-quests.md` |
 | 各任务树完整剧本 | `docs/gdd/quests/<ID>-<slug>.md` |
 | UI 素材规范 | `docs/ui/UI-ASSET-GUIDE.md` |
+| 架构优化方案 | `docs/architecture-optimization.md` |
 
 ---
 
@@ -149,7 +150,7 @@
 - 切区时旧曲 0.4 秒淡出、新曲 1.2 秒淡入（交叉淡化）；同曲恢复时补淡入（防无声 bug）。
 - BGM 音量 0.5；浏览器自动播放限制下由首次点击解锁。
 - 现有 SFX：`public/audio/{wood-pluck, quest-complete, breath-bell}.wav`——分别作为 UI 确认/受挫、任务完成、突破/抵达/疗伤的基础音色；音量默认最大（1.0）。
-- NPC 对白位于 `public/audio/voice/<树ID>_<节点>_<角色>.mp3`（100 个全部接入）：剧情弹窗开节点自动播首条配音，台词旁 ♪ 按钮可重播；对白期间 BGM 自动 duck 至 30%，结束恢复。
+- NPC 对白位于 `public/audio/voice/<树ID>_<节点>_<角色>.mp3`（100 个全部接入）：剧情弹窗开节点后**按台词顺序连播**（句间约 0.4 秒气口），当前句高亮；♪ 从该句起重听后续；关闭/抉择时中断队列。对白期间 BGM 自动 duck 至 30%，队列结束恢复。
 - 客栈「打听消息」播放地域语音轮换（`INN_VOICES`：江南 8 条 / 大理 3 条）。
 - 音效开关在顶栏；BGM 与语音随开关启停。
 - BGM / SFX 生成提示词：`prompts/wuxia-bgm.txt`、`prompts/wuxia-sfx.txt`。
@@ -231,6 +232,23 @@
 - 所有音频资源须遵守 `docs/gdd/05` 音量基线与循环规范；不接受硬切循环。
 - 任何把数值、按钮标签、剧情文案烘焙进图片的做法一律打回重做（见 `docs/ui/UI-ASSET-GUIDE.md` 第 5 条）。
 - 打开卡顿优先查首屏图体积与字体，不要先怪服务器内存：本站是 nginx 静态资源，2G RAM 足够；瓶颈是 PNG 体积、Google 字体和每秒整页刷新。新图必须按显示尺寸出 WebP，源 PNG 只进 `art-src/`。
+
+### 9.1 推荐优化
+
+- 新增系统前先阅读 `docs/architecture-optimization.md`，优先把规则放入 `src/game/`，把内容放入 `src/content/`，组件只负责展示与派发动作。
+- 任务树必须保持单一数据源；每棵树独立文件，构建时校验节点、奖励、物品、语音与前置引用。
+- 玩家状态统一经 reducer/action 更新；挂机累计、剧情结算、音频播放等易变状态禁止使用模块级可变变量。
+- 存档必须带版本号与迁移函数；任务进度应记录选择、世界 `flag` 与 NPC 阶段，而不只记录完成数量。
+- 大型剧情按区域动态加载；使用 selector、`memo` 和稳定 props，避免挂机定时器导致整页刷新。
+- 涉及状态、计时、随机结算或存档的改动，提交前至少运行 `npm run build`，并补对应回归测试。
+
+### 9.2 架构警示
+
+- `src/main.jsx` 是当前过渡期单体文件；不得继续向其中追加大型数据表、系统规则或新弹窗，新增代码应先落到目标目录。
+- `idleHold`、音频实例、定时器等模块级变量若未在重开、读档、卸载时清理，可能造成角色串档、重复奖励或资源泄漏。
+- `load()` 不得继续依赖浅合并兼容未来字段；任何 `GameState` 字段变更都必须更新迁移与默认值。
+- 不得在核心结算中直接调用不可注入的 `Math.random()`，否则线上问题无法重放。
+- `scripts/deploy.sh` 的线上替换必须可回滚；构建失败、内容校验失败或资源缺失时不得上线。
 ## 10. 部署
 
 - 目标：阿里云 `aliyun-prayer`（47.108.114.17），nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。
