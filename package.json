@@ -10,13 +10,13 @@
     "audio:voice": "node scripts/generate-voice.mjs",
     "audio:voice:dry": "node scripts/generate-voice.mjs --dry-run",
     "art:optimize": "python scripts/optimize-art.py",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy": "bash scripts/deploy.sh",
+    "test": "node --test --test-isolation=none src/game/*.test.js"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
-  },
-  "devDependencies": {}
+    "react-dom": "latest",
+    "vite": "latest"
+  }
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
+import { createIdleRuntime } from './game/idle-runtime.js';
+import { canResolveChoice } from './game/quest-guards.js';
 
 /* ================= 音效（复用 Audio，避免每次点击新建） ================= */
 const SOUND = { click: '/audio/wood-pluck.wav', quest: '/audio/quest-complete.wav', bell: '/audio/breath-bell.wav' };
@@ -1273,41 +1275,29 @@ function resolveSpar(s) {
   n.log = n.log.slice(0, 8);
   return levelUpLog(n, s);
 }
-/* 挂机历练先攒在内存，满 5 息或将要突破才写回，避免每秒整页重绘 */
-let idleHold = 0;
-function persist(state) {
-  const add = idleHold ? 2 * (state.devMult || 1) * idleHold : 0;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ ...state, fx: null, expTotal: state.expTotal + add })); } catch (e) { /* 忽略 */ }
-}
-function flushIdle(s) {
-  if (!idleHold) return s;
-  const add = 2 * (s.devMult || 1) * idleHold;
-  idleHold = 0;
-  const n = { ...s, expTotal: s.expTotal + add };
-  return levelUpLog(n, s);
-}
 function tick(s) {
   if (s.action) {
-    const flushed = flushIdle(s);
-    const a = { ...flushed.action, left: flushed.action.left - 1 };
-    const n = { ...flushed, action: a };
+    const a = { ...s.action, left: s.action.left - 1 };
+    const n = { ...s, action: a };
     if (a.left <= 0) return a.type === 'quest' ? resolveQuest(n) : a.type === 'travel' ? resolveTravel(n) : resolveSpar(n);
     return n;
   }
-  if (!s.idle) {
-    const flushed = flushIdle(s);
-    if (flushed.fx) return { ...flushed, fx: null };
-    return flushed;
-  }
-  idleHold += 1;
-  const pending = 2 * (s.devMult || 1) * idleHold;
-  if (idleHold < 5 && lv(s.expTotal + pending) === lv(s.expTotal)) return s;
-  return { ...flushIdle(s), fx: null };
+  return s.fx ? { ...s, fx: null } : s;
 }
 
-/* ================= 界面 ================= */
 function App() {
-  const [s, setS] = useState(() => load() || initial());
+  const [saved] = useState(load);
+  const [s, commitState] = useState(() => saved || initial());
+  const runtimeRef = useRef(null);
+  if (!runtimeRef.current) runtimeRef.current = createIdleRuntime(levelUpLog, lv);
+  const runtime = runtimeRef.current;
+  const sRef = useRef(s);
+  const setS = update => {
+    const previous = runtime.flush(sRef.current);
+    const next = typeof update === 'function' ? update(previous) : update;
+    sRef.current = next;
+    commitState(next);
+  };
   const [tab, setTab] = useState('武学');
   const [side, setSide] = useState('江湖');
   const [story, setStory] = useState(null);   // { zone, ti, ni }
@@ -1317,7 +1307,7 @@ function App() {
   const [speakI, setSpeakI] = useState(-1);        // 当前连播到的对白行
   const [leaf, setLeaf] = useState(0);             // 江湖纸卷页：0=本区历练，1+=任务树
   const [heroOpen, setHeroOpen] = useState(false);  // 手机：左栏「属性」打开角色浮层
-  const [creating, setCreating] = useState(() => !load()); // 无存档则先创角
+  const [creating, setCreating] = useState(() => !saved); // 无存档则先创角
   const [cName, setCName] = useState('');
   const [origin, setOrigin] = useState('hunter');
   const [cSkill, setCSkill] = useState('taizu');
@@ -1328,24 +1318,33 @@ function App() {
   const doneArr = s.done[s.loc] || [];
   const busy = !!s.action;
 
-  const sRef = useRef(s);
-  sRef.current = s;
   useEffect(() => { voiceLineCb = setSpeakI; return () => { voiceLineCb = null; }; }, []);
-  useEffect(() => { const t = setInterval(() => setS(tick), 1000); return () => clearInterval(t); }, []);
   useEffect(() => {
-    const t = setTimeout(() => persist(s), 2500);
-    return () => clearTimeout(t);
-  }, [s]);
+    if (creating) return;
+    const timer = setInterval(() => {
+      const next = tick(runtime.advance(sRef.current));
+      sRef.current = next;
+      commitState(next);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [creating, runtime]);
   useEffect(() => {
-    const onHide = () => persist(sRef.current);
-    const onVis = () => { if (document.hidden) onHide(); };
-    window.addEventListener('beforeunload', onHide);
+    if (creating) return;
+    const persist = () => {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(runtime.snapshot(sRef.current))); } catch { /* Storage unavailable. */ }
+    };
+    const timer = setTimeout(persist, 2500);
+    const onVis = () => { if (document.hidden) persist(); };
+    window.addEventListener('beforeunload', persist);
+    window.addEventListener('pagehide', persist);
     document.addEventListener('visibilitychange', onVis);
     return () => {
-      window.removeEventListener('beforeunload', onHide);
+      clearTimeout(timer);
+      window.removeEventListener('beforeunload', persist);
+      window.removeEventListener('pagehide', persist);
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, []);
+  }, [s, creating, runtime]);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.muteSfx); }, [s.fx, s.muteSfx]);
   useEffect(() => { bgmSwitch(s.loc, s.muteBgm); }, [s.loc, s.muteBgm]);
   useEffect(() => { if (s.muteVoice) stopVoice(); }, [s.muteVoice]);
@@ -1414,14 +1413,18 @@ function App() {
   /* 剧情抉择：检定（能力不足走软失败，主线不断），结算回响（docs/gdd/07） */
   const choose = c => {
     stopVoice();
+    if (!story || outcome) return;
     const { zone, ti, ni } = story;
     const t = ZONES[zone].trees[ti], node = t.nodes[ni];
-    const ok = !c.diff || ability(s) >= c.diff;
+    if (!canResolveChoice(sRef.current, treeKey(zone, t.id), ni, c)) return;
+    const ok = !c.diff || ability(sRef.current) >= c.diff;
     const eff = ok ? c.ok : c.fail;
     const last = ni === t.nodes.length - 1;
     play(ok ? SOUND.quest : SOUND.click, s.muteSfx);
     if (eff.voice) playVoice(eff.voice, s.muteVoice);
     setS(v => {
+      const progressKey = treeKey(zone, t.id);
+      if (!canResolveChoice(v, progressKey, ni, c)) return v;
       let n = { ...v, fx: null };
       if (c.cost?.silver) n.silver = Math.max(0, n.silver - c.cost.silver);
       if (c.cost?.item) n.items = { ...n.items, [c.cost.item]: (n.items[c.cost.item] || 0) - 1 };
@@ -1443,6 +1446,9 @@ function App() {
     if (!window.confirm('重开将清空全部江湖进度，确定？')) return;
     try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* 忽略 */ }
     stopVoice();
+    runtime.clear();
+    setS(initial());
+    setStory(null); setOutcome(null); setQuestCard(null); setPanel(null);
     setCName(''); setOrigin('hunter'); setCSkill('taizu'); setAlloc({ hp: 0, ab: 0, exp: 0 });
     setCreating(true);
   };
