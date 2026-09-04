@@ -427,3 +427,41 @@ input{touch-action:manipulation}
 /* 开发者按钮 */
 .hbtn.dev{border-color:#4f7a5b;color:#9fd0a8}
 .hbtn.dev:hover{background:#2c5a3f55;color:#c9f0d3}
+
+/* 手机默认尺寸：压过切片 38px 徽记 / 折行顶栏 / 过大导航，避免与系统栏抢空间 */
+@media(max-width:600px){
+  header{
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    align-items:center;
+    gap:4px 8px;
+    min-height:0;
+    height:auto;
+    padding:6px 10px 8px;
+    flex-wrap:unset;
+  }
+  .brand{grid-column:1;grid-row:1;min-width:0}
+  .brand small{display:none}
+  .brand strong{font-size:20px;letter-spacing:2px;white-space:nowrap}
+  .currency{grid-column:1/-1;grid-row:2;margin:0;justify-content:flex-start;gap:14px;font-size:12px}
+  .currency span+span{padding-left:12px;border-left:1px solid #a9823d}
+  .currency i,.currency i.em,.currency i.em-silver,.currency .cultivate i.em-cult{width:22px;height:22px}
+  .currency b{font-size:15px}
+  .hbtn.dev{display:none}
+  header>.hbtn:nth-last-child(2){grid-column:2;grid-row:1}
+  header>.hbtn:last-child{grid-column:3;grid-row:1}
+  .hbtn{height:28px;min-width:0;width:auto;padding:0 8px;font-size:11px;line-height:1}
+
+  .layout{padding:8px;gap:8px}
+  .map-col{padding:6px 8px;overflow:hidden}
+  .map-col .world{display:none}
+  .primary-nav{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .primary-nav button{min-width:0;min-height:46px;padding:4px 2px;grid-template-columns:1fr;justify-items:center;gap:2px}
+  .primary-nav button i{width:20px;height:20px;font-size:13px}
+  .primary-nav button b{font-size:12px;letter-spacing:0}
+
+  .paper{padding:18px 7%}
+  .chapter h1{font-size:28px;letter-spacing:4px}
+  .idle{padding:10px 16px;height:auto;min-height:52px;grid-template-columns:64px 1fr 48px 56px}
+  footer{height:auto;min-height:88px;padding:16px 18px calc(10px + env(safe-area-inset-bottom,0px))}
+}
