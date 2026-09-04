@@ -1307,6 +1307,7 @@ function App() {
   const [panel, setPanel] = useState(null);     // attr | ach | let | rank | set
   const [questCard, setQuestCard] = useState(null); // 普通任务的剧情卡（任务索引）
   const [speakI, setSpeakI] = useState(-1);        // 当前连播到的对白行
+  const [leaf, setLeaf] = useState(0);             // 江湖纸卷页：0=本区历练，1+=任务树
   const [creating, setCreating] = useState(() => !load()); // 无存档则先创角
   const [cName, setCName] = useState('');
   const [origin, setOrigin] = useState('hunter');
@@ -1338,6 +1339,7 @@ function App() {
   }, []);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.mute); }, [s.fx, s.mute]);
   useEffect(() => { bgmSwitch(s.loc, s.mute); if (s.mute) stopVoice(); }, [s.loc, s.mute]);
+  useEffect(() => { setLeaf(0); }, [s.loc]);
 
   const click = () => { play(SOUND.click, s.mute); bgmSwitch(s.loc, s.mute); };
   const go = i => {
@@ -1536,27 +1538,61 @@ function App() {
             <small>{z.faction} · {z.cities} · 凶险度 <em className={`tag t${dangerTag(z.danger)}`}>{DANGER_TAGS[dangerTag(z.danger)]}</em>（推荐能力 {z.danger}）</small>
             <h1>{z.name}</h1>
             <p>{z.desc}</p>
-            <p className="hint">本区任务需按线索顺序完成；实力不足时支线可能受挫，小主线自有高人相助，不致卡关。{(z.trees || []).length > 0 && <b className="tree-hint">本区另有原著剧情 {z.trees.length} 桩：{z.trees.map(t => `《${t.name}》`).join('、')}，见下方「第X回」。</b>}</p>
+            <p className="hint">本区任务需按线索顺序完成；实力不足时支线可能受挫，小主线自有高人相助，不致卡关。{(z.trees || []).length > 0 && <b className="tree-hint">本区另有原著剧情 {(z.trees || []).length} 桩，用「上一页 / 下一页」或下方地名签翻阅。</b>}</p>
           </div>
-          <div className="mission-list">
-            {z.quests.map((q, i) => {
-              const complete = !!doneArr[i];
-              const locked = i > 0 && !doneArr[i - 1];
-              const active = s.action?.type === 'quest' && s.action.zone === s.loc && s.action.idx === i;
-              const r = questReward(z, q.kind === 'main');
-              return <button key={q.name} className={`mission ${complete ? 'done' : ''} ${active ? 'active' : ''}`}
-                disabled={complete || locked || busy} onClick={() => openQuestCard(i)}>
-                <span>{q.kind === 'main' ? '小主线' : '支线'}</span>
-                <div className="qbody"><b>{q.name}</b><i>{q.text}</i></div>
-                <small>{complete ? '已完成' : locked ? '待前置任务' : active ? `行动中 ${s.action.left}s` : `前往　历练 +${r.exp}`}</small>
-              </button>;
-            })}
-          </div>
-          {/* 原著任务树：剧情抉择（docs/gdd/07 框架） */}
-          {(z.trees || []).map((t, ti) => {
+          {(() => {
+            const trees = z.trees || [];
+            const pages = 1 + trees.length;
+            const page = Math.min(leaf, pages - 1);
+            const goPage = n => { click(); setLeaf(Math.max(0, Math.min(pages - 1, n))); };
+            const pager = pages > 1 ? <div className="pager">
+              <button disabled={page === 0} onClick={() => goPage(page - 1)}>◀ 上一页</button>
+              <div className="pager-mid">
+                <b>{page === 0 ? '本区历练' : `《${trees[page - 1].name}》`}</b>
+                <small>{page + 1} / {pages}</small>
+              </div>
+              <button disabled={page === pages - 1} onClick={() => goPage(page + 1)}>下一页 ▶</button>
+            </div> : null;
+            const dots = pages > 1 ? <div className="pager-dots">
+              <button className={page === 0 ? 'on' : ''} onClick={() => goPage(0)}>历练</button>
+              {trees.map((t, i) => <button key={t.id} className={page === i + 1 ? 'on' : ''} onClick={() => goPage(i + 1)}>{t.where || t.id}</button>)}
+            </div> : null;
+            if (page === 0) {
+              return <>
+                {pager}{dots}
+                <div className="mission-list">
+                  {z.quests.map((q, i) => {
+                    const complete = !!doneArr[i];
+                    const locked = i > 0 && !doneArr[i - 1];
+                    const active = s.action?.type === 'quest' && s.action.zone === s.loc && s.action.idx === i;
+                    const r = questReward(z, q.kind === 'main');
+                    return <button key={q.name} className={`mission ${complete ? 'done' : ''} ${active ? 'active' : ''}`}
+                      disabled={complete || locked || busy} onClick={() => openQuestCard(i)}>
+                      <span>{q.kind === 'main' ? '小主线' : '支线'}</span>
+                      <div className="qbody"><b>{q.name}</b><i>{q.text}</i></div>
+                      <small>{complete ? '已完成' : locked ? '待前置任务' : active ? `行动中 ${s.action.left}s` : `前往　历练 +${r.exp}`}</small>
+                    </button>;
+                  })}
+                </div>
+                <div className="facilities">
+                  <h3>城中去处</h3>
+                  <div className="fac-grid">
+                    <button disabled={busy || s.silver < 2} onClick={askRumor}><b>{fac.inn}</b><small>打听消息 · 银两 -2</small></button>
+                    <button disabled={busy || s.silver < 20} onClick={() => buyItem('jinchuang', 20)}><b>{fac.med}</b><small>金创药 · 银两 -20</small></button>
+                    <button disabled={busy || s.silver < 15} onClick={() => buyItem('jiedu', 15)}><b>{fac.med}</b><small>解毒丸 · 银两 -15</small></button>
+                    <button disabled={busy || s.silver < 60} onClick={() => buyItem('tianxiang', 60)}><b>{fac.med}</b><small>天香断续膏 · 银两 -60</small></button>
+                    <button disabled={busy || s.silver < 40} onClick={() => buyItem('canye', 40)}><b>武馆典藏</b><small>武学残页 · 银两 -40</small></button>
+                    <button disabled={busy} onClick={startSpar}><b>{fac.gym}</b><small>切磋 · 胜 +15 / 负 +8 历练</small></button>
+                  </div>
+                </div>
+                {pager}
+              </>;
+            }
+            const ti = page - 1, t = trees[ti];
             const count = s.treeDone[treeKey(s.loc, t.id)] || 0;
             const finished = count >= t.nodes.length;
-            return <div key={t.id}>
+            return <>
+              {pager}{dots}
               <div className="tree-head">
                 <small>原著任务树 {t.id} · {t.where} · 线性剧情 · 软失败不断线</small>
                 <h2>《{t.name}》{finished ? '（已完成）' : ''}</h2>
@@ -1573,19 +1609,9 @@ function App() {
                   </button>;
                 })}
               </div>
-            </div>;
-          })}
-          <div className="facilities">
-            <h3>城中去处</h3>
-            <div className="fac-grid">
-              <button disabled={busy || s.silver < 2} onClick={askRumor}><b>{fac.inn}</b><small>打听消息 · 银两 -2</small></button>
-              <button disabled={busy || s.silver < 20} onClick={() => buyItem('jinchuang', 20)}><b>{fac.med}</b><small>金创药 · 银两 -20</small></button>
-              <button disabled={busy || s.silver < 15} onClick={() => buyItem('jiedu', 15)}><b>{fac.med}</b><small>解毒丸 · 银两 -15</small></button>
-              <button disabled={busy || s.silver < 60} onClick={() => buyItem('tianxiang', 60)}><b>{fac.med}</b><small>天香断续膏 · 银两 -60</small></button>
-              <button disabled={busy || s.silver < 40} onClick={() => buyItem('canye', 40)}><b>武馆典藏</b><small>武学残页 · 银两 -40</small></button>
-              <button disabled={busy} onClick={startSpar}><b>{fac.gym}</b><small>切磋 · 胜 +15 / 负 +8 历练</small></button>
-            </div>
-          </div>
+              {pager}
+            </>;
+          })()}
           </>}
         </article>
         {s.action && <div className="actionbar">
