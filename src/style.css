@@ -27,7 +27,8 @@ header{min-height:86px;height:auto;display:flex;align-items:center;flex-wrap:wra
 .primary-nav button i{display:grid;place-items:center;width:45px;height:45px;border:1px solid #9f7c42;border-radius:50%;font-style:normal;font-size:24px;color:#cfaa5a}
 .primary-nav button b{font:28px 'ZCOOL XiaoWei','STKaiti','KaiTi','LiSu',serif;letter-spacing:5px}
 .primary-nav button.on{background:linear-gradient(90deg,rgba(160,117,40,.36),rgba(160,117,40,.05));box-shadow:inset 4px 0 #d9ae55;color:#f2d993}
-.primary-nav button.on i{border-color:#d5ad5c;background:#573f20;color:#f5dd91}
+.primary-nav button.on i,.primary-nav .nav-hero.on i{border-color:#d5ad5c;background:#573f20;color:#f5dd91}
+.hero-close,.hero-mask,.nav-hero{display:none}
 .side-verse{margin:22px 18px;color:#9d8962;font-size:13px;line-height:2.05;text-align:center}
 .travel-panel{margin-top:8px}.travel-panel .world{padding:0 14px}.travel-panel .map{margin-top:12px}
 
@@ -392,7 +393,8 @@ input{touch-action:manipulation}
 
 /* 平板与手机：主导航横排 */
 @media(max-width:1100px){
-  .primary-nav{grid-template-columns:repeat(5,1fr)}
+  .primary-nav{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .nav-hero{display:grid}
   .primary-nav button{min-height:66px;grid-template-columns:1fr;justify-items:center;gap:4px;padding:8px 4px;text-align:center;border-bottom:0;border-right:1px solid #b08a4733}
   .primary-nav button i{width:34px;height:34px;font-size:18px}
   .primary-nav button b{font-size:19px;letter-spacing:2px}
@@ -455,7 +457,7 @@ input{touch-action:manipulation}
   .layout{padding:8px;gap:8px}
   .map-col{padding:6px 8px;overflow:hidden}
   .map-col .world{display:none}
-  .primary-nav{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .primary-nav{grid-template-columns:repeat(6,minmax(0,1fr))}
   .primary-nav button{min-width:0;min-height:46px;padding:4px 2px;grid-template-columns:1fr;justify-items:center;gap:2px}
   .primary-nav button i{width:20px;height:20px;font-size:13px}
   .primary-nav button b{font-size:12px;letter-spacing:0}
@@ -464,4 +466,22 @@ input{touch-action:manipulation}
   .chapter h1{font-size:28px;letter-spacing:4px}
   .idle{padding:10px 16px;height:auto;min-height:52px;grid-template-columns:64px 1fr 48px 56px}
   footer{height:auto;min-height:88px;padding:16px 18px calc(10px + env(safe-area-inset-bottom,0px))}
+}
+
+/* 窄屏：角色卡不占文档流，由左栏「属性」浮层打开 */
+@media(max-width:1100px){
+  .hero-mask{display:block;position:fixed;inset:0;background:#050a08d9;z-index:55}
+  .hero{display:none}
+  .hero.open{
+    display:block;position:fixed;z-index:60;left:50%;top:max(12px,env(safe-area-inset-top,0px));
+    transform:translateX(-50%);width:min(420px,calc(100vw - 20px));
+    max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+    overflow:auto;text-align:center;padding:40px 16px 20px;grid-template-columns:unset;
+  }
+  .hero.open .portrait{width:120px;height:120px;margin:0 auto 10px;grid-row:auto}
+  .hero.open .htabs,.hero.open .quick-actions,.hero.open .skills,.hero.open .bag,.hero.open .rumors{grid-column:auto}
+  .hero-close{
+    display:grid;place-items:center;position:absolute;top:8px;right:8px;width:32px;height:32px;
+    background:transparent;border:1px solid #8b6c3866;color:#c4ad76;cursor:pointer;font-size:14px;
+  }
 }

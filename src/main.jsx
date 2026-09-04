@@ -1308,6 +1308,7 @@ function App() {
   const [questCard, setQuestCard] = useState(null); // 普通任务的剧情卡（任务索引）
   const [speakI, setSpeakI] = useState(-1);        // 当前连播到的对白行
   const [leaf, setLeaf] = useState(0);             // 江湖纸卷页：0=本区历练，1+=任务树
+  const [heroOpen, setHeroOpen] = useState(false);  // 手机：左栏「属性」打开角色浮层
   const [creating, setCreating] = useState(() => !load()); // 无存档则先创角
   const [cName, setCName] = useState('');
   const [origin, setOrigin] = useState('hunter');
@@ -1468,7 +1469,9 @@ function App() {
     <div className="layout">
       {/* 左栏：主导航；舆图在游历状态展开 */}
       <aside className="map-col">
-        <nav className="primary-nav">{[['江湖','♟'],['行囊','♜'],['武学','▥'],['门派','⌂'],['游历','⌁']].map(([name,icon]) => <button key={name} className={side === name ? 'on' : ''} onClick={() => { click(); setSide(name); }}><i>{icon}</i><b>{name}</b></button>)}</nav>
+        <nav className="primary-nav">{[['江湖','♟'],['行囊','♜'],['武学','▥'],['门派','⌂'],['游历','⌁']].map(([name,icon]) => <button key={name} className={side === name ? 'on' : ''} onClick={() => { click(); setHeroOpen(false); setSide(name); }}><i>{icon}</i><b>{name}</b></button>)}
+          <button type="button" className={`nav-hero${heroOpen ? ' on' : ''}`} onClick={() => { click(); setHeroOpen(v => !v); }}><i>☯</i><b>属性</b></button>
+        </nav>
         <div className="world"><h3>天下大势</h3><p>{WORLD_INTRO}</p></div>
         <div className="side-verse">风雨江湖路，且从眼前这一封密信走起。</div>
       </aside>
@@ -1627,8 +1630,10 @@ function App() {
           <button className="rest" disabled={s.silver < 5 || s.hp >= 100} onClick={rest}>客栈歇息<br />银两 -5</button>
         </div>
       </section>
-      {/* 右栏：角色 / 武学 / 行囊 / 传闻 */}
-      <aside className="hero">
+      {/* 右栏：角色 / 武学 / 行囊 / 传闻；手机由左栏「属性」浮层打开 */}
+      {heroOpen && <div className="hero-mask" onClick={() => setHeroOpen(false)} />}
+      <aside className={`hero${heroOpen ? ' open' : ''}`}>
+        <button type="button" className="hero-close" onClick={() => { click(); setHeroOpen(false); }}>✕</button>
         <div className="portrait" />
         <h2>{s.name}</h2>
         <p>等级 {level}　·　{grade(level)}</p>
