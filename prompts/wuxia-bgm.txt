@@ -1,0 +1,179 @@
+# 江湖长夜 · 背景音乐生成提示词
+
+> 用途：喂给 Suno / Udio / Stable Audio / ElevenLabs Music 等模型。所有提示词以"中文用途 + 英文 prompt + 乐器/约束"三段式书写，便于跨平台复用。
+> 通用音色约束：`no vocals unless specified, no drums unless specified, 5-pentatonic, Chinese traditional instruments only, soft attack, loopable 4 or 8 bars, leave 20% center silent for voice-over`
+
+---
+
+## M01 主菜单
+
+**用途**：标题屏《江湖长夜》。雨夜、古卷、孤独剑客意象。
+**英文 prompt**：
+`Cinematic Chinese guqin solo intro, soft felt piano pad underneath, distant xiao flute echo, light rain ambience, dark minor pentatonic (D yu mode), 58 BPM, melancholic and restrained, no percussion, 2:30 loop.`
+**乐器**：古琴主奏、箫远景、毛毡钢琴垫
+**BPM / 调**：58 / D 羽
+**尾音**：8 小节自然淡出，含一声远钟。
+
+---
+
+## 区域主旋律（13 区）
+
+### T01 江南东南·烟雨
+
+**英文 prompt**：
+`Gentle guqin arpeggio with xiao flute counter-melody, pipa arpeggios, soft erhu sustain, water sounds in background, Suzhou garden rainy mood, A yu pentatonic, 64 BPM, no drums, loopable 1:30.`
+**乐器**：古琴 + 箫 + 琵琶 + 二胡长音
+**BPM / 调**：64 / A 羽
+
+### T02 荆襄前线·鼓角
+
+**英文 prompt**：
+`Chinese war suona fanfare opening then drops to marching rhythm with tanggu drum and bangu clapper, mixed with mournful xiao, Xiangyang siege mood, G zhi mode shifting to A yu, 92 BPM, tense and heroic, 1:30.`
+**乐器**：唢呐 + 唐鼓 + 板鼓 + 箫
+**BPM / 调**：92 / G 徵→A 羽转调
+
+### T03 中原腹地·会盟
+
+**英文 prompt**：
+`Solo guzheng melody with pipa tremolo, neutral wu-sheng pentatonic D shang, grand but measured, Luoyang martial arts gathering mood, 70 BPM, light wooden fish pulse, 1:30.`
+**乐器**：古筝主奏 + 琵琶颤音 + 木鱼低频脉冲
+**BPM / 调**：70 / D 商
+
+### T04 河朔燕云·霜风
+
+**英文 prompt**：
+`Low octave erhu with morin khuur-like bowed strings, wind ambience, distant horse gallops, E jiao mode, cold vast northern frontier, 66 BPM, no drums, melancholic and proud, 1:30.`
+**乐器**：低音二胡 + 马头琴风格拉弦 + 风噪
+**BPM / 调**：66 / E 角
+
+### T05 塞北草原·长调
+
+**英文 prompt**：
+`Morin khuur solo melody over open steppe wind and horse bells, throat singing imitation by overtone flute, B zhi mode, heroic wandering mood, 72 BPM, no percussion, vast and free, 1:30.`
+**乐器**：马头琴 + 泛音笛模仿呼麦
+**BPM / 调**：72 / B 徵
+
+### T06 辽东大金·铁骑
+
+**英文 prompt**：
+`Heavy Chinese war drums intro, suona blasts, low brass imitation, G gong mode, harsh winter steppe march, 88 BPM, dark and powerful, 1:30, ends with single drum hit.`
+**乐器**：战鼓 + 唢呐 + 低频垫
+**BPM / 调**：88 / G 宫
+
+### T07 白山黑水·密林
+
+**英文 prompt**：
+`Low xiao with shamanic frame drum and wooden clapper, eerie atonal slides, A yu mode, dark forest spy mood, 60 BPM, sparse percussion, 1:30.`
+**乐器**：低箫 + 萨满风格手鼓 + 木质敲击
+**BPM / 调**：60 / A 羽
+
+### T08 西北西夏·沙海
+
+**英文 prompt**：
+`Middle eastern pipa imitation with rawap-like lute, exotic xiao counter melody, distant camel caravan bells, E jiao mode with raised 4th, 78 BPM, mysterious Silk Road mood, 1:30.`
+**乐器**：琵琶 + 仿热瓦甫 + 驼铃声
+**BPM / 调**：78 / E 角（升 4 音）
+
+### T09 关中秦地·剑气
+
+**英文 prompt**：
+`Solo guqin with qinqiang-style high male voice ahh vowel imitation by erhu harmonics, D shang mode, Huashan sword test mood, 68 BPM, archaic and sharp, 1:30.`
+**乐器**：古琴 + 二胡泛音模仿秦腔
+**BPM / 调**：68 / D 商
+
+### T10 巴蜀西南·栈道
+
+**英文 prompt**：
+`Bamboo dizi with lusheng imitation, mountain wind ambience, B zhi mode, misty Sichuan mountain path mood, 72 BPM, light and ethereal, 1:30.`
+**乐器**：竹笛 + 仿芦笙 + 山风
+**BPM / 调**：72 / B 徵
+
+### T11 云贵大明·茶马
+
+**英文 prompt**：
+`Hulusi and lusheng duet, mid-rythm pipa accompaniment, tea horse caravan feel, D shang mode, warm and humid, 76 BPM, no heavy drums, 1:30.`
+**乐器**：葫芦丝 + 芦笙 + 琵琶
+**BPM / 调**：76 / D 商
+
+### T12 大理诸国·梵音
+
+**英文 prompt**：
+`Temple bronze bell loop with xiao flute and soft male buddhist chant imitation, A yu mode, peaceful and ancient Dali temple mood, 52 BPM, very spacious, 1:30.`
+**乐器**：铜钟循环 + 箫 + 梵唱（无歌词，母音 a） 
+**BPM / 调**：52 / A 羽
+
+### T13 东海海外·沧波
+
+**英文 prompt**：
+`Dizi melody over recorded ocean waves and seagulls, guqin harmonics, G gong to A yu modulation, lonely island mood, 64 BPM, no drums, 1:30.`
+**乐器**：笛 + 海浪采样 + 古琴泛音
+**BPM / 调**：64 / G 宫→A 羽
+
+---
+
+## 场景变奏
+
+### C01 城内闲行
+
+`Playful pipa and zhongruan duet, market crowd ambience, G shang mode, lively but not loud, 72 BPM, 2:00 loop.`
+
+### C02 城内夜雨
+
+`Solo guqin with subtle erhu harmony, persistent rain loop, A yu mode, reflective late-night town mood, 58 BPM, 2:30 loop.`
+
+### F01 山林小径
+
+`Bamboo flute with wood block pulse, birds and insects ambience, C jiao mode, calm forest hike, 64 BPM, 2:00 loop.`
+
+### I01 客栈酒肆
+
+`Erhu and pipa trading phrases, low crowd murmur, G zhi mode, warm tavern mood, 78 BPM, 1:45 loop.`
+
+### B01 守城战场
+
+`War suona with marching tanggu, mixed male shouting, gong strikes, G gong to A yu, 110 BPM, 2:00.`
+
+### B02 江湖夜奔
+
+`Fast erhu tremolo with chase drum pattern, A yu mode, tense pursuit mood, 132 BPM, 1:45.`
+
+### S01 主线剧情
+
+`Solo guqin harmonics with single xiao long notes, A yu mode, emotional reveal, 50 BPM, 1:30.`
+
+### S02 支线闲趣
+
+`Light pipa tremolo with xiao, G shang mode, playful wandering mood, 80 BPM, 1:30.`
+
+### S03 离愁别绪
+
+`Erhu solo over guqin arpeggio, A yu mode, sad farewell, 56 BPM, 2:00.`
+
+### S04 佛法梵音
+
+`Bronze bell and wooden fish loop with soft ahhh chant, D shang mode, temple meditation, 52 BPM, 2:00.`
+
+### S05 异域商路
+
+`Exotic pipa with rawap-like lute and camel bells, E jiao mode with raised 4th, 84 BPM, 1:45.`
+
+### S06 海岛潮声
+
+`Dizi over ocean wave loop, guqin harmonics, G gong mode, lonely island, 60 BPM, 2:00.`
+
+### E01 章节结束
+
+`Single bronze bell strike with long decay and reverb tail, G gong fundamental, 0:30.`
+
+---
+
+## 生成参数建议（Suno / Udio）
+
+```text
+model: suno-v3.5 / udio-v1.5
+duration: 按上表
+instrumental: true（除 S04 梵唱）
+lyrics: 无
+style tags: chinese traditional, wuxia, guqin, pentatonic, ambient
+output format: mp3 192k → 转 ogg vorbis q5
+```

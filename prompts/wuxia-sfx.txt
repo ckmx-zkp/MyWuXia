@@ -1,0 +1,263 @@
+# 江湖长夜 · 音效生成提示词
+
+> 用途：喂给 ElevenLabs Sound Effects / Stable Audio / Suno SFX 模式。所有提示词均含中文用途、英文 prompt、长度与采样参数。
+> 通用约束：`mono, 44.1 kHz, 16-bit WAV; normalized -12 LUFS; max 4 sec unless ambient; seamless loop markers if > 6 sec.`
+
+---
+
+## UI 反馈
+
+### click-paper
+纸面按钮点击
+`Soft brush tap on rice paper, single short tap, no reverb, 0.15 sec.`
+
+### page-turn
+卷轴翻页
+`Rice paper scroll turn, gentle crinkle and slight whoosh, 0.6 sec, mid decay.`
+
+### scroll-unroll
+卷轴展开
+`Long scroll unrolling with paper slide and faint wooden weight thud at end, 1.2 sec.`
+
+### tab-switch
+切换左侧菜单
+`Single guqin plucked note, 0.5 sec natural decay, mid register.`
+
+### lock-jingle
+任务未解锁
+`Two muted bronze bell hits with detuned interval, 0.4 sec, slightly sad.`
+
+### fail-buzz
+操作失败
+`Low wooden block buzz with detuned erhu slide down, 0.5 sec, 拒绝感.`
+
+### level-up
+升级提示
+`Bronze bell strike ascending three-note motif, bright, 1.0 sec, 喜悦.`
+
+### exp-tick
+阅历增长
+`Single light wood block tick, very short, 0.08 sec.`
+
+### hp-low-pulse
+气血低警告
+`Low pulsing temple bell with slow tremolo, loopable 1.0 sec, 危险感.`
+
+### reputation-up
+声望上升
+`Soft ascending guqin arpeggio, 0.8 sec.`
+
+### reputation-down
+声望下降
+`Soft descending erhu slide, 0.8 sec.`
+
+### danger-warning
+高危 NPC 提示
+`Temple bell single deep strike with long reverb tail, 1.5 sec, urgent.`
+
+---
+
+## 状态类
+
+### poison-loop
+中毒循环
+`Bubbling dark water loop, slightly sinister xiao overtone, 4 sec seamless.`
+
+### heal-bell
+疗伤
+`Two bright bronze bell strikes with warm reverb, 0.8 sec.`
+
+### detox-chime
+解毒
+`Clear glass chime single strike with light splash, 0.6 sec.`
+
+### death-thud
+倒地
+`Body fall on hard dirt with hollow wooden undertone, 0.7 sec.`
+
+### revive-gong
+复活
+`Single deep temple gong with 3 sec reverb tail, 复苏.`
+
+---
+
+## 战斗
+
+### sword-draw
+剑出鞘
+`Metal sword sliding out of scabbard, sharp ring at end, 0.5 sec.`
+
+### sword-clash-01
+长剑对撞 A
+`Sharp metallic ring on impact with subtle steel scrape, 0.25 sec.`
+
+### sword-clash-02
+长剑对撞 B
+`Heavier blade clash with louder ring and short reverb, 0.3 sec.`
+
+### sword-clash-03
+长剑对撞 C
+`Light blade tap with high pitch and quick decay, 0.2 sec.`
+
+### dodge-whoosh
+闪避
+`Air whoosh past ear, fast moving cloth, 0.4 sec.`
+
+### fist-impact
+拳掌命中
+`Muffled fist on flesh body thump, 0.2 sec.`
+
+### dodge-step
+踏步位移
+`Single footstep on stone with light scuff, 0.25 sec.`
+
+### arrow-release
+弓弦释放
+`Bowstring twang with feather whoosh, 0.5 sec.`
+
+### hidden-weapon-ping
+暗器
+`Small metal dart clink and fast whoosh, 0.3 sec.`
+
+### critical-hit
+暴击
+`Heavy metallic clang followed by deep gong echo, 0.6 sec.`
+
+### kill-stinger
+击杀
+`Sharp sword stab thud with final bell ding, 0.5 sec, decisive.`
+
+---
+
+## 移动
+
+### footstep-stone-{01..03}
+石板脚步 ×3
+`Hard shoe on stone tile, slight scuff, varied weight, 0.3 sec each.`
+
+### footstep-grass-{01..03}
+草地脚步 ×3
+`Soft shoe on grass with faint rustle, varied weight, 0.3 sec each.`
+
+### footstep-wood-{01..03}
+木地板脚步 ×3
+`Wood plank creak under shoe, varied weight, 0.3 sec each.`
+
+### footstep-mud-{01..03}
+泥地脚步 ×3
+`Wet mud squelch under shoe, varied weight, 0.35 sec each.`
+
+### jump
+轻功起跳
+`Light whoosh upward with cloth flap, 0.5 sec.`
+
+### fall
+坠地
+`Body landing roll on dirt with cloth rustle, 0.7 sec.`
+
+### roll
+闪避翻滚
+`Cloth roll on stone with quick scuff, 0.6 sec.`
+
+---
+
+## 环境循环
+
+### rain-loop
+夜雨循环
+`Steady moderate rain on roof tiles and leaves, distant thunder rumble, 30 sec seamless.`
+
+### wind-loop
+夜风循环
+`Soft night wind through pine needles, occasional gust, 30 sec seamless.`
+
+### night-cricket-loop
+秋夜虫鸣
+`Field cricket chorus with occasional distant frog, 30 sec seamless.`
+
+### fire-loop
+篝火循环
+`Crackling campfire with light popping sparks, 20 sec seamless.`
+
+### stream-loop
+溪水循环
+`Small mountain stream bubbling over rocks, 30 sec seamless.`
+
+### temple-bell-loop
+远处寺钟循环
+`Single bronze bell strike every 8 sec with long reverb, 30 sec.`
+
+### market-crowd-loop
+市井人声循环
+`Distant Chinese market crowd murmur, no clear words, 30 sec seamless.`
+
+---
+
+## 动物
+
+### horse-gallop
+马蹄疾驰
+`Multiple horse hooves galloping on packed dirt, 1.5 sec loopable segment.`
+
+### horse-whinny
+马嘶
+`Single horse neigh, 1.2 sec.`
+
+### dog-bark
+犬吠
+`Single sharp dog bark with slight echo, 0.5 sec.`
+
+### hawk-cry
+鹰唳
+`Distant hawk screech across valley, 1.5 sec.`
+
+### monkey-screech
+猿啸
+`Wild monkey scream echo, 1.0 sec.`
+
+### snake-hiss
+蛇信
+`Snake hiss with rattle, 0.8 sec.`
+
+---
+
+## 物品
+
+### coin-pouch
+钱袋
+`Leather pouch with multiple copper coins clinking, 0.5 sec.`
+
+### bottle-open
+药瓶开启
+`Ceramic bottle cork pop with small liquid splash, 0.5 sec.`
+
+### book-open
+翻书
+`Old paper book opening with crisp page turn, 0.7 sec.`
+
+### door-creak
+木门推开
+`Old wooden door creaking open, 1.5 sec.`
+
+### bowl-drop
+碗碎
+`Ceramic bowl falling and breaking on stone, 0.6 sec.`
+
+### fire-crackle
+火炬
+`Torch wood crackle, 4 sec loopable.`
+
+---
+
+## 生成参数（SFX）
+
+```text
+model: elevenlabs-sound-effects / stable-audio
+sample rate: 44.1 kHz
+bit depth: 16-bit
+channels: 1 (mono) for SFX, 2 for ambient loops
+format: WAV
+normalization: -12 LUFS peak -3 dBFS
+max duration: 4 sec (SFX) / 60 sec (ambient)
+loop markers: at 0 and end, seamless crossfade 80 ms
+```
