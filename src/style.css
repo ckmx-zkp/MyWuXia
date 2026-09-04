@@ -129,7 +129,7 @@ footer button{align-self:end;background:transparent;border:0;color:#d5b262;font:
   .paper{min-height:420px;background-size:cover;padding:30px 8%}
   .hero{text-align:left}
   .portrait{margin:6px 0 0}
-  .idle{grid-template-columns:110px 1fr 80px}
+  .idle{grid-template-columns:110px 1fr 72px 92px}
   .idle .rest{display:none}
 }
 @media(max-width:600px){
@@ -361,4 +361,45 @@ footer{border:0;background:url('/art/ui/slices/log-frame.png') center/100% 100% 
   .idle{padding:14px 60px}
   footer{padding:20px 40px}
   .story{padding:40px 12%}
+}
+
+/* ===== H5 / 移动端双端适配 ===== */
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+input{touch-action:manipulation}
+.skills,.bag,.rumors,.story,.panel,.map{-webkit-overflow-scrolling:touch}
+
+/* 平板与手机：主导航横排 */
+@media(max-width:1100px){
+  .primary-nav{grid-template-columns:repeat(5,1fr)}
+  .primary-nav button{min-height:66px;grid-template-columns:1fr;justify-items:center;gap:4px;padding:8px 4px;text-align:center;border-bottom:0;border-right:1px solid #b08a4733}
+  .primary-nav button i{width:34px;height:34px;font-size:18px}
+  .primary-nav button b{font-size:19px;letter-spacing:2px}
+  .world{margin-top:12px}
+  /* 底部留出手势安全区 */
+  footer{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+}
+
+/* 手机 */
+@media(max-width:600px){
+  .c-grid{grid-template-columns:1fr}
+  .fac-grid{grid-template-columns:1fr 1fr}
+  .quick-actions{grid-column:1/-1}
+  .quick-actions .tag-btn{min-height:110px;padding-top:30px;font-size:15px}
+  .htabs{grid-column:1/-1}
+  .story-mask{padding:10px}
+  .story{padding:34px 9%}
+  .panel{padding:22px 18px}
+  .attr-grid{grid-template-columns:1fr 1fr}
+  .ach{grid-template-columns:1fr;gap:3px}
+  .side-verse{display:none}
+  .actionbar{grid-template-columns:1fr;padding:12px 16px;gap:8px}
+  .actionbar span{display:none}
+}
+
+/* 横屏矮屏（手机横置） */
+@media(max-height:500px){
+  .story,.panel{max-height:96vh}
+  .story{padding:26px 10%}
 }
