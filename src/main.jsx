@@ -1049,7 +1049,7 @@ function App() {
   return <main className="app">
     <header>
       <div className="brand"><small>THE LONG NIGHT OF</small><strong>江湖长夜</strong></div>
-      <div className="currency"><span><i>◎</i>银两 <b>{s.silver}</b></span><span className="cultivate"><i>♨</i>修为 <b>{s.expTotal % 100}</b></span></div>
+      <div className="currency"><span><i className="em em-silver" />银两 <b>{s.silver}</b></span><span className="cultivate"><i className="em em-cult" />修为 <b>{s.expTotal % 100}</b></span></div>
       <button className="hbtn" onClick={() => { setS(v => ({ ...v, mute: !v.mute })); }}>{s.mute ? '音效：关' : '音效：开'}</button>
       <button className="hbtn" onClick={reset}>重开</button>
     </header>
@@ -1209,7 +1209,7 @@ function App() {
         <div className="htabs">
           {['武学', '行囊', '传闻'].map(x => <button key={x} className={tab === x ? 'on' : ''} onClick={() => { click(); setTab(x); }}>{x}</button>)}
         </div>
-        <div className="quick-actions">{[['成就', 'ach'], ['信件', 'let'], ['排行', 'rank'], ['设置', 'set']].map(([x, p]) => <button key={x} onClick={() => { click(); setPanel(p); }}>{x}</button>)}</div>
+        <div className="quick-actions">{[['成就', 'ach', 'tag-achieve'], ['信件', 'let', 'tag-letter'], ['排行', 'rank', 'tag-rank'], ['设置', 'set', 'tag-setting']].map(([x, p, img]) => <button key={x} className="tag-btn" style={{ backgroundImage: `url('/art/ui/slices/${img}.png')` }} onClick={() => { click(); setPanel(p); }}>{x}</button>)}</div>
         {tab === '武学' ? <div className="skills">
           {s.bonusSkill && <div className="skill on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
           {SKILLS.map(k => {

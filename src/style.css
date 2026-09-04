@@ -328,3 +328,37 @@ footer{height:150px;display:grid;grid-template-columns:82px 1fr 100px;gap:22px;p
 /* ===== 语音按钮 ===== */
 .vbtn{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:8px;vertical-align:-4px;background:#76532f;border:1px solid #9b7544;border-radius:50%;color:#f5dfab;font-size:11px;cursor:pointer}
 .vbtn:hover{background:#8a6238}
+
+/* ===== UI 素材切片接入（装饰层，文案仍由代码渲染；docs/ui/UI-ASSET-GUIDE.md） ===== */
+/* 顶栏资源徽记 */
+.currency i.em{border:0;box-shadow:none;background-color:transparent;width:38px;height:38px}
+.currency i.em-silver{background:url('/art/ui/slices/emblem-silver.png') center/contain no-repeat}
+.currency .cultivate i.em-cult{background:url('/art/ui/slices/emblem-cultivate.png') center/contain no-repeat}
+
+/* 右栏三属性：龙纹面板底 */
+.stats{border:0;background:url('/art/ui/slices/attr-panel.png') center/100% 100% no-repeat;padding:26px 30px 22px}
+.stats .stat span{color:#d8c9a0}
+
+/* 成就/信件/排行/设置：垂挂签 */
+.quick-actions .tag-btn{position:relative;min-height:150px;padding:44px 4px 30px;background:linear-gradient(none);background:transparent center/contain no-repeat;border:0;clip-path:none;writing-mode:vertical-rl;letter-spacing:7px;color:#f5e3b0;font:17px 'ZCOOL XiaoWei';text-shadow:0 1px 3px #000}
+.quick-actions .tag-btn:before{content:none}
+.quick-actions .tag-btn:hover{filter:brightness(1.18)}
+
+/* 挂机条：雕金黑木长条 */
+.idle{border:0;background:url('/art/ui/slices/idle-bar.png') center/100% 100% no-repeat;padding:26px 90px 26px 130px}
+
+/* 江湖日志：雕金卷轴框 */
+footer{border:0;background:url('/art/ui/slices/log-frame.png') center/100% 100% no-repeat;padding:34px 70px 30px}
+
+/* 剧情弹窗：任务纸卷 */
+.story{background:url('/art/ui/slices/scroll-mission.png') center/100% 100% no-repeat;border:0;padding:60px 90px 50px 100px}
+
+/* 左栏竖匾诗句 */
+.side-verse{writing-mode:vertical-rl;height:320px;margin:14px auto;padding:34px 20px;background:url('/art/ui/slices/nav-plaque.png') center/contain no-repeat;font-size:13px;color:#e8d9b0;letter-spacing:5px;text-align:center}
+
+@media(max-width:600px){
+  .side-verse{writing-mode:horizontal-tb;height:auto;background:none;padding:0}
+  .idle{padding:14px 60px}
+  footer{padding:20px 40px}
+  .story{padding:40px 12%}
+}
