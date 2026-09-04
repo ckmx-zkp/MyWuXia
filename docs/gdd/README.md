@@ -11,9 +11,15 @@
 | [05-audio-design.md](05-audio-design.md) | BGM / SFX 分类、13 区调性、命名与音量规范 |
 | [06-map-infrastructure.md](06-map-infrastructure.md) | 地图基础设施：两层结构（生活+原著）与四大母版规范 |
 | [07-dialogue-framework.md](07-dialogue-framework.md) | 剧本与事件文案工程规范（文案框架与对话标准） |
+| [08-jiangnan-daily-quests.md](08-jiangnan-daily-quests.md) | 基础设施层：江南大宋六大城市生活支线与循环日常库 |
 | [quests/DL-01-wuliang-crisis.md](quests/DL-01-wuliang-crisis.md) | 任务树剧本：大理·DL-01《无量山风波》（含完整对话与事件文案） |
+| [quests/DL-02-nandi-track.md](quests/DL-02-nandi-track.md) | 任务树剧本：大理·DL-02《南帝旧踪与桃源避世》（含完整对话与事件文案） |
 | [quests/JX-01-zuixianlou.md](quests/JX-01-zuixianlou.md) | 任务树剧本：嘉兴·JX-01《醉仙楼十八年之约》（含完整对话与事件文案） |
 | [quests/YZ-01-weixiaobao.md](quests/YZ-01-weixiaobao.md) | 任务树剧本：扬州·YZ-01《市井小宝与丽春深澜》（含完整对话与事件文案） |
+| [quests/FZ-01-fuwei-crisis.md](quests/FZ-01-fuwei-crisis.md) | 任务树剧本：福州·FZ-01《福威血夜与辟邪遗恨》（含完整对话与事件文案） |
+| [quests/SZ-01-yanziwu.md](quests/SZ-01-yanziwu.md) | 任务树剧本：苏州·SZ-01《姑苏燕子坞与还施水阁》（含完整对话与事件文案） |
+| [quests/HZ-01-meizhuang.md](quests/HZ-01-meizhuang.md) | 任务树剧本：杭州·HZ-01《西湖梅庄与琴棋书画四友》（含完整对话与事件文案） |
+| [quests/WX-01-xingzilin.md](quests/WX-01-xingzilin.md) | 任务树剧本：无锡·WX-01《杏子林变局与身世惊雷》（含完整对话与事件文案） |
 
 ## 冻结原则
 

@@ -9,8 +9,12 @@ header,.layout,footer{position:relative;z-index:1;max-width:1560px;margin:auto}
 header{height:86px;display:flex;align-items:center;gap:14px;padding:0 32px;border-bottom:1px solid #b08a4769}
 .brand small{display:block;font-size:9px;letter-spacing:3px}
 .brand strong{font:44px 'ZCOOL XiaoWei';letter-spacing:8px;color:#dec173}
-.currency{margin-left:auto;font-size:19px}
-.currency b{color:#e3c777}
+.currency{margin-left:auto;display:flex;align-items:center;gap:34px;font-size:19px}
+.currency span{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.currency span+span{padding-left:26px;border-left:1px solid #a9823d}
+.currency i{display:grid;place-items:center;width:42px;height:42px;border:2px solid #bf9550;border-radius:50%;font-style:normal;font-size:28px;color:#d5ad5a;background:#17251d;box-shadow:inset 0 0 12px #0008}
+.currency .cultivate i{border-color:#4f9b80;color:#71c19c}
+.currency b{color:#e3c777;font-size:24px}
 .hbtn{height:38px;padding:0 14px;background:#0b1914;border:1px solid #b08a4769;color:#c4ad76;font:15px 'Noto Serif SC';cursor:pointer}
 .hbtn:hover{background:#b98d4a45;color:#f0d88e}
 
@@ -46,21 +50,21 @@ header{height:86px;display:flex;align-items:center;gap:14px;padding:0 32px;borde
 /* ===== 中栏：区域与任务 ===== */
 .paper{min-height:520px;padding:38px 9%;color:#382d20;background:url('/art/story-parchment.png') center/100% 100% no-repeat}
 .chapter{border-bottom:1px solid #87683f85;padding-bottom:16px;margin-bottom:20px}
-.chapter small{color:#94744c}
+.chapter small{color:#6d5732}
 .chapter h1{font:44px 'ZCOOL XiaoWei';margin:8px 0}
 .chapter p{line-height:1.9;margin:8px 0}
-.chapter .hint{font-size:12px;color:#8d795a}
+.chapter .hint{font-size:12px;color:#6d5a3c}
 .mission-list{display:grid;gap:11px}
-.mission{min-height:64px;width:100%;display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 17px;background:#eee1bfbd;border:1px solid #9b7544;color:#382d20;text-align:left;font:inherit}
+.mission{min-height:64px;width:100%;display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 17px;background:#f2e5c2f2;border:1px solid #9b7544;color:#382d20;text-align:left;font:inherit}
 .mission:not(:disabled){cursor:pointer}
-.mission:not(:disabled):hover{background:#f3e6c5}
-.mission:disabled{opacity:.55}
+.mission:not(:disabled):hover{background:#f7ecca}
+.mission:disabled{opacity:.82}
 .mission.done{text-decoration:line-through}
 .mission.active{border-color:#7a4a2a;box-shadow:0 0 0 1px #7a4a2a inset}
 .mission>span{color:#aa4639;font-size:13px}
-.mission>small{color:#8d795a;font-size:12px;white-space:nowrap}
+.mission>small{color:#6d5a3c;font-size:12px;white-space:nowrap}
 .qbody b{display:block;font-size:16px;margin-bottom:3px}
-.qbody i{display:block;font-style:normal;font-size:12px;color:#6d5a40;line-height:1.6}
+.qbody i{display:block;font-style:normal;font-size:12px;color:#45351f;line-height:1.6}
 
 /* ===== 行动 / 挂机条 ===== */
 .actionbar,.idle{margin-top:13px;padding:18px 22px;display:grid;grid-template-columns:150px 1fr auto;gap:15px;align-items:center;border:1px solid #b08a4769;background:#0b1914ef}
@@ -68,25 +72,38 @@ header{height:86px;display:flex;align-items:center;gap:14px;padding:0 32px;borde
 .actionbar span{color:#c4ad76;font-size:14px}
 .actionbar i,.idle i,.stat i{display:block;width:100%;height:11px;background:#06100c;border:1px solid #8b6c3866;overflow:hidden}
 .actionbar em,.idle em,.stat em{display:block;height:100%;background:linear-gradient(90deg,#9e7338,#e0ca78)}
-.idle{grid-template-columns:138px 1fr 88px 96px}
+.idle{grid-template-columns:138px 1fr 74px 108px 96px}
 .idle button{min-height:45px;background:#76532f;border:1px solid #d1ac63;color:#f5dfab;font:16px 'Noto Serif SC';cursor:pointer}
 .idle button:disabled{opacity:.4;cursor:default}
 .idle .rest{background:#3d4a2f}
+.idle .claim{background:#75542d;box-shadow:inset 0 0 0 2px #ad8544}
 
 /* ===== 右栏：角色 ===== */
 .hero{text-align:center}
 .portrait{width:200px;height:200px;margin:6px auto 0;border-radius:50%;background:url('/art/wanderer-portrait.png') center/cover;border:4px solid #b89655}
 .portrait+h2{margin:20px 0 4px;font:36px 'ZCOOL XiaoWei';letter-spacing:6px}
 .hero p{margin:4px 0}
-.stat{text-align:left;margin:22px 7px}
-.stat span{display:block;margin-bottom:8px;font-size:14px}
+.stats{margin:18px 6px 11px;padding:13px 12px;border:1px solid #896a3c;background:#0a1713}
+.stat{display:grid;grid-template-columns:76px 1fr auto;align-items:center;gap:9px;text-align:left;margin:8px 0}
+.stat span{display:flex;gap:7px;align-items:center;font-size:14px;white-space:nowrap}
+.stat span i{width:auto;height:auto;border:0;background:none;display:inline;color:#db684f;font-size:18px;overflow:visible}
+.stat.qi span i{color:#5aa89a}.stat.fame span i{color:#c99d54}
+.stat > i{height:9px}
+.stat b{font-size:13px;color:#d8c184;white-space:nowrap}
+.stat.qi em{background:linear-gradient(90deg,#407c79,#8ac5b7)}
+.stat.fame em{background:linear-gradient(90deg,#8b6434,#cfa657)}
 .ability{border-top:1px solid #b08a4769;border-bottom:1px solid #b08a4769;padding:14px 0;margin-bottom:14px}
 .ability small,.ability em{display:block;font-size:12px;color:#9c9681;font-style:normal}
 .ability b{display:block;font-size:21px}
 .ability strong{font-size:31px;color:#d6a55c}
+.details{width:100%;height:38px;margin:0 0 13px;background:transparent;border:1px solid #896a3c;color:#d8bd7d;font:16px 'ZCOOL XiaoWei';letter-spacing:3px;cursor:pointer}
+.details:hover{background:#b98d4a2e}
 .htabs{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #8b6c3866;margin-bottom:12px}
 .htabs button{height:40px;background:transparent;border:0;color:#c4ad76;font:700 18px 'ZCOOL XiaoWei';cursor:pointer;letter-spacing:4px}
 .htabs button.on{background:#b98d4a45;color:#f0d88e}
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0 14px}
+.quick-actions button{position:relative;min-height:57px;padding:21px 3px 6px;background:linear-gradient(#a97b37,#5b3e21);border:1px solid #d2a654;color:#f0d28d;font:15px 'ZCOOL XiaoWei';letter-spacing:2px;cursor:pointer;clip-path:polygon(11% 0,89% 0,100% 13%,100% 100%,0 100%,0 13%)}
+.quick-actions button:before{content:'◆';position:absolute;top:4px;left:0;right:0;font-size:8px;color:#ead087}.quick-actions button:hover{filter:brightness(1.18)}
 .skills,.bag{display:grid;gap:8px;text-align:left;max-height:340px;overflow:auto}
 .skill,.bag-item{padding:9px 12px;border:1px solid #8b6c3866;background:#0b1914}
 .skill{opacity:.45}
@@ -101,7 +118,10 @@ header{height:86px;display:flex;align-items:center;gap:14px;padding:0 32px;borde
 .bag-item button:disabled{opacity:.35;cursor:default}
 
 /* ===== 日志底栏 ===== */
-footer{height:61px;border-top:1px solid #b08a4769;padding:15px 26px;display:flex;gap:26px;overflow:hidden;font-size:12px;white-space:nowrap}
+footer{height:150px;border:1px solid #b08a4769;padding:17px 24px;display:grid;grid-template-columns:84px 1fr 100px;gap:22px;overflow:hidden;font-size:13px;background:linear-gradient(90deg,#07140fe8,#07140fb8),url('/art/jianghu-rain-bg.png') center/cover}
+footer strong{font:22px/1.12 'ZCOOL XiaoWei';letter-spacing:7px;color:#cba556;border-right:1px solid #8e6e3d;padding:3px 16px}
+.log-lines{display:grid;align-content:start;gap:4px;color:#bca66c;line-height:1.55}.log-lines span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer button{align-self:end;background:transparent;border:0;color:#d5b262;font:16px 'ZCOOL XiaoWei';letter-spacing:2px;cursor:pointer}
 
 /* ===== 窄屏适配 ===== */
 @media(max-width:1100px){
@@ -115,16 +135,16 @@ footer{height:61px;border-top:1px solid #b08a4769;padding:15px 26px;display:flex
 @media(max-width:600px){
   header{height:76px;padding:0 14px;gap:7px;align-items:center}
   .brand{min-width:132px}.brand small{font-size:7px;letter-spacing:2px}.brand strong{font-size:31px;letter-spacing:3px;white-space:nowrap}
-  .currency{margin-left:auto;font-size:11px;line-height:1.45;white-space:normal;width:70px}.currency b{font-size:15px}
+  .currency{margin-left:auto;gap:4px;font-size:10px;line-height:1.2}.currency span{gap:3px}.currency span+span{padding-left:4px;border:0}.currency i{width:21px;height:21px;border-width:1px;font-size:13px}.currency b{font-size:13px}
   .hbtn{height:34px;width:36px;padding:2px;font-size:10px;line-height:1.2}
   .layout{padding:10px;gap:10px}.map-col{padding:10px}.world h3{font-size:22px}.world p{font-size:12px;line-height:1.65}
   .primary-nav{grid-template-columns:1fr 1fr}.primary-nav button{min-height:58px;padding:0 9px;grid-template-columns:33px 1fr}.primary-nav button i{width:27px;height:27px;font-size:15px}.primary-nav button b{font-size:19px;letter-spacing:3px}.side-verse{margin:12px;font-size:12px}
   .map{grid-template-columns:1fr 1fr;gap:6px;max-height:380px;overflow:auto}.map button{padding:8px}.map button b{font-size:15px}.map button span,.map button small{font-size:10px}
   .paper{min-height:0;padding:25px 8%;background-size:cover}.chapter h1{font-size:36px}.chapter p{font-size:14px;line-height:1.75}.chapter .hint{font-size:11px}
   .mission{grid-template-columns:43px 1fr;gap:7px;padding:10px;min-height:76px}.mission>small{grid-column:2;white-space:normal}.mission>span{font-size:11px}.qbody b{font-size:15px}.qbody i{font-size:11px;line-height:1.4}
-  .idle{margin-top:10px;padding:12px;grid-template-columns:87px 1fr 58px;height:75px;gap:8px}.idle b{font-size:20px}.idle button{min-height:37px;font-size:13px}
+  .idle{margin-top:10px;padding:12px;grid-template-columns:76px 1fr 52px 62px;height:75px;gap:6px}.idle b{font-size:18px}.idle button{min-height:37px;font-size:12px}.idle .rest{display:none}
   .hero{padding:13px;display:grid;grid-template-columns:94px 1fr;gap:4px 14px}.portrait{width:90px;height:90px;grid-row:span 5}.portrait+h2{margin:0;font-size:27px;letter-spacing:4px}.hero p{font-size:12px}.stat{margin:5px 0}.ability{margin:3px 0;padding:7px 0}.ability b{font-size:17px;margin:2px 0}.ability p{margin:2px 0}.ability strong{font-size:24px}.htabs{grid-column:2;margin:3px 0}.skills,.bag{grid-column:1/-1;max-height:230px}.skill,.bag-item{padding:7px 9px}
-  footer{height:76px;padding:12px;font-size:10px;white-space:normal;display:block;line-height:1.7}.map-col+section{order:0}
+  footer{height:110px;padding:11px;grid-template-columns:49px 1fr 55px;gap:8px;font-size:10px}.log-lines{gap:2px}.log-lines span{white-space:normal;line-height:1.4}footer strong{font-size:15px;letter-spacing:4px;padding-right:7px}footer button{font-size:11px}.map-col+section{order:0}
 }
 
 /* Desktop composition: an old-school wuxia game board instead of three plain cards. */
@@ -165,31 +185,30 @@ footer{height:61px;border-top:1px solid #b08a4769;padding:15px 26px;display:flex
   .paper{min-height:610px;padding:54px 10% 42px;background-size:100% 100%;box-shadow:0 2px 17px rgba(0,0,0,.38),inset 0 0 50px rgba(111,75,31,.19)}
   .layout > section{grid-column:2;grid-row:1;min-width:0}
   .chapter h1{font-size:48px;letter-spacing:12px;margin:8px 0 14px}.chapter p{font-size:16px;line-height:1.85}.chapter .hint{font-size:12px;margin-top:9px}
-  .mission{min-height:76px;padding:12px 15px;grid-template-columns:58px 1fr 112px;background:rgba(254,248,224,.34);border-color:rgba(137,92,37,.48)}
-  .mission:not(:disabled):hover{background:rgba(255,250,227,.7);transform:translateX(3px)}
+  .mission{min-height:76px;padding:12px 15px;grid-template-columns:58px 1fr 112px;background:rgba(253,246,222,.92);border-color:rgba(137,92,37,.48)}
+  .mission:not(:disabled):hover{background:rgba(255,250,227,.97);transform:translateX(3px)}
   .mission>span{font-size:12px}.qbody b{font-size:17px}.qbody i{font-size:12px}.mission>small{font-size:11px}
-  .idle{height:92px;padding:16px 22px;grid-template-columns:124px minmax(0,1fr) 75px 96px;border-color:rgba(173,130,49,.5);background:rgba(5,20,17,.9)}
+  .idle{height:92px;padding:16px 22px;grid-template-columns:124px minmax(0,1fr) 75px 110px 96px;border-color:rgba(173,130,49,.5);background:rgba(5,20,17,.9)}
   .idle b{font-size:24px}.idle button{font-size:14px}
   .hero{grid-column:3;grid-row:1;height:780px;overflow:hidden;padding:25px 20px 18px;background:linear-gradient(180deg,rgba(7,20,17,.97),rgba(3,13,11,.92));box-shadow:inset 0 0 0 1px rgba(171,130,56,.39),inset 0 0 65px rgba(0,0,0,.55)}
   .portrait{width:174px;height:174px;margin:3px auto 16px}.hero h2{font-size:35px;letter-spacing:9px;margin:8px 0}.hero>p{font-size:13px}.stat{margin:14px 6px}.ability{margin-top:16px;padding:17px 0}.ability b{font-size:20px}.ability strong{font-size:35px}.skills,.bag{max-height:235px}
-  footer{position:fixed;z-index:3;left:50%;bottom:18px;transform:translateX(-50%);width:min(1450px,calc(100vw - 36px));height:170px;margin:0;padding:26px 28px 20px 150px;white-space:normal;overflow:hidden;font-size:13px;line-height:2.15;border:1px solid rgba(166,126,50,.42);background:linear-gradient(90deg,rgba(7,19,15,.98),rgba(7,19,15,.86)),url('/art/jianghu-rain-bg.png') center/cover;position:relative}
-  footer:before{content:'江\A 湖\A 日\A 志';white-space:pre;position:absolute;left:44px;top:19px;color:#cda551;font-family:var(--serif);font-size:22px;line-height:1.13;letter-spacing:6px;padding-right:20px;border-right:1px solid rgba(171,130,56,.42)}
+  footer{position:fixed;z-index:3;left:50%;bottom:18px;transform:translateX(-50%);width:min(1450px,calc(100vw - 36px));height:170px;margin:0;padding:25px 34px;grid-template-columns:90px 1fr 108px;white-space:normal;overflow:hidden;font-size:13px;line-height:2.15;border:1px solid rgba(166,126,50,.42);background:linear-gradient(90deg,rgba(7,19,15,.98),rgba(7,19,15,.86)),url('/art/jianghu-rain-bg.png') center/cover;position:relative}
 }
 
 /* ===== 任务树 ===== */
 .tree-head{margin:22px 0 12px;border-bottom:1px dashed #87683f85;padding-bottom:10px}
-.tree-head small{color:#94744c}
+.tree-head small{color:#6d5732}
 .tree-head h2{font:30px 'ZCOOL XiaoWei';margin:6px 0 0;color:#5a3d1e}
 
 /* ===== 城中去处 ===== */
 .facilities{margin-top:24px}
 .facilities h3{font:26px 'ZCOOL XiaoWei';color:#5a3d1e;margin:0 0 10px;border-bottom:1px solid #87683f85;padding-bottom:8px}
 .fac-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.fac-grid button{padding:11px 13px;text-align:left;background:#eee1bfbd;border:1px solid #9b7544;color:#382d20;font:inherit;cursor:pointer}
-.fac-grid button:not(:disabled):hover{background:#f3e6c5}
-.fac-grid button:disabled{opacity:.5;cursor:default}
+.fac-grid button{padding:11px 13px;text-align:left;background:#f2e5c2f2;border:1px solid #9b7544;color:#382d20;font:inherit;cursor:pointer}
+.fac-grid button:not(:disabled):hover{background:#f7ecca}
+.fac-grid button:disabled{opacity:.6;cursor:default}
 .fac-grid b{display:block;font-size:15px}
-.fac-grid small{display:block;font-size:12px;color:#8d795a;margin-top:2px}
+.fac-grid small{display:block;font-size:12px;color:#6d5a3c;margin-top:2px}
 
 /* ===== 声望 / 好感 ===== */
 .rep{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;font-size:13px;color:#b3a172;margin-bottom:12px}
@@ -200,3 +219,78 @@ footer{height:61px;border-top:1px solid #b08a4769;padding:15px 26px;display:flex
 .rumor{padding:9px 12px;border:1px solid #8b6c3866;background:#0b1914}
 .rumor small{display:block;font-size:12px;color:#b3a172;line-height:1.7}
 .rumors .empty{font-size:12px;color:#8e7353;text-align:center;line-height:1.8}
+
+/* ===== 剧情弹窗 ===== */
+.story-mask{position:fixed;inset:0;background:#050a08d9;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.story{width:min(680px,94vw);max-height:88vh;overflow:auto;padding:34px 40px;color:#382d20;background:url('/art/story-parchment.png') center/100% 100% no-repeat;border:1px solid #9b7544}
+.story .st-tag{color:#94744c;font-size:12px}
+.story h2{font:32px 'ZCOOL XiaoWei';color:#5a3d1e;margin:8px 0 12px}
+.story .scene{font-size:14px;line-height:2;border-left:3px solid #9b7544;padding-left:12px;margin:0 0 14px}
+.story .dlg{font-size:13.5px;line-height:1.9;margin:8px 0}
+.story .dlg b{display:inline-block;color:#aa4639;margin-right:8px}
+.story .outcome{margin:16px 0;padding:13px 15px;background:#5a3d1e14;border:1px dashed #87683f85;font-size:13.5px;line-height:2;white-space:pre-wrap}
+.choices{display:grid;gap:9px;margin-top:14px}
+.choices button{padding:11px 15px;text-align:left;background:#f2e5c2f2;border:1px solid #9b7544;color:#382d20;font:14px 'Noto Serif SC';cursor:pointer}
+.choices button:not(:disabled):hover{background:#f7ecca}
+.choices button:disabled{opacity:.55;cursor:default}
+.choices small{display:block;font-size:11.5px;color:#6d5a3c;margin-top:3px}
+.go-on{width:100%;height:44px;background:#76532f;border:1px solid #d1ac63;color:#f5dfab;font:16px 'Noto Serif SC';cursor:pointer;letter-spacing:6px}
+
+/* 标注的原型组件：资源徽记、器物导航、三项属性、挂签和日志。 */
+.currency{display:flex;gap:25px;align-items:center}.currency span{display:flex;align-items:center;gap:8px}.currency span+span{padding-left:22px;border-left:1px solid #9b783c}.currency i{display:grid;place-items:center;width:42px;height:42px;border:2px solid #b98f49;border-radius:50%;font-style:normal;font-size:26px;color:#d4ac58;background:#142219}.currency .cultivate i{color:#72b99a;border-color:#579579}.currency b{font-size:24px}
+.primary-nav{display:grid}.primary-nav button{display:grid;grid-template-columns:66px 1fr;align-items:center;min-height:122px;padding:0 20px;background:transparent;border:0;border-bottom:1px solid #b08a4769;color:#cdb77e;text-align:left;font:inherit;cursor:pointer}.primary-nav button i{display:grid;place-items:center;width:54px;height:54px;border:1px solid #9f7c42;border-radius:50%;font-style:normal;font-size:26px;color:#cfaa5a}.primary-nav button b{font:30px 'ZCOOL XiaoWei';letter-spacing:7px}.primary-nav button.on{background:linear-gradient(90deg,rgba(160,117,40,.36),transparent);box-shadow:inset 4px 0 #d9ae55}.primary-nav button.on i{background:#573f20}.side-verse{margin:32px 28px;color:#9d8962;text-align:center;line-height:2.1}.travel-panel{height:700px;overflow:hidden}.travel-panel .map{max-height:500px;overflow:auto}
+.idle{grid-template-columns:138px 1fr 76px 108px 96px}.idle .claim{background:#76532f;box-shadow:inset 0 0 0 2px #ad8544}
+.stats{margin:16px 6px 9px;padding:12px;border:1px solid #896a3c;background:#0a1713}.stats .stat{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;margin:8px 0;text-align:left}.stats .stat span{margin:0;font-size:13px;white-space:nowrap}.stats .stat>i{height:9px}.stats .stat b{font-size:12px;color:#d8c184}.stats .qi em{background:linear-gradient(90deg,#407c79,#8ac5b7)}.stats .fame em{background:linear-gradient(90deg,#8b6434,#cfa657)}.details{width:100%;height:36px;margin-bottom:10px;background:transparent;border:1px solid #896a3c;color:#d8bd7d;font:16px 'ZCOOL XiaoWei';letter-spacing:3px;cursor:pointer}.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.quick-actions button{min-height:55px;background:linear-gradient(#a97b37,#5b3e21);border:1px solid #d2a654;color:#f0d28d;font:15px 'ZCOOL XiaoWei';cursor:pointer;clip-path:polygon(12% 0,88% 0,100% 15%,100% 100%,0 100%,0 15%)}
+footer{height:150px;display:grid;grid-template-columns:82px 1fr 100px;gap:22px;padding:17px 24px;border:1px solid #b08a4769;background:linear-gradient(90deg,#07140fe8,#07140fb8),url('/art/jianghu-rain-bg.png') center/cover}footer strong{font:22px/1.12 'ZCOOL XiaoWei';letter-spacing:7px;color:#cba556;border-right:1px solid #8e6e3d;padding:3px 16px}.log-lines{display:grid;align-content:start;gap:4px;color:#bca66c;line-height:1.55}.log-lines span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}footer button{align-self:end;background:transparent;border:0;color:#d5b262;font:16px 'ZCOOL XiaoWei';cursor:pointer}
+
+/* ===== 中栏分页：舆图 / 武学 / 行囊 ===== */
+.atlas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.atlas button{padding:12px 14px;text-align:left;background:#f2e5c2f2;border:1px solid #9b7544;color:#382d20;font:inherit;cursor:pointer}
+.atlas button:disabled{opacity:.7;cursor:default}
+.atlas button.near:not(:disabled):hover{background:#f7ecca}
+.atlas button.here{border-color:#7a4a2a;box-shadow:0 0 0 1px #7a4a2a inset}
+.atlas span,.atlas small{display:block;font-size:11px;color:#6d5a3c}
+.atlas b{display:block;font-size:18px;margin:4px 0;color:#5a3d1e}
+.page-list{display:grid;gap:10px}
+.page-item{padding:11px 14px;background:#f2e5c2f2;border:1px solid #9b7544;color:#382d20;opacity:.6}
+.page-item.on{opacity:1}
+.page-item b{font-size:16px}
+.page-item em{float:right;font-style:normal;font-size:12px;color:#aa6a2e}
+.page-item small{display:block;font-size:12px;color:#45351f;margin-top:4px;line-height:1.6}
+.page-item button{margin-top:8px;height:32px;padding:0 14px;background:#76532f;border:1px solid #9b7544;color:#f5dfab;font:13px 'Noto Serif SC';cursor:pointer}
+.page-item button:disabled{opacity:.4;cursor:default}
+@media(max-width:600px){.atlas{grid-template-columns:1fr}}
+
+/* ===== 功能面板（详细属性/成就/信件/排行/设置） ===== */
+.panel{position:relative;width:min(560px,94vw);max-height:86vh;overflow:auto;padding:30px 34px;background:linear-gradient(180deg,rgba(9,22,18,.98),rgba(4,13,11,.96));border:1px solid #b08a4769;color:#d8c184;box-shadow:0 8px 40px #000a}
+.panel h2{font:30px 'ZCOOL XiaoWei';color:#dec173;margin:0 0 16px;letter-spacing:4px}
+.panel h2 small{font:14px 'Noto Serif SC';color:#9c9681;letter-spacing:0;margin-left:10px}
+.panel h3{font:20px 'ZCOOL XiaoWei';color:#cba556;margin:18px 0 10px;border-bottom:1px solid #8b6c3866;padding-bottom:6px}
+.panel-x{position:absolute;top:12px;right:12px;width:32px;height:32px;background:transparent;border:1px solid #8b6c3866;color:#c4ad76;cursor:pointer;font-size:14px}
+.panel-x:hover{background:#b98d4a45;color:#f0d88e}
+.attr-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.attr-grid>div{padding:9px 12px;border:1px solid #8b6c3866;background:#0b1914}
+.attr-grid small{display:block;font-size:11px;color:#8e7353}
+.attr-grid b{font-size:14px;color:#e3c777}
+.favor-list{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:#b3a172}
+.favor-list b{color:#d6a55c}
+.ach-list{display:grid;gap:8px}
+.ach{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;padding:9px 12px;border:1px solid #8b6c3866;background:#0b1914;opacity:.5}
+.ach.on{opacity:1;border-color:#b08a47}
+.ach b{font-size:14px;color:#d8c184}
+.ach.on b{color:#e3c777}
+.ach small{font-size:12px;color:#8e7353}
+.letter-list{display:grid;gap:10px}
+.letter{padding:12px 15px;border:1px solid #8b6c3866;background:#0b1914}
+.letter b{font-size:14px;color:#d6a55c}
+.letter p{margin:6px 0 0;font-size:13px;line-height:1.8;color:#bca66c}
+.panel-p{font-size:13.5px;line-height:1.9;color:#bca66c;margin:10px 0}
+.panel-p.dim{color:#8e7353;font-size:12px}
+.rank-no{font-size:26px;color:#d6a55c}
+.set-row{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid #8b6c3866}
+.set-row span{width:52px;font-size:15px;color:#d8c184}
+.set-row small{font-size:12px;color:#8e7353}
+.rep .dim{color:#6d604a;font-size:12px}
+
+/* 任务树提示 */
+.tree-hint{display:block;color:#7a4a2a;font-weight:700;margin-top:4px}
