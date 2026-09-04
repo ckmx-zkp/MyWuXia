@@ -1,11 +1,11 @@
 *{box-sizing:border-box}
 body{margin:0;background:#07100d;color:#dec88e;font-family:'STKaiti','KaiTi','FangSong','STSong','SimSun',serif}
-.app{min-height:100vh;background:linear-gradient(#07110ee0,#09160fe0),url('/art/jianghu-rain-bg.webp') center/cover no-repeat}
+.app{min-height:100vh;min-height:100dvh;padding-top:constant(safe-area-inset-top);padding-top:env(safe-area-inset-top,0px);padding-left:constant(safe-area-inset-left);padding-left:env(safe-area-inset-left,0px);padding-right:constant(safe-area-inset-right);padding-right:env(safe-area-inset-right,0px);background:linear-gradient(#07110ee0,#09160fe0),url('/art/jianghu-rain-bg.webp') center/cover no-repeat}
 .app:before{content:'';position:fixed;inset:0;background:#0003;pointer-events:none}
 header,.layout,footer{position:relative;z-index:1;max-width:1560px;margin:auto}
 
 /* ===== 顶栏 ===== */
-header{height:86px;display:flex;align-items:center;gap:14px;padding:0 32px;border-bottom:1px solid #b08a4769}
+header{min-height:86px;height:auto;display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;padding:10px 32px;border-bottom:1px solid #b08a4769}
 .brand small{display:block;font-size:9px;letter-spacing:3px}
 .brand strong{font:44px 'ZCOOL XiaoWei','STKaiti','KaiTi','LiSu',serif;letter-spacing:8px;color:#dec173}
 .currency{margin-left:auto;display:flex;align-items:center;gap:34px;font-size:19px}
@@ -132,7 +132,7 @@ footer button{align-self:end;background:transparent;border:0;color:#d5b262;font:
   .idle .rest{display:none}
 }
 @media(max-width:600px){
-  header{height:76px;padding:0 14px;gap:7px;align-items:center}
+  header{min-height:0;height:auto;padding:8px 12px;gap:6px 8px;align-items:center}
   .brand{min-width:132px}.brand small{font-size:7px;letter-spacing:2px}.brand strong{font-size:31px;letter-spacing:3px;white-space:nowrap}
   .currency{margin-left:auto;gap:4px;font-size:10px;line-height:1.2}.currency span{gap:3px}.currency span+span{padding-left:4px;border:0}.currency i{width:21px;height:21px;border-width:1px;font-size:13px}.currency b{font-size:13px}
   .hbtn{height:34px;min-width:36px;width:auto;padding:2px 7px;font-size:10px;line-height:1.2}
@@ -238,7 +238,7 @@ footer button{align-self:end;background:transparent;border:0;color:#d5b262;font:
 .rumors .empty{font-size:12px;color:#8e7353;text-align:center;line-height:1.8}
 
 /* ===== 剧情弹窗 ===== */
-.story-mask{position:fixed;inset:0;background:#050a08d9;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.story-mask{position:fixed;inset:0;background:#050a08d9;z-index:50;display:flex;align-items:center;justify-content:center;padding:max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px))}
 .story{width:min(680px,94vw);max-height:88vh;overflow:auto;padding:34px 40px;color:#382d20;background:#e8d5a8;border:1px solid #9b7544}
 .story .st-tag{color:#94744c;font-size:12px}
 .story h2{font:32px 'ZCOOL XiaoWei','STKaiti','KaiTi','LiSu',serif;color:#5a3d1e;margin:8px 0 12px}
@@ -398,7 +398,7 @@ input{touch-action:manipulation}
   .primary-nav button b{font-size:19px;letter-spacing:2px}
   .world{margin-top:12px}
   /* 底部留出手势安全区 */
-  footer{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  footer{padding-bottom:calc(14px + constant(safe-area-inset-bottom));padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px))}
 }
 
 /* 手机 */
@@ -408,7 +408,7 @@ input{touch-action:manipulation}
   .quick-actions{grid-column:1/-1}
   .quick-actions .tag-btn{min-height:110px;padding-top:30px;font-size:15px}
   .htabs{grid-column:1/-1}
-  .story-mask{padding:10px}
+  .story-mask{padding:max(10px, env(safe-area-inset-top, 0px)) 10px max(10px, env(safe-area-inset-bottom, 0px))}
   .story{padding:34px 9%}
   .panel{padding:22px 18px}
   .attr-grid{grid-template-columns:1fr 1fr}
