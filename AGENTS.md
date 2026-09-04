@@ -115,8 +115,9 @@
 - 顶部：银两 / 修为徽记 + 开发者收益倍率（×1/×2/×5/×10 循环，作用于全部正向收益）+ 音效开关 + 重开。
 - 无存档首访或重开后进入**开局创角**：名号输入、出身四选一（猎户/商贾/弃卒/书生）、天赋 5 点加点（根骨/臂力/悟性）、家传武学三选一；角色名与家传武学全站生效。
 - 普通任务点击后先出**剧情卡**（场景 + NPC 台词 + 酬劳预览 + 动身/离开），再进入计时；台词来自 `CHATTER` 表（每区 4 条，与任务顺序一致）。
-- 进度使用 `localStorage`（键 `jianghu-save-v1`）自动存档。
+- 进度使用 `localStorage`（键 `jianghu-save-v1`）自动存档：状态变更后 2.5 秒防抖写入，隐藏页签 / 关闭页时立即落盘（含尚未刷入界面的挂机历练）。
 - 双端适配：viewport/安全区/触摸优化；≤1100px 导航横排、单栏布局；≤600px 进一步收窄。
+- **首屏性能**：UI 图全部为按显示尺寸压缩的 WebP（`public/art/`，合计约 0.5 MB）；禁止把 kit 源 PNG、未缩放切片打进 `public/`。字体用系统楷体/仿宋栈，**禁止** `@import` Google Fonts。全屏背景不得使用 `background-attachment: fixed`。剧情纸卷（`scroll-mission.webp`）仅在弹窗带 `.scroll` 时加载。挂机历练每 5 秒才写回 React 状态，SFX 复用 `Audio` 实例。
 
 ### 5.2 任务树接入
 
@@ -148,7 +149,7 @@
 - 切区时旧曲 0.4 秒淡出、新曲 1.2 秒淡入（交叉淡化）；同曲恢复时补淡入（防无声 bug）。
 - BGM 音量 0.5；浏览器自动播放限制下由首次点击解锁。
 - 现有 SFX：`public/audio/{wood-pluck, quest-complete, breath-bell}.wav`——分别作为 UI 确认/受挫、任务完成、突破/抵达/疗伤的基础音色；音量默认最大（1.0）。
-- NPC 对白位于 `public/audio/voice/<树ID>_<节点>_<角色>.mp3`（86 个全部接入）：剧情弹窗开节点自动播首条配音，台词旁 ♪ 按钮可重播；对白期间 BGM 自动 duck 至 30%，结束恢复。
+- NPC 对白位于 `public/audio/voice/<树ID>_<节点>_<角色>.mp3`（100 个全部接入）：剧情弹窗开节点自动播首条配音，台词旁 ♪ 按钮可重播；对白期间 BGM 自动 duck 至 30%，结束恢复。
 - 客栈「打听消息」播放地域语音轮换（`INN_VOICES`：江南 8 条 / 大理 3 条）。
 - 音效开关在顶栏；BGM 与语音随开关启停。
 - BGM / SFX 生成提示词：`prompts/wuxia-bgm.txt`、`prompts/wuxia-sfx.txt`。
@@ -208,11 +209,12 @@
 | UI 素材规范 | `docs/ui/` |
 | AI 生成提示词（图像 / 音频） | `prompts/` |
 | 应用代码 | `src/`（React + Vite） |
-| 静态资源（图片、音效、字体） | `public/`（`art/`、`audio/`） |
+| 静态资源（站点用） | `public/`（`art/**/*.webp`、`audio/`） |
+| UI / 场景图 PNG 源 | `art-src/`（不部署；`scripts/optimize-art.py` 写出 WebP） |
 | 区主题曲 BGM | `public/audio/bgm/zone/T01…T13-<slug>.mp3` |
 | 通用 SFX | `public/audio/*.wav` |
-| UI 切片素材（离线裁切产物） | `public/art/ui/slices/`（脚本 `scripts/slice-ui.py`） |
-| 脚本工具（音频生成、UI 切片、部署） | `scripts/`（`deploy.sh` 为上线入口） |
+| UI 切片 WebP | `public/art/ui/slices/`（源 PNG 在 `art-src/ui/slices/`，脚本 `scripts/slice-ui.py` + `optimize-art.py`） |
+| 脚本工具（音频生成、切图、压图、部署） | `scripts/`（`deploy.sh` 为上线入口） |
 | 第三方依赖 | `node_modules/`（git 忽略） |
 | 构建产物 | `dist/`（git 忽略） |
 | 本地密钥 | `Key.txt`（git 忽略；脚本读取此文件） |
@@ -228,6 +230,7 @@
 - 任务文案五模块结构**不可省略任一**；纯 NPC 对话节点也需要 `dialogues` 与 `hearsay`。
 - 所有音频资源须遵守 `docs/gdd/05` 音量基线与循环规范；不接受硬切循环。
 - 任何把数值、按钮标签、剧情文案烘焙进图片的做法一律打回重做（见 `docs/ui/UI-ASSET-GUIDE.md` 第 5 条）。
+- 打开卡顿优先查首屏图体积与字体，不要先怪服务器内存：本站是 nginx 静态资源，2G RAM 足够；瓶颈是 PNG 体积、Google 字体和每秒整页刷新。新图必须按显示尺寸出 WebP，源 PNG 只进 `art-src/`。
 ## 10. 部署
 
 - 目标：阿里云 `aliyun-prayer`（47.108.114.17），nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。

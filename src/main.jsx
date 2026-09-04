@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 
-/* ================= 音效 ================= */
+/* ================= 音效（复用 Audio，避免每次点击新建） ================= */
 const SOUND = { click: '/audio/wood-pluck.wav', quest: '/audio/quest-complete.wav', bell: '/audio/breath-bell.wav' };
+const sfxPool = {};
 function play(src, mute) {
   if (mute) return;
-  try { const a = new Audio(src); a.volume = 1.0; a.play().catch(() => {}); } catch (e) { /* 浏览器未解锁音频时忽略 */ }
+  try {
+    let a = sfxPool[src];
+    if (!a) { a = new Audio(src); a.volume = 1.0; sfxPool[src] = a; }
+    a.currentTime = 0;
+    a.play().catch(() => {});
+  } catch (e) { /* 浏览器未解锁音频时忽略 */ }
 }
 
 /* ================= BGM：13 区主题曲（docs/gdd/05，切区交叉淡化） ================= */
@@ -1132,6 +1138,7 @@ function load() {
   } catch (e) { return null; }
 }
 
+
 /* ================= 行动结算 ================= */
 function levelUpLog(n, s) {
   if (lv(n.expTotal) > lv(s.expTotal)) {
@@ -1216,20 +1223,36 @@ function resolveSpar(s) {
   n.log = n.log.slice(0, 8);
   return levelUpLog(n, s);
 }
+/* 挂机历练先攒在内存，满 5 息或将要突破才写回，避免每秒整页重绘 */
+let idleHold = 0;
+function persist(state) {
+  const add = idleHold ? 2 * (state.devMult || 1) * idleHold : 0;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ ...state, fx: null, expTotal: state.expTotal + add })); } catch (e) { /* 忽略 */ }
+}
+function flushIdle(s) {
+  if (!idleHold) return s;
+  const add = 2 * (s.devMult || 1) * idleHold;
+  idleHold = 0;
+  const n = { ...s, expTotal: s.expTotal + add };
+  return levelUpLog(n, s);
+}
 function tick(s) {
   if (s.action) {
-    const a = { ...s.action, left: s.action.left - 1 };
-    const n = { ...s, action: a };
+    const flushed = flushIdle(s);
+    const a = { ...flushed.action, left: flushed.action.left - 1 };
+    const n = { ...flushed, action: a };
     if (a.left <= 0) return a.type === 'quest' ? resolveQuest(n) : a.type === 'travel' ? resolveTravel(n) : resolveSpar(n);
     return n;
   }
-  if (!s.idle) return s.fx ? { ...s, fx: null } : s;
-  const n = { ...s, fx: null, expTotal: s.expTotal + 2 * (s.devMult || 1) };
-  if (lv(n.expTotal) > lv(s.expTotal)) {
-    n.fx = 'bell';
-    n.log = [`突破！等级升至 ${lv(n.expTotal)}，境界「${grade(lv(n.expTotal))}」。`, ...s.log].slice(0, 8);
+  if (!s.idle) {
+    const flushed = flushIdle(s);
+    if (flushed.fx) return { ...flushed, fx: null };
+    return flushed;
   }
-  return n;
+  idleHold += 1;
+  const pending = 2 * (s.devMult || 1) * idleHold;
+  if (idleHold < 5 && lv(s.expTotal + pending) === lv(s.expTotal)) return s;
+  return { ...flushIdle(s), fx: null };
 }
 
 /* ================= 界面 ================= */
@@ -1252,8 +1275,23 @@ function App() {
   const doneArr = s.done[s.loc] || [];
   const busy = !!s.action;
 
+  const sRef = useRef(s);
+  sRef.current = s;
   useEffect(() => { const t = setInterval(() => setS(tick), 1000); return () => clearInterval(t); }, []);
-  useEffect(() => { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ ...s, fx: null })); } catch (e) { /* 忽略 */ } }, [s]);
+  useEffect(() => {
+    const t = setTimeout(() => persist(s), 2500);
+    return () => clearTimeout(t);
+  }, [s]);
+  useEffect(() => {
+    const onHide = () => persist(sRef.current);
+    const onVis = () => { if (document.hidden) onHide(); };
+    window.addEventListener('beforeunload', onHide);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      window.removeEventListener('beforeunload', onHide);
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, []);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.mute); }, [s.fx, s.mute]);
   useEffect(() => { bgmSwitch(s.loc, s.mute); }, [s.loc, s.mute]);
 
@@ -1540,7 +1578,7 @@ function App() {
         <div className="htabs">
           {['武学', '行囊', '传闻'].map(x => <button key={x} className={tab === x ? 'on' : ''} onClick={() => { click(); setTab(x); }}>{x}</button>)}
         </div>
-        <div className="quick-actions">{[['成就', 'ach', 'tag-achieve'], ['信件', 'let', 'tag-letter'], ['排行', 'rank', 'tag-rank'], ['设置', 'set', 'tag-setting']].map(([x, p, img]) => <button key={x} className="tag-btn" style={{ backgroundImage: `url('/art/ui/slices/${img}.png')` }} onClick={() => { click(); setPanel(p); }}>{x}</button>)}</div>
+        <div className="quick-actions">{[['成就', 'ach', 'tag-achieve'], ['信件', 'let', 'tag-letter'], ['排行', 'rank', 'tag-rank'], ['设置', 'set', 'tag-setting']].map(([x, p, img]) => <button key={x} className="tag-btn" style={{ backgroundImage: `url('/art/ui/slices/${img}.webp')` }} onClick={() => { click(); setPanel(p); }}>{x}</button>)}</div>
         {tab === '武学' ? <div className="skills">
           {s.bonusSkill && <div className="skill on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
           {SKILLS.map(k => {
@@ -1618,7 +1656,7 @@ function App() {
     {creating && (() => {
       const left = ALLOC_POINTS - alloc.hp - alloc.ab - alloc.exp;
       return <div className="story-mask">
-        <div className="story create">
+        <div className="story create scroll">
           <small className="st-tag">江湖长夜 · 开局</small>
           <h2>创建侠客</h2>
           <div className="c-row">
@@ -1656,7 +1694,7 @@ function App() {
       const q = z.quests[questCard], r = questReward(z, q.kind === 'main');
       const [who, line] = CHATTER[s.loc][questCard];
       return <div className="story-mask" onClick={() => setQuestCard(null)}>
-        <div className="story" onClick={e => e.stopPropagation()}>
+        <div className="story scroll" onClick={e => e.stopPropagation()}>
           <small className="st-tag">{q.kind === 'main' ? '小主线' : '支线'} · {z.name}</small>
           <h2>{q.name}</h2>
           <p className="scene">{q.text}</p>
@@ -1671,7 +1709,7 @@ function App() {
     })()}
     {/* 剧情弹窗（情境描摹 / NPC台词 / 交互抉择 / 判定回响） */}
     {story && stNode && <div className="story-mask" onClick={() => { if (outcome) { stopVoice(); setStory(null); setOutcome(null); } }}>
-      <div className="story" onClick={e => e.stopPropagation()}>
+      <div className="story scroll" onClick={e => e.stopPropagation()}>
         <small className="st-tag">【{st.name}】第{['一', '二', '三', '四', '五', '六', '七'][story.ni] || story.ni + 1}回 · {st.where}</small>
         <h2>{stNode.name}</h2>
         <p className="scene">{stNode.scene}</p>

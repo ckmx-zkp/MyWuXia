@@ -9,6 +9,7 @@
     "audio:bgm:dry": "node scripts/generate-bgm.mjs --dry-run",
     "audio:voice": "node scripts/generate-voice.mjs",
     "audio:voice:dry": "node scripts/generate-voice.mjs --dry-run",
+    "art:optimize": "python scripts/optimize-art.py",
     "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {

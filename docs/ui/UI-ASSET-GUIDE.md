@@ -2,14 +2,16 @@
 
 ## 当前素材
 
+源文件在 `art-src/`（PNG，不部署）。站点只发布 `public/art/**/*.webp`（`python scripts/optimize-art.py`）。
+
 | 文件 | 用途 | 状态 |
 |---|---|---|
-| `public/art/wuxia-attribute-kit-v1.png` | 右栏属性铜牌与四枚垂挂签的风格参考/精修源素材 | 已生成 |
-| `public/art/ui/wuxia-attribute-kit-v1.png` | 右栏属性铜牌与四枚垂挂签 | 已切片接入（属性面板、四枚挂签） |
-| `public/art/ui/wuxia-core-ui-kit-v1.png` | 纸卷任务框、左导航框、资源徽记、挂机条、日志框 | 已切片接入（`slices/`，脚本 `scripts/slice-ui.py`） |
-| `public/art/story-parchment.png` | 中央剧情纸卷 | 已接入 |
-| `public/art/wanderer-portrait.png` | 侠客圆形头像 | 已接入 |
-| `public/art/jianghu-rain-bg.png` | 全局雨夜背景与日志底图 | 已接入 |
+| `art-src/ui/wuxia-attribute-kit-v1.png` | 右栏属性铜牌与四枚垂挂签的切片源表 | 源文件，禁止打进 `public/` |
+| `art-src/ui/wuxia-core-ui-kit-v1.png` | 纸卷 / 导航匾 / 徽记 / 挂机条 / 日志框切片源表 | 源文件，禁止打进 `public/` |
+| `public/art/story-parchment.webp` | 中央剧情纸卷 | 已接入（由源 PNG 压缩） |
+| `public/art/wanderer-portrait.webp` | 侠客圆形头像 | 已接入（显示约 174px，源缩到 400px） |
+| `public/art/jianghu-rain-bg.webp` | 全局雨夜背景 | 已接入（约 1280×720） |
+| `public/art/ui/slices/*.webp` | 徽记、属性面板、挂签、挂机条、日志框、弹窗纸卷 | 已接入 |
 
 ## 右栏实现规则
 
@@ -24,27 +26,33 @@
 ```css
 /* 仅作为装饰层。内容层仍保留普通 HTML。 */
 .hero-ornament {
-  background-image: url('/art/wuxia-attribute-kit-v1.png');
+  background-image: url('/art/ui/slices/attr-panel.webp');
   background-repeat: no-repeat;
   pointer-events: none;
 }
 ```
 
-将素材裁成独立面板/挂签前，先保留原始 `-v1` 文件；新版本使用递增文件名，例如 `wuxia-attribute-panel-v2.png`。不要覆盖已有素材。
+将素材裁成独立面板/挂签前，先保留原始 `-v1` 文件于 `art-src/`；新版本使用递增文件名，例如 `wuxia-attribute-panel-v2.png`。不要覆盖已有素材。切图用 `scripts/slice-ui.py`，再跑 `npm run art:optimize` 写出 WebP。
 
 ## 目录约定
 
 ```text
-public/art/
-├─ jianghu-rain-bg.png        # 全屏环境背景
-├─ story-parchment.png        # 已接入的主纸卷
-├─ wanderer-portrait.png      # 角色肖像
-└─ ui/                        # 所有可复用 UI 底图与切片源
+art-src/                      # PNG 源，不进 dist
+├─ jianghu-rain-bg.png
+├─ story-parchment.png
+├─ wanderer-portrait.png
+└─ ui/
    ├─ wuxia-attribute-kit-v1.png
-   └─ wuxia-core-ui-kit-v1.png
+   ├─ wuxia-core-ui-kit-v1.png
+   └─ slices/*.png
+public/art/                   # 仅 WebP，按显示尺寸压缩
+├─ jianghu-rain-bg.webp
+├─ story-parchment.webp
+├─ wanderer-portrait.webp
+└─ ui/slices/*.webp
 ```
 
-`wuxia-core-ui-kit-v1.png` 已补齐五类尚缺视觉件：任务纸卷、左侧导航框、银两/修为徽记、挂机收益条、江湖日志框。后续接入时以 CSS 背景定位或离线裁切生成独立 PNG；不要把整张素材表直接作为单一背景使用。
+不要把整张素材表直接作为单一背景使用，也不要把 kit 源 PNG 放进 `public/`。
 
 ## 视觉验收
 

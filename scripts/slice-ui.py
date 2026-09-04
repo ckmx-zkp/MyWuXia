@@ -5,7 +5,7 @@ from PIL import Image
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-UI = ROOT / 'public' / 'art' / 'ui'
+UI = ROOT / 'art-src' / 'ui'
 OUT = UI / 'slices'
 OUT.mkdir(exist_ok=True)
 
