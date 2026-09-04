@@ -213,3 +213,8 @@
 - 任务文案五模块结构**不可省略任一**；纯 NPC 对话节点也需要 `dialogues` 与 `hearsay`。
 - 所有音频资源须遵守 `docs/gdd/05` 音量基线与循环规范；不接受硬切循环。
 - 任何把数值、按钮标签、剧情文案烘焙进图片的做法一律打回重做（见 `docs/ui/UI-ASSET-GUIDE.md` 第 5 条）。
+## 10. 部署
+
+- 目标：阿里云 `aliyun-prayer`（47.108.114.17），nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。
+- 流程：开发完成 → `npm run deploy`（`scripts/deploy.sh`：本地 build → scp 原子替换 → 直接生效，无需 reload nginx）。
+- 每次上线以 deploy 脚本内的 build 为验证；构建失败不得上线。

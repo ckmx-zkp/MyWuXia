@@ -294,3 +294,15 @@ footer{height:150px;display:grid;grid-template-columns:82px 1fr 100px;gap:22px;p
 
 /* 任务树提示 */
 .tree-hint{display:block;color:#7a4a2a;font-weight:700;margin-top:4px}
+
+/* 首屏对齐：已完成章节不再把纸卷撑成长列表，右栏内容不裁切。 */
+.tree-head + .mission-list .mission.done{display:none}
+.tree-head:has(+ .mission-list .mission.done:only-child){margin:13px 0 7px}
+@media(min-width:1101px){
+  .hero{height:auto;min-height:690px;overflow:visible}
+  .skills,.bag,.rumors{max-height:150px}
+  .quick-actions{margin:8px 0 0}.quick-actions button{min-height:66px}
+  .paper{padding-bottom:34px}
+  .idle{margin-top:10px}
+  footer{bottom:10px;height:142px}
+}
