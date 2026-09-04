@@ -54,6 +54,24 @@ function bgmSwitch(zoneIdx, mute) {
   } catch (e) { /* 忽略 */ }
 }
 
+/* ================= 语音（docs/gdd/05：对白期间 BGM duck） ================= */
+let voiceCur = null;
+function stopVoice() {
+  if (voiceCur) { try { voiceCur.pause(); } catch (e) { /* 忽略 */ } voiceCur = null; }
+  if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 600);
+}
+function playVoice(src, mute) {
+  if (mute || !src) return;
+  try {
+    stopVoice();
+    const a = new Audio(src);
+    a.volume = 1.0;
+    if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME * 0.3, 300);
+    a.onended = () => { voiceCur = null; if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 800); };
+    a.play().catch(() => { if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 600); });
+    voiceCur = a;
+  } catch (e) { /* 忽略 */ }
+}
 /* ================= 世界数据 ================= */
 const ZONES = [
   {
@@ -450,9 +468,9 @@ const ZONES = [
             name: '剑湖观剑',
             scene: '无量山剑湖宫正殿，四角铜炉焚着松柏香。东西二宗五年一届的比剑已至第五局，东宗掌门左子穆端坐太师椅，指间摩挲茶盏。场中剑风激荡，观礼长廊角落里，一名湖绿绸衫的贵气书生忽然“噗嗤”笑出了声。',
             dialogues: [
-              ['左子穆', '容师侄这招“顺水推舟”虽未至化境，倒也深得本门精要。这一局，西宗可愿认下？'],
-              ['辛双清', '左师兄高兴得太早。出剑轻浮躁进，下盘空虚如朽木，若遇名家，不过自取其辱！'],
-              ['段誉', '（以折扇掩面，低声自语）明明是自己重心不稳向前跌了个趔趄，偏要叫什么“顺水推舟”……'],
+              ['左子穆', '容师侄这招“顺水推舟”虽未至化境，倒也深得本门精要。这一局，西宗可愿认下？', '/audio/voice/DL-01_Q01_zuo_zimu.mp3'],
+              ['辛双清', '左师兄高兴得太早。出剑轻浮躁进，下盘空虚如朽木，若遇名家，不过自取其辱！', '/audio/voice/DL-01_Q01_xin_shuangqing.mp3'],
+              ['段誉', '（以折扇掩面，低声自语）明明是自己重心不稳向前跌了个趔趄，偏要叫什么“顺水推舟”……', '/audio/voice/DL-01_Q01_duan_yu.mp3'],
               ['左子穆', '哪来的狂妄小辈！本门百年剑法，岂容你这手无缚鸡之力的后生胡言乱语？左右，给我拿下！'],
             ],
             choices: [
@@ -471,7 +489,7 @@ const ZONES = [
             name: '梁上少女与剧毒之影',
             scene: '殿梁之上微风飒然，一名十六七岁的少女晃着翠绿绣花小鞋，手捧瓜子嗑得正欢。中年武师纵身去抓她脚踝，一道白影却电射而出，在他手腕一沾即走——整条右臂瞬间爬满青黑。',
             dialogues: [
-              ['钟灵', '你们无量剑派恼羞成怒还要杀人，真是不害臊！小乖乖，有人欺负你家主人，去尝尝他的滋味！'],
+              ['钟灵', '你们无量剑派恼羞成怒还要杀人，真是不害臊！小乖乖，有人欺负你家主人，去尝尝他的滋味！', '/audio/voice/DL-01_Q02_zhong_ling.mp3'],
               ['场中宾客', '剧毒！是剧毒毒兽！'],
             ],
             choices: [
@@ -491,8 +509,8 @@ const ZONES = [
             scene: '殿内剑拔弩张之际，山外响起凄厉竹哨。数名浴血的无量守门弟子跌撞奔入，两道火箭射破殿顶瓦片，浓烟中满是硫磺与草药的焦臭——神农帮杀上来了。',
             dialogues: [
               ['无量门人', '掌门！神农帮封死了后山泉水，四处洒了断肠散和毒蛇……山门弟子全死绝了！'],
-              ['段誉', '为何好端端的要杀人？大家坐下来讲和不行么？在下去劝劝那神农帮主！'],
-              ['钟灵', '呆哥哥你疯啦！司空玄杀人不眨眼，你连武功都不会，去了就是送死！'],
+              ['段誉', '为何好端端的要杀人？大家坐下来讲和不行么？在下去劝劝那神农帮主！', '/audio/voice/DL-01_Q03_duan_yu.mp3'],
+              ['钟灵', '呆哥哥你疯啦！司空玄杀人不眨眼，你连武功都不会，去了就是送死！', '/audio/voice/DL-01_Q03_zhong_ling.mp3'],
             ],
             choices: [
               {
@@ -511,8 +529,8 @@ const ZONES = [
             name: '后山寻踪与钟灵受难',
             scene: '后山密林断崖旁，暮色四合，白雾中弥漫着腥甜的毒烟味。段誉失魂落魄地跌坐在碎石堆旁，官靴跑丢了一只。',
             dialogues: [
-              ['段誉', '钟姑娘为了救我，放出闪电貂去咬司空玄……谁知他早备了药囊，用捕蛇网罩住了灵儿！他们逼我回大理借“通天草”换人，三日不归，就要将灵儿剁成肉酱抛入万劫谷喂蛇啊！'],
-              ['段誉', '山道全被封死，我方才脚滑险些坠下悬崖……兄台，求你救救钟姑娘！'],
+              ['段誉', '钟姑娘为了救我，放出闪电貂去咬司空玄……谁知他早备了药囊，用捕蛇网罩住了灵儿！他们逼我回大理借“通天草”换人，三日不归，就要将灵儿剁成肉酱抛入万劫谷喂蛇啊！', '/audio/voice/DL-01_Q04_duan_yu.mp3'],
+              ['段誉', '山道全被封死，我方才脚滑险些坠下悬崖……兄台，求你救救钟姑娘！', '/audio/voice/DL-01_Q04_duan_yu_cry.mp3'],
             ],
             choices: [
               {
@@ -531,7 +549,7 @@ const ZONES = [
             name: '夜探神农营地',
             scene: '山脚神农帮驻地，兽皮大帐依山而建，中央篝火上架着铜锅熬煮墨绿药汁，毒蛇盘绕在木桩之上。中军帐前，司空玄剧烈咳嗽，面色铁青。',
             dialogues: [
-              ['司空玄', '抓紧调配断肠散！灵鹫宫的生死符只剩半月就要发作……夺不下剑湖宫的奇草，老夫要这满山上下死得干干净净！'],
+              ['司空玄', '抓紧调配断肠散！灵鹫宫的生死符只剩半月就要发作……夺不下剑湖宫的奇草，老夫要这满山上下死得干干净净！', '/audio/voice/DL-01_Q05_si_kong_xuan.mp3'],
               ['巡逻弟子', '帮主，那姓钟的小娘皮咬舌也不肯交出闪电貂的解药，弟子已把她锁在东面水牢木笼里了。'],
             ],
             choices: [
@@ -550,8 +568,8 @@ const ZONES = [
             name: '逃出生天与万劫谷伏笔',
             scene: '无量山南麓古茶树下，月朗星稀，大火已被抛在数里之外。钟灵坐在大青石上，从靴帮里掏出一枚雕着奇门八卦纹路的青铜小锁。',
             dialogues: [
-              ['钟灵', '这次若不是你仗义相救，本姑娘真要被那秃头司空玄炼成毒人了。那个呆里呆气的段哥哥……不知道逃出来没有。'],
-              ['钟灵', '这是我万劫谷的入谷信物。顺着澜沧江往下走，寻到九株并排的大榕树，向左转三步，在石壁上敲响铜锁，就能避开谷口的陷阱和“见骨散”毒雾。'],
+              ['钟灵', '这次若不是你仗义相救，本姑娘真要被那秃头司空玄炼成毒人了。那个呆里呆气的段哥哥……不知道逃出来没有。', '/audio/voice/DL-01_Q06_zhong_ling.mp3'],
+              ['钟灵', '这是我万劫谷的入谷信物。顺着澜沧江往下走，寻到九株并排的大榕树，向左转三步，在石壁上敲响铜锁，就能避开谷口的陷阱和“见骨散”毒雾。', '/audio/voice/DL-01_Q06_zhong_ling_thanks.mp3'],
             ],
             choices: [
               { text: '护送钟灵安全下山', ok: { text: '山道崎岖，钟灵一路叽叽喳喳说个没完，临别时冲你用力挥了挥手：“下次来万劫谷，我让娘亲给你煮好茶！”', exp: 30, favor: { 钟灵: 5 } } },
@@ -583,7 +601,7 @@ const ZONES = [
 /* 道路连通关系（索引对应 ZONES） */
 const LINKS = { 0: [1, 12], 1: [0, 2, 9], 2: [1, 3, 8], 3: [2, 4, 5], 4: [3], 5: [3, 6], 6: [5], 7: [8], 8: [2, 7, 9], 9: [1, 8, 10], 10: [9, 11], 11: [10], 12: [0] };
 
-const WORLD_INTRO = '五朝并立，三大缓冲区烽烟不息，四大边疆与海外自成江湖。你是沈孤鸿，一名无门无派的行侠者，一卷《天下舆图》在身——走到哪里，哪里便是你的江湖。道路相连处皆可前往，越是深处，越是凶险。';
+const WORLD_INTRO = '五朝并立，三大缓冲区烽烟不息，四大边疆与海外自成江湖。你是一名无门无派的行侠者，一卷《天下舆图》在身——走到哪里，哪里便是你的江湖。道路相连处皆可前往，越是深处，越是凶险。';
 
 /* ================= 物品 / 武学 ================= */
 const clamp = v => Math.max(1, Math.min(100, Math.round(v)));
@@ -606,6 +624,21 @@ const SKILLS = [
   { name: '六脉残谱', lv: 180, bonus: 70, text: '剑气无形，隔空伤敌。' },
   { name: '太玄经影', lv: 260, bonus: 110, text: '石壁蝌蚪文，悟者自成宗师。' },
 ];
+
+/* ================= 开局：出身 / 家传武学 ================= */
+const ORIGINS = [
+  { id: 'hunter', name: '猎户之子', text: '山林长大，筋骨结实。', apply: { hp: 15 }, desc: '气血 +15' },
+  { id: 'trader', name: '商贾子弟', text: '算盘打得好，盘缠也足。', apply: { silver: 150 }, desc: '银两 +150' },
+  { id: 'soldier', name: '行伍弃卒', text: '军中厮杀过，拳脚带杀气。', apply: { ab: 6, hp: 5 }, desc: '能力 +6 · 气血 +5' },
+  { id: 'scholar', name: '落魄书生', text: '读万卷书，胸中自有江湖。', apply: { exp: 120 }, desc: '历练 +120' },
+];
+const START_SKILLS = [
+  { id: 'taizu', name: '太祖长拳', text: '大开大阖，拳出如山。', bonus: 5, desc: '能力 +5' },
+  { id: 'luohan', name: '罗汉拳', text: '稳扎稳打，下盘生根。', hp: 12, desc: '气血 +12' },
+  { id: 'luoye', name: '落叶剑法', text: '轻灵飘逸，剑随身走。', bonus: 2, exp: 50, desc: '能力 +2 · 历练 +50' },
+];
+const ALLOC_POINTS = 5;
+const ALLOC_STATS = [['hp', '根骨', '气血 +5 / 点'], ['ab', '臂力', '能力 +2 / 点'], ['exp', '悟性', '历练 +15 / 点']];
 
 /* 旅途随机事件：(state, zone) => [日志, 状态补丁] */
 const ROAD = [
@@ -726,7 +759,7 @@ const CHATTER = {
 /* ================= 派生数值 ================= */
 const lv = e => Math.floor(e / 100) + 1;
 const grade = l => l < 20 ? '不堪一击' : l < 50 ? '初学乍练' : l < 80 ? '初出茅庐' : l < 150 ? '马马虎虎' : l < 300 ? '略有小成' : '已有大成';
-const ability = s => Math.round(lv(s.expTotal) * (0.35 + s.hp / 100)) + SKILLS.filter(k => lv(s.expTotal) >= k.lv).reduce((a, k) => a + k.bonus, 0);
+const ability = s => Math.round(lv(s.expTotal) * (0.35 + s.hp / 100)) + SKILLS.filter(k => lv(s.expTotal) >= k.lv).reduce((a, k) => a + k.bonus, 0) + (s.attrAb || 0) + (s.bonusSkill?.bonus || 0);
 const DANGER_TAGS = ['平和', '险恶', '凶险', '绝地'];
 const dangerTag = d => d < 40 ? 0 : d < 120 ? 1 : d < 260 ? 2 : 3;
 const questReward = (z, main) => main
@@ -759,6 +792,7 @@ const rankTier = ab => ab >= 300 ? '天榜' : ab >= 120 ? '地榜' : '人榜';
 /* ================= 存档 ================= */
 const SAVE_KEY = 'jianghu-save-v1';
 const initial = () => ({
+  name: '沈孤鸿', attrAb: 0, bonusSkill: null,
   expTotal: 1251, hp: 79, silver: 168, loc: 0, idle: true, mute: false,
   done: {}, items: { jinchuang: 1 }, action: null, fx: null,
   rep: 0, favor: {}, rumors: [], treeDone: {},
@@ -881,6 +915,11 @@ function App() {
   const [outcome, setOutcome] = useState(null); // 抉择回响文本
   const [panel, setPanel] = useState(null);     // attr | ach | let | rank | set
   const [questCard, setQuestCard] = useState(null); // 普通任务的剧情卡（任务索引）
+  const [creating, setCreating] = useState(() => !load()); // 无存档则先创角
+  const [cName, setCName] = useState('');
+  const [origin, setOrigin] = useState('hunter');
+  const [cSkill, setCSkill] = useState('taizu');
+  const [alloc, setAlloc] = useState({ hp: 0, ab: 0, exp: 0 });
   const level = lv(s.expTotal), ab = ability(s), z = ZONES[s.loc];
   const inner = Math.round(80 + level * 18 + ab * 3);
   const fac = FAC[s.loc] || FAC_DEFAULT;
@@ -920,6 +959,7 @@ function App() {
   const askRumor = () => {
     click();
     if (s.silver < 2) return;
+    if (s.loc === 11) playVoice('/audio/voice/DL-01_inn_innkeeper.mp3', s.mute);
     setS(v => {
       const unk = RUMORS.filter(r => !(v.rumors || []).includes(r));
       const got = unk.length ? unk[Math.floor(Math.random() * unk.length)] : null;
@@ -947,9 +987,12 @@ function App() {
     click();
     setStory({ zone: s.loc, ti, ni });
     setOutcome(null);
+    const first = ZONES[s.loc].trees[ti].nodes[ni].dialogues.find(d => d[2]);
+    if (first) playVoice(first[2], s.mute);
   };
   /* 剧情抉择：检定（能力不足走软失败，主线不断），结算回响（docs/gdd/07） */
   const choose = c => {
+    stopVoice();
     const { zone, ti, ni } = story;
     const t = ZONES[zone].trees[ti], node = t.nodes[ni];
     const ok = !c.diff || ability(s) >= c.diff;
@@ -977,7 +1020,27 @@ function App() {
   const reset = () => {
     if (!window.confirm('重开将清空全部江湖进度，确定？')) return;
     try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* 忽略 */ }
-    setS(initial());
+    stopVoice();
+    setCName(''); setOrigin('hunter'); setCSkill('taizu'); setAlloc({ hp: 0, ab: 0, exp: 0 });
+    setCreating(true);
+  };
+  /* 开局创角：名号 + 出身 + 天赋加点 + 家传武学 */
+  const finishCreate = () => {
+    click();
+    const o = ORIGINS.find(x => x.id === origin), sk = START_SKILLS.find(x => x.id === cSkill);
+    const name = cName.trim() || '沈孤鸿';
+    const base = initial();
+    setS({
+      ...base,
+      name,
+      hp: clamp(base.hp + (o.apply.hp || 0) + alloc.hp * 5 + (sk.hp || 0)),
+      silver: base.silver + (o.apply.silver || 0),
+      expTotal: base.expTotal + (o.apply.exp || 0) + alloc.exp * 15 + (sk.exp || 0),
+      attrAb: (o.apply.ab || 0) + alloc.ab * 2,
+      bonusSkill: { name: sk.name, text: sk.text, bonus: sk.bonus || 0 },
+      log: [`${name}踏入江湖。出身${o.name}，家传「${sk.name}」。`, ...base.log],
+    });
+    setCreating(false);
   };
 
   const st = story ? ZONES[story.zone].trees[story.ti] : null;
@@ -1022,11 +1085,12 @@ function App() {
             </div>
           </> : side === '武学' ? <>
             <div className="chapter">
-              <small>沈孤鸿 · 等级 {level} · {grade(level)}</small>
+              <small>{s.name} · 等级 {level} · {grade(level)}</small>
               <h1>武学</h1>
               <p>武学随等级自行领悟，各加能力。当前能力 {ab}。</p>
             </div>
             <div className="page-list">
+              {s.bonusSkill && <div className="page-item on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` · 能力 +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
               {SKILLS.map(k => {
                 const on = level >= k.lv;
                 return <div key={k.name} className={`page-item ${on ? 'on' : ''}`}>
@@ -1128,7 +1192,7 @@ function App() {
       {/* 右栏：角色 / 武学 / 行囊 / 传闻 */}
       <aside className="hero">
         <div className="portrait" />
-        <h2>沈孤鸿</h2>
+        <h2>{s.name}</h2>
         <p>等级 {level}　·　{grade(level)}</p>
         <div className="stats"><div className="stat hp"><span>♥ 气血</span><i><em style={{ width: `${s.hp}%` }} /></i><b>{s.hp}/100</b></div><div className="stat qi"><span>☯ 内力</span><i><em style={{ width: '100%' }} /></i><b>{inner}/{inner}</b></div><div className="stat fame"><span>✥ 声望</span><i><em style={{ width: `${Math.min(100, (s.rep || 0) / 25)}%` }} /></i><b>{s.rep || 0}</b></div></div>
         <div className="ability">
@@ -1147,6 +1211,7 @@ function App() {
         </div>
         <div className="quick-actions">{[['成就', 'ach'], ['信件', 'let'], ['排行', 'rank'], ['设置', 'set']].map(([x, p]) => <button key={x} onClick={() => { click(); setPanel(p); }}>{x}</button>)}</div>
         {tab === '武学' ? <div className="skills">
+          {s.bonusSkill && <div className="skill on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
           {SKILLS.map(k => {
             const on = level >= k.lv;
             return <div key={k.name} className={`skill ${on ? 'on' : ''}`}>
@@ -1218,6 +1283,43 @@ function App() {
         </>}
       </div>
     </div>}
+    {/* 开局创角：名号 / 出身 / 天赋加点 / 家传武学 */}
+    {creating && (() => {
+      const left = ALLOC_POINTS - alloc.hp - alloc.ab - alloc.exp;
+      return <div className="story-mask">
+        <div className="story create">
+          <small className="st-tag">江湖长夜 · 开局</small>
+          <h2>创建侠客</h2>
+          <div className="c-row">
+            <span>名号</span>
+            <input value={cName} onChange={e => setCName(e.target.value)} placeholder="沈孤鸿" maxLength={8} />
+          </div>
+          <h3 className="c-h">出身</h3>
+          <div className="c-grid">
+            {ORIGINS.map(o => <button key={o.id} className={origin === o.id ? 'on' : ''} onClick={() => { click(); setOrigin(o.id); }}>
+              <b>{o.name}</b><small>{o.text}</small><em>{o.desc}</em>
+            </button>)}
+          </div>
+          <h3 className="c-h">天赋（剩余 {left} 点）</h3>
+          {ALLOC_STATS.map(([key, label, per]) => <div className="c-row" key={key}>
+            <span>{label}</span>
+            <div className="alloc">
+              <button disabled={!alloc[key]} onClick={() => { click(); setAlloc(a => ({ ...a, [key]: a[key] - 1 })); }}>−</button>
+              <b>{alloc[key]}</b>
+              <button disabled={!left} onClick={() => { click(); setAlloc(a => ({ ...a, [key]: a[key] + 1 })); }}>＋</button>
+            </div>
+            <small>{per}</small>
+          </div>)}
+          <h3 className="c-h">家传武学</h3>
+          <div className="c-grid">
+            {START_SKILLS.map(k => <button key={k.id} className={cSkill === k.id ? 'on' : ''} onClick={() => { click(); setCSkill(k.id); }}>
+              <b>{k.name}</b><small>{k.text}</small><em>{k.desc}</em>
+            </button>)}
+          </div>
+          <button className="go-on" onClick={finishCreate}>踏入江湖</button>
+        </div>
+      </div>;
+    })()}
     {/* 普通任务剧情卡：情境 + NPC 台词 + 动身 */}
     {questCard !== null && (() => {
       const q = z.quests[questCard], r = questReward(z, q.kind === 'main');
@@ -1237,15 +1339,15 @@ function App() {
       </div>;
     })()}
     {/* 剧情弹窗（情境描摹 / NPC台词 / 交互抉择 / 判定回响） */}
-    {story && stNode && <div className="story-mask" onClick={() => { if (outcome) { setStory(null); setOutcome(null); } }}>
+    {story && stNode && <div className="story-mask" onClick={() => { if (outcome) { stopVoice(); setStory(null); setOutcome(null); } }}>
       <div className="story" onClick={e => e.stopPropagation()}>
         <small className="st-tag">【{st.name}】第{['一', '二', '三', '四', '五', '六', '七'][story.ni] || story.ni + 1}回 · {st.where}</small>
         <h2>{stNode.name}</h2>
         <p className="scene">{stNode.scene}</p>
-        {stNode.dialogues.map(([who, line]) => <p className="dlg" key={who + line.slice(0, 8)}><b>{who}</b>{line}</p>)}
+        {stNode.dialogues.map(([who, line, voice]) => <p className="dlg" key={who + line.slice(0, 8)}>{voice && <button className="vbtn" title="播放语音" onClick={() => playVoice(voice, s.mute)}>♪</button>}<b>{who}</b>{line}</p>)}
         {outcome ? <>
           <p className="outcome">{outcome}</p>
-          <button className="go-on" onClick={() => { click(); setStory(null); setOutcome(null); }}>继续</button>
+          <button className="go-on" onClick={() => { click(); stopVoice(); setStory(null); setOutcome(null); }}>继续</button>
         </> : <div className="choices">
           {stNode.choices.map((c, ci) => {
             const noSilver = c.cost?.silver && s.silver < c.cost.silver;

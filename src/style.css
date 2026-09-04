@@ -306,3 +306,25 @@ footer{height:150px;display:grid;grid-template-columns:82px 1fr 100px;gap:22px;p
   .idle{margin-top:10px}
   footer{bottom:10px;height:142px}
 }
+
+/* ===== 开局创角 ===== */
+.story.create{max-height:92vh}
+.story .c-h{font:20px 'ZCOOL XiaoWei';color:#5a3d1e;margin:16px 0 8px;border-bottom:1px solid #87683f85;padding-bottom:5px}
+.c-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.c-row>span{width:44px;font-size:15px;color:#5a3d1e;flex:none}
+.c-row input{flex:1;height:40px;padding:0 12px;background:#f7efdc;border:1px solid #9b7544;color:#382d20;font:16px 'Noto Serif SC'}
+.c-row>small{font-size:12px;color:#6d5a3c}
+.c-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.c-grid button{padding:10px 13px;text-align:left;background:#f2e5c2f2;border:1px solid #9b7544;color:#382d20;font:inherit;cursor:pointer}
+.c-grid button.on{border-color:#7a4a2a;box-shadow:0 0 0 2px #7a4a2a55 inset;background:#f7ecca}
+.c-grid b{display:block;font-size:15px}
+.c-grid small{display:block;font-size:12px;color:#6d5a3c;margin-top:2px}
+.c-grid em{display:block;font-style:normal;font-size:12px;color:#aa6a2e;margin-top:3px}
+.alloc{display:flex;align-items:center;gap:10px}
+.alloc button{width:34px;height:34px;background:#76532f;border:1px solid #9b7544;color:#f5dfab;font-size:17px;cursor:pointer}
+.alloc button:disabled{opacity:.35;cursor:default}
+.alloc b{width:22px;text-align:center;font-size:17px;color:#5a3d1e}
+
+/* ===== 语音按钮 ===== */
+.vbtn{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:8px;vertical-align:-4px;background:#76532f;border:1px solid #9b7544;border-radius:50%;color:#f5dfab;font-size:11px;cursor:pointer}
+.vbtn:hover{background:#8a6238}
