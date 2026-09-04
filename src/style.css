@@ -16,6 +16,8 @@ header{min-height:86px;height:auto;display:flex;align-items:center;flex-wrap:wra
 .currency b{color:#e3c777;font-size:24px}
 .hbtn{height:38px;padding:0 14px;background:#0b1914;border:1px solid #b08a4769;color:#c4ad76;font:15px 'STKaiti','KaiTi','FangSong','STSong','SimSun',serif;cursor:pointer}
 .hbtn:hover{background:#b98d4a45;color:#f0d88e}
+.hbtn.off{opacity:.45}
+.audio-toggles{display:flex;align-items:center;gap:8px}
 
 /* ===== 三栏布局 ===== */
 .layout{display:grid;grid-template-columns:300px minmax(520px,1fr) 320px;gap:20px;padding:16px 18px;min-height:calc(100vh - 147px)}
@@ -434,7 +436,7 @@ input{touch-action:manipulation}
 @media(max-width:600px){
   header{
     display:grid;
-    grid-template-columns:1fr auto auto;
+    grid-template-columns:1fr auto;
     align-items:center;
     gap:4px 8px;
     min-height:0;
@@ -445,13 +447,14 @@ input{touch-action:manipulation}
   .brand{grid-column:1;grid-row:1;min-width:0}
   .brand small{display:none}
   .brand strong{font-size:20px;letter-spacing:2px;white-space:nowrap}
-  .currency{grid-column:1/-1;grid-row:2;margin:0;justify-content:flex-start;gap:14px;font-size:12px}
+  .currency{grid-column:1;grid-row:2;margin:0;justify-content:flex-start;gap:14px;font-size:12px}
   .currency span+span{padding-left:12px;border-left:1px solid #a9823d}
   .currency i,.currency i.em,.currency i.em-silver,.currency .cultivate i.em-cult{width:22px;height:22px}
   .currency b{font-size:15px}
   .hbtn.dev{display:none}
-  header>.hbtn:nth-last-child(2){grid-column:2;grid-row:1}
-  header>.hbtn:last-child{grid-column:3;grid-row:1}
+  .audio-toggles{grid-column:1/-1;grid-row:3;gap:4px}
+  .audio-toggles .hbtn{flex:1}
+  header>.hbtn.reopen{grid-column:2;grid-row:1}
   .hbtn{height:28px;min-width:0;width:auto;padding:0 8px;font-size:11px;line-height:1}
 
   .layout{padding:8px;gap:8px}

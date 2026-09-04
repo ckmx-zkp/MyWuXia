@@ -1165,7 +1165,8 @@ const rankTier = ab => ab >= 300 ? '天榜' : ab >= 120 ? '地榜' : '人榜';
 const SAVE_KEY = 'jianghu-save-v1';
 const initial = () => ({
   name: '沈孤鸿', attrAb: 0, bonusSkill: null, devMult: 1,
-  expTotal: 1251, hp: 79, silver: 168, loc: 0, idle: true, mute: false,
+  expTotal: 1251, hp: 79, silver: 168, loc: 0, idle: true,
+  muteBgm: false, muteSfx: false, muteVoice: false,
   done: {}, items: { jinchuang: 1 }, action: null, fx: null,
   rep: 0, favor: {}, rumors: [], treeDone: {},
   letters: [{ from: '无名氏', text: '江南密信已现端倪。若想查清主人，先去扬州寻那盐商一问。' }],
@@ -1176,7 +1177,14 @@ function load() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
-    return { ...initial(), ...JSON.parse(raw), fx: null, action: null };
+    const parsed = JSON.parse(raw);
+    const old = parsed.mute;
+    return {
+      ...initial(), ...parsed, fx: null, action: null,
+      muteBgm: parsed.muteBgm ?? old ?? false,
+      muteSfx: parsed.muteSfx ?? old ?? false,
+      muteVoice: parsed.muteVoice ?? old ?? false,
+    };
   } catch (e) { return null; }
 }
 
@@ -1338,11 +1346,13 @@ function App() {
       document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
-  useEffect(() => { if (s.fx) play(SOUND[s.fx], s.mute); }, [s.fx, s.mute]);
-  useEffect(() => { bgmSwitch(s.loc, s.mute); if (s.mute) stopVoice(); }, [s.loc, s.mute]);
+  useEffect(() => { if (s.fx) play(SOUND[s.fx], s.muteSfx); }, [s.fx, s.muteSfx]);
+  useEffect(() => { bgmSwitch(s.loc, s.muteBgm); }, [s.loc, s.muteBgm]);
+  useEffect(() => { if (s.muteVoice) stopVoice(); }, [s.muteVoice]);
   useEffect(() => { setLeaf(0); }, [s.loc]);
 
-  const click = () => { play(SOUND.click, s.mute); bgmSwitch(s.loc, s.mute); };
+  const click = () => { play(SOUND.click, s.muteSfx); bgmSwitch(s.loc, s.muteBgm); };
+  const toggleAudio = key => setS(v => ({ ...v, [key]: !v[key] }));
   const go = i => {
     click();
     if (busy || i === s.loc) return;
@@ -1371,7 +1381,7 @@ function App() {
     click();
     if (s.silver < 2) return;
     const vp = INN_VOICES[s.loc];
-    if (vp) playVoice(`/audio/voice/${vp[Math.floor(Math.random() * vp.length)]}`, s.mute);
+    if (vp) playVoice(`/audio/voice/${vp[Math.floor(Math.random() * vp.length)]}`, s.muteVoice);
     setS(v => {
       const unk = RUMORS.filter(r => !(v.rumors || []).includes(r));
       const got = unk.length ? unk[Math.floor(Math.random() * unk.length)] : null;
@@ -1385,12 +1395,12 @@ function App() {
   };
   const useItem = id => {
     if (!(s.items[id] > 0)) return;
-    play(SOUND.bell, s.mute);
+    play(SOUND.bell, s.muteSfx);
     setS(v => ({ ...v, ...ITEMS[id].apply(v), items: { ...v.items, [id]: v.items[id] - 1 }, log: [`使用了${ITEMS[id].name}。`, ...v.log].slice(0, 8) }));
   };
   const rest = () => {
     if (s.silver < 5 || s.hp >= 100) return;
-    play(SOUND.bell, s.mute);
+    play(SOUND.bell, s.muteSfx);
     setS(v => ({ ...v, silver: v.silver - 5, hp: clamp(v.hp + 30), log: ['在客栈歇息半日，气血大复（银两 -5）。', ...v.log].slice(0, 8) }));
   };
   const claimIdle = () => { click(); const m = s.devMult || 1; setS(v => ({ ...v, silver: v.silver + 5 * m, log: [`领取挂机收益：银两 +${5 * m}。`, ...v.log].slice(0, 8) })); };
@@ -1399,7 +1409,7 @@ function App() {
     click();
     setStory({ zone: s.loc, ti, ni });
     setOutcome(null);
-    playDialogues(ZONES[s.loc].trees[ti].nodes[ni].dialogues, s.mute, 0);
+    playDialogues(ZONES[s.loc].trees[ti].nodes[ni].dialogues, s.muteVoice, 0);
   };
   /* 剧情抉择：检定（能力不足走软失败，主线不断），结算回响（docs/gdd/07） */
   const choose = c => {
@@ -1409,8 +1419,8 @@ function App() {
     const ok = !c.diff || ability(s) >= c.diff;
     const eff = ok ? c.ok : c.fail;
     const last = ni === t.nodes.length - 1;
-    play(ok ? SOUND.quest : SOUND.click, s.mute);
-    if (eff.voice) playVoice(eff.voice, s.mute);
+    play(ok ? SOUND.quest : SOUND.click, s.muteSfx);
+    if (eff.voice) playVoice(eff.voice, s.muteVoice);
     setS(v => {
       let n = { ...v, fx: null };
       if (c.cost?.silver) n.silver = Math.max(0, n.silver - c.cost.silver);
@@ -1463,8 +1473,12 @@ function App() {
       <div className="brand"><small>THE LONG NIGHT OF</small><strong>江湖长夜</strong></div>
       <div className="currency"><span><i className="em em-silver" />银两 <b>{s.silver}</b></span><span className="cultivate"><i className="em em-cult" />修为 <b>{s.expTotal % 100}</b></span></div>
       <button className="hbtn dev" onClick={() => { click(); setS(v => { const nx = (v.devMult || 1) === 1 ? 2 : v.devMult === 2 ? 5 : v.devMult === 5 ? 10 : 1; return { ...v, devMult: nx, log: [`开发者：收益调整为 ×${nx}。`, ...v.log].slice(0, 8) }; }); }}>收益 ×{s.devMult || 1}</button>
-      <button className="hbtn" onClick={() => { setS(v => ({ ...v, mute: !v.mute })); }}>{s.mute ? '音效：关' : '音效：开'}</button>
-      <button className="hbtn" onClick={reset}>重开</button>
+      <div className="audio-toggles">
+        <button className={`hbtn${s.muteBgm ? ' off' : ''}`} title="背景音乐" onClick={() => toggleAudio('muteBgm')}>{s.muteBgm ? '音乐关' : '音乐'}</button>
+        <button className={`hbtn${s.muteSfx ? ' off' : ''}`} title="界面音效" onClick={() => toggleAudio('muteSfx')}>{s.muteSfx ? '音效关' : '音效'}</button>
+        <button className={`hbtn${s.muteVoice ? ' off' : ''}`} title="剧情配音" onClick={() => toggleAudio('muteVoice')}>{s.muteVoice ? '配音关' : '配音'}</button>
+      </div>
+      <button className="hbtn reopen" onClick={reset}>重开</button>
     </header>
     <div className="layout">
       {/* 左栏：主导航；舆图在游历状态展开 */}
@@ -1720,7 +1734,9 @@ function App() {
         </>}
         {panel === 'set' && <>
           <h2>设置</h2>
-          <div className="set-row"><span>音效</span><button className="hbtn" onClick={() => setS(v => ({ ...v, mute: !v.mute }))}>{s.mute ? '关' : '开'}</button></div>
+          <div className="set-row"><span>音乐</span><button className="hbtn" onClick={() => toggleAudio('muteBgm')}>{s.muteBgm ? '关' : '开'}</button></div>
+          <div className="set-row"><span>音效</span><button className="hbtn" onClick={() => toggleAudio('muteSfx')}>{s.muteSfx ? '关' : '开'}</button></div>
+          <div className="set-row"><span>配音</span><button className="hbtn" onClick={() => toggleAudio('muteVoice')}>{s.muteVoice ? '关' : '开'}</button></div>
           <div className="set-row"><span>存档</span><small>自动保存在本地浏览器，关闭页面进度不丢失。</small></div>
           <div className="set-row"><span>重开</span><button className="hbtn" onClick={() => { setPanel(null); reset(); }}>清空进度重开</button></div>
         </>}
@@ -1787,7 +1803,7 @@ function App() {
         <small className="st-tag">【{st.name}】第{['一', '二', '三', '四', '五', '六', '七'][story.ni] || story.ni + 1}回 · {st.where}</small>
         <h2>{stNode.name}</h2>
         <p className="scene">{stNode.scene}</p>
-        {stNode.dialogues.map(([who, line, voice], di) => <p className={`dlg${speakI === di ? ' speak' : ''}`} key={who + line.slice(0, 8)}>{voice && <button className={`vbtn${speakI === di ? ' on' : ''}`} title="从此句连播" onClick={() => playDialogues(stNode.dialogues, s.mute, di)}>♪</button>}<b>{who}</b>{line}</p>)}
+        {stNode.dialogues.map(([who, line, voice], di) => <p className={`dlg${speakI === di ? ' speak' : ''}`} key={who + line.slice(0, 8)}>{voice && <button className={`vbtn${speakI === di ? ' on' : ''}`} title="从此句连播" onClick={() => playDialogues(stNode.dialogues, s.muteVoice, di)}>♪</button>}<b>{who}</b>{line}</p>)}
         {outcome ? <>
           <p className="outcome">{outcome}</p>
           <button className="go-on" onClick={() => { click(); stopVoice(); setStory(null); setOutcome(null); }}>继续</button>
