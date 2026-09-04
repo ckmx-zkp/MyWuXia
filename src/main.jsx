@@ -1116,7 +1116,7 @@ const rankTier = ab => ab >= 300 ? '天榜' : ab >= 120 ? '地榜' : '人榜';
 /* ================= 存档 ================= */
 const SAVE_KEY = 'jianghu-save-v1';
 const initial = () => ({
-  name: '沈孤鸿', attrAb: 0, bonusSkill: null,
+  name: '沈孤鸿', attrAb: 0, bonusSkill: null, devMult: 1,
   expTotal: 1251, hp: 79, silver: 168, loc: 0, idle: true, mute: false,
   done: {}, items: { jinchuang: 1 }, action: null, fx: null,
   rep: 0, favor: {}, rumors: [], treeDone: {},
@@ -1142,9 +1142,10 @@ function levelUpLog(n, s) {
 }
 /* 剧情效果统一结算（docs/gdd/07 判定与回响模块） */
 function applyEff(n, e = {}) {
+  const m = n.devMult || 1;
   if (e.hp) n.hp = clamp(n.hp + e.hp);
-  if (e.silver) n.silver = Math.max(0, n.silver + e.silver);
-  if (e.exp) n.expTotal += e.exp;
+  if (e.silver) n.silver = Math.max(0, n.silver + (e.silver > 0 ? e.silver * m : e.silver));
+  if (e.exp) n.expTotal += e.exp * m;
   if (e.rep) n.rep = (n.rep || 0) + e.rep;
   if (e.favor) { n.favor = { ...n.favor }; for (const [k, d] of Object.entries(e.favor)) n.favor[k] = (n.favor[k] || 0) + d; }
   if (e.items) { n.items = { ...n.items }; for (const [k, d] of Object.entries(e.items)) n.items[k] = (n.items[k] || 0) + d; }
@@ -1161,11 +1162,12 @@ function resolveQuest(s) {
   const ab = ability(s);
   const p = main ? 1 : Math.max(0.25, Math.min(0.95, 0.45 + (ab / z.danger) * 0.55));
   if (Math.random() < p) {
+    const m = s.devMult || 1;
     arr[idx] = true;
-    n.silver += r.silver;
-    n.expTotal += r.exp;
+    n.silver += r.silver * m;
+    n.expTotal += r.exp * m;
     n.hp = clamp(n.hp + r.hp);
-    let gain = `银两 +${r.silver}、历练 +${r.exp}`;
+    let gain = `银两 +${r.silver * m}、历练 +${r.exp * m}`;
     if (q.item) {
       n.items = { ...n.items, [q.item]: (n.items[q.item] || 0) + 1 };
       gain += `、${ITEMS[q.item].name} ×1`;
@@ -1176,7 +1178,7 @@ function resolveQuest(s) {
     n.log = [msg, ...s.log];
   } else {
     n.hp = clamp(n.hp - 12);
-    n.expTotal += 5;
+    n.expTotal += 5 * (s.devMult || 1);
     n.fx = 'click';
     n.log = [`「${q.name}」行事受挫，带伤而返，仅得历练 5。养足气血或提升实力再来。`, ...s.log];
   }
@@ -1202,12 +1204,12 @@ function resolveSpar(s) {
   const fac = FAC[s.action.zone] || FAC_DEFAULT;
   const n = { ...s, action: null, fx: null };
   if (ability(s) >= ZONES[s.action.zone].danger * 0.6 + Math.random() * 20) {
-    n.expTotal += 15;
+    n.expTotal += 15 * (s.devMult || 1);
     n.fx = 'quest';
     n.log = [`在${fac.gym}切磋获胜，历练 +15。`, ...s.log];
   } else {
     n.hp = Math.max(1, clamp(n.hp - 10));
-    n.expTotal += 8;
+    n.expTotal += 8 * (s.devMult || 1);
     n.fx = 'click';
     n.log = [`在${fac.gym}切磋落败，只受了些皮肉伤（切磋不致重伤），历练 +8。`, ...s.log];
   }
@@ -1222,7 +1224,7 @@ function tick(s) {
     return n;
   }
   if (!s.idle) return s.fx ? { ...s, fx: null } : s;
-  const n = { ...s, fx: null, expTotal: s.expTotal + 2 };
+  const n = { ...s, fx: null, expTotal: s.expTotal + 2 * (s.devMult || 1) };
   if (lv(n.expTotal) > lv(s.expTotal)) {
     n.fx = 'bell';
     n.log = [`突破！等级升至 ${lv(n.expTotal)}，境界「${grade(lv(n.expTotal))}」。`, ...s.log].slice(0, 8);
@@ -1306,7 +1308,7 @@ function App() {
     play(SOUND.bell, s.mute);
     setS(v => ({ ...v, silver: v.silver - 5, hp: clamp(v.hp + 30), log: ['在客栈歇息半日，气血大复（银两 -5）。', ...v.log].slice(0, 8) }));
   };
-  const claimIdle = () => { click(); setS(v => ({ ...v, silver: v.silver + 5, log: ['领取挂机收益：银两 +5。', ...v.log].slice(0, 8) })); };
+  const claimIdle = () => { click(); const m = s.devMult || 1; setS(v => ({ ...v, silver: v.silver + 5 * m, log: [`领取挂机收益：银两 +${5 * m}。`, ...v.log].slice(0, 8) })); };
   /* 剧情节点：打开场景弹窗 */
   const openStory = (ti, ni) => {
     click();
@@ -1376,6 +1378,7 @@ function App() {
     <header>
       <div className="brand"><small>THE LONG NIGHT OF</small><strong>江湖长夜</strong></div>
       <div className="currency"><span><i className="em em-silver" />银两 <b>{s.silver}</b></span><span className="cultivate"><i className="em em-cult" />修为 <b>{s.expTotal % 100}</b></span></div>
+      <button className="hbtn dev" onClick={() => { click(); setS(v => { const nx = (v.devMult || 1) === 1 ? 2 : v.devMult === 2 ? 5 : v.devMult === 5 ? 10 : 1; return { ...v, devMult: nx, log: [`开发者：收益调整为 ×${nx}。`, ...v.log].slice(0, 8) }; }); }}>收益 ×{s.devMult || 1}</button>
       <button className="hbtn" onClick={() => { setS(v => ({ ...v, mute: !v.mute })); }}>{s.mute ? '音效：关' : '音效：开'}</button>
       <button className="hbtn" onClick={reset}>重开</button>
     </header>
