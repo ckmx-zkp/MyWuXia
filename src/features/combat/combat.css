@@ -1,0 +1,41 @@
+.combat-mask{z-index:65}
+.combat-panel{width:min(720px,100%);max-height:90dvh;overflow:auto;background:#eee2c7;color:#453621;border:1px solid #9a8058;padding:24px;box-shadow:0 16px 70px #0008;font-family:KaiTi,STKaiti,FangSong,serif}
+.combat-panel button,.save-panel button{font:inherit;color:inherit;border:1px solid #99815c;background:#e3d3b4;padding:10px 14px;cursor:pointer;border-radius:3px}
+.combat-panel button:hover,.save-panel button:hover{background:#d4bf96}
+.combat-panel button:disabled,.save-panel button:disabled{opacity:.5;cursor:not-allowed}
+.combat-heading{display:flex;justify-content:space-between;gap:14px;align-items:start;margin-bottom:16px}
+.combat-heading h2{margin:6px 0;font-size:27px;color:#51351e;outline:none}
+.combat-heading small,.combat-note{color:#725c40;line-height:1.7}
+.combat-opponents{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.combat-opponents button small{display:block;margin-top:6px}
+.combat-opponents .selected,.combat-panel .primary{background:#58452e;color:#fff0ce;border-color:#58452e}
+.combat-warning{padding:10px 12px;border-left:3px solid #9b4435;background:#9b44350b;line-height:1.7}
+.loadout-editor{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.loadout-editor label{display:flex;flex-direction:column;gap:7px;font-size:16px}
+.loadout-editor select{width:100%;min-height:38px;font:inherit;color:#453621;background:#f5ebd4;border:1px solid #ac9370;padding:6px;border-radius:3px}
+.loadout-editor small{font-size:13px;line-height:1.6;opacity:.8}
+.combat-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:16px}
+.combat-vitals{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.combat-fighter{min-width:0;background:#fff5dc66;border:1px solid #b49a7270;padding:12px}
+.combat-fighter h3{font-size:21px;margin:5px 0 14px;overflow-wrap:anywhere}
+.combat-fighter label{display:flex;justify-content:space-between;gap:4px;font-size:13px}
+.combat-fighter meter{display:block;width:100%;height:12px;margin:3px 0 10px;accent-color:#963e32}
+.combat-fighter meter::-webkit-meter-bar{background:#d9c7a5;border:0;border-radius:0}
+.combat-fighter meter::-webkit-meter-optimum-value{background:#963e32}
+.combat-fighter meter.mp::-webkit-meter-optimum-value{background:#4b7769}
+.combat-fighter small{font-size:12px}
+.combat-round{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:16px 0 9px;font-size:13px}
+.combat-log{height:230px;overflow:auto;overscroll-behavior:contain;border:1px solid #ac9370;background:#f8eed9;padding:12px 16px;font-size:15px;line-height:1.9}
+.combat-log p{margin:0 0 10px;overflow-wrap:anywhere}
+.combat-log p:last-child{margin-bottom:0;color:#873d2e}
+.combat-result{white-space:pre-wrap;background:#dac69866;padding:12px;line-height:1.8}
+.save-mask{z-index:75}
+.save-panel{width:min(620px,100%);max-height:90dvh;overflow:auto;background:#eee2c7;color:#453621;padding:24px;border:1px solid #9a8058}
+.save-panel h2{margin:0;font-family:KaiTi,serif}
+.save-slot{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #b69e78;padding:14px 0}
+.save-slot small{display:block;font-size:12px;line-height:1.8;margin-top:5px}
+.save-buttons{display:flex;gap:8px;flex-shrink:0}
+.save-status{line-height:1.7;color:#743a29}
+.save-launch{font:inherit;padding:7px 12px;border:1px solid #9c804b;color:inherit;background:transparent;cursor:pointer}
+.save-alert{position:fixed;bottom:16px;right:16px;max-width:calc(100vw - 32px);z-index:80;background:#eee2c7;color:#743a29;border:1px solid #9b4435;padding:12px;font:inherit;cursor:pointer}
+@media(max-width:600px){.combat-panel,.save-panel{padding:15px;max-height:94dvh}.combat-heading h2{font-size:22px}.combat-opponents{gap:5px}.combat-opponents button{padding:9px 5px;font-size:14px}.combat-opponents small{font-size:11px}.combat-vitals{gap:8px}.combat-fighter{padding:9px}.combat-fighter h3{font-size:18px}.combat-fighter label{font-size:11px}.combat-log{height:210px;padding:10px;font-size:14px}.loadout-editor{gap:12px 9px}.save-slot{flex-wrap:wrap}.combat-note{font-size:13px}}
