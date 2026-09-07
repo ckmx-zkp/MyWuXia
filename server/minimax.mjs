@@ -1,13 +1,38 @@
 const DEFAULT_BASE = (process.env.MINIMAX_API_BASE || 'https://api.minimaxi.com').replace(/\/$/, '');
 const DEFAULT_MODEL = process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5';
 
+function asText(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return value.map(asText).join('\n');
+  if (typeof value === 'object') return asText(value.text || value.content || '');
+  return String(value);
+}
+
 export function parseModelJson(text) {
   if (typeof text !== 'string' || !text.trim()) return null;
   const stripped = text.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/```json\s*|```/g, '').trim();
   const start = stripped.indexOf('{');
-  const end = stripped.lastIndexOf('}');
-  if (start < 0 || end <= start) return null;
-  try { return JSON.parse(stripped.slice(start, end + 1)); } catch { return null; }
+  if (start < 0) return null;
+  let depth = 0, inStr = false, escape = false;
+  for (let i = start; i < stripped.length; i++) {
+    const ch = stripped[i];
+    if (inStr) {
+      if (escape) escape = false;
+      else if (ch === '\\') escape = true;
+      else if (ch === '"') inStr = false;
+      continue;
+    }
+    if (ch === '"') inStr = true;
+    else if (ch === '{') depth++;
+    else if (ch === '}') {
+      depth--;
+      if (depth === 0) {
+        try { return JSON.parse(stripped.slice(start, i + 1)); } catch { return null; }
+      }
+    }
+  }
+  return null;
 }
 
 export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MODEL, fetchImpl = fetch, timeoutMs = 25000 } = {}) {
@@ -25,8 +50,7 @@ export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MO
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error?.message || payload.base_resp?.status_msg || `minimax_${response.status}`);
       const message = payload.choices?.[0]?.message || {};
-      const content = [message.content, message.reasoning_content].filter(Boolean).join('\n');
-      const parsed = parseModelJson(content);
+      const parsed = parseModelJson(asText(message.content)) || parseModelJson(asText(message.reasoning_content));
       if (!parsed) throw new Error('invalid_model_json');
       return { parsed, model: payload.model || model, raw: content };
     } finally {

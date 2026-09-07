@@ -66,5 +66,6 @@ test('json store isolates generated copy by save id', async () => {
 test('model json parser accepts fenced objects', () => {
   assert.equal(parseModelJson('```json\n{"scene":"a"}\n```').scene, 'a');
   assert.equal(parseModelJson('<think>plan</think>{"scene":"a"}').scene, 'a');
+  assert.equal(parseModelJson('```json\n{"scene":"a"}\n```\nchoices: {"accept":{}}').scene, 'a');
   assert.equal(parseModelJson('not json'), null);
 });
