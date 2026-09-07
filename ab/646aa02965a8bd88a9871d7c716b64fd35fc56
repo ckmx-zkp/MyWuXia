@@ -1,0 +1,19 @@
+AGENTS.md
+  s_ca090b9872f8ca::t_2a7658fe7194f3 290-439
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ab646aa02965a8bd88a9871d7c716b64fd35fc56",
+  "prompts": {},
+  "sessions": {
+    "s_ca090b9872f8ca": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07b9a-a911-7862-9006-883d2a1cf952",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
