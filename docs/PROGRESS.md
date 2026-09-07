@@ -48,7 +48,7 @@
 
 ### 工程
 - React + Vite；localStorage 存档（`jianghu-save-v1`）
-- 部署：`npm run deploy`（build → scp → nginx /srv/jianghu，端口 8082）
+- 部署：`npm run deploy`（跨平台 Node 入口，test/build → scp → nginx /srv/jianghu，端口 8082）
 - 仓库：github.com/ckmx-zkp/MyWuXia
 - 首页仅加载当前区域剧情正文，启程与读档按区域异步加载；构建前校验任务索引、剧情结构、战斗引用、命运节点与音频资源
 

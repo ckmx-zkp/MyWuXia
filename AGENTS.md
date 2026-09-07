@@ -223,7 +223,7 @@
 | 区主题曲 BGM | `public/audio/bgm/zone/T01…T13-<slug>.mp3` |
 | 通用 SFX | `public/audio/*.wav` |
 | UI 切片 WebP | `public/art/ui/slices/`（源 PNG 在 `art-src/ui/slices/`，脚本 `scripts/slice-ui.py` + `optimize-art.py`） |
-| 脚本工具（音频生成、切图、压图、部署） | `scripts/`（`deploy.sh` 为上线入口） |
+| 脚本工具（音频生成、切图、压图、部署） | `scripts/`（`deploy.mjs` 为跨平台上线入口，`deploy.sh` 保留给 Linux） |
 | 第三方依赖 | `node_modules/`（git 忽略） |
 | 构建产物 | `dist/`（git 忽略） |
 | 本地密钥 | `Key.txt`（git 忽略；脚本读取此文件） |
@@ -260,7 +260,7 @@
 ## 10. 部署
 
 - 目标：阿里云 `aliyun-prayer`（47.108.114.17），nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。
-- 流程：开发完成 → `npm run deploy`（`scripts/deploy.sh`：本地 build → scp 原子替换 → 直接生效，无需 reload nginx）。
+- 流程：开发完成 → `npm run deploy`（`scripts/deploy.mjs`：本地 test/build → scp 原子替换 → 直接生效，无需 reload nginx）。
 - 每次上线以 deploy 脚本内的 build 为验证；构建失败不得上线。
 
 ### 10.1 自动交付约定
