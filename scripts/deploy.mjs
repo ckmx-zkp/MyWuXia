@@ -1,9 +1,10 @@
 import { execFileSync } from 'node:child_process';
 
 const run = (command, args, options = {}) => execFileSync(command, args, { stdio: 'inherit', ...options });
-const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-run(npm, ['test']);
-run(npm, ['run', 'build']);
+const npmCli = process.env.npm_execpath;
+if (!npmCli) throw new Error('请使用 npm run deploy 启动发布。');
+run(process.execPath, [npmCli, 'test']);
+run(process.execPath, [npmCli, 'run', 'build']);
 
 const short = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
