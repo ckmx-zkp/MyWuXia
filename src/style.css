@@ -67,6 +67,11 @@ header{min-height:86px;height:auto;display:flex;align-items:center;flex-wrap:wra
 .mission>small{color:#6d5a3c;font-size:12px;white-space:nowrap}
 .qbody b{display:block;font-size:16px;margin-bottom:3px}
 .qbody i{display:block;font-style:normal;font-size:12px;color:#45351f;line-height:1.6}
+.routine-section{margin-top:22px;padding-top:18px;border-top:1px solid #87683f85}
+.routine-section h3{margin:0 0 4px;font-size:22px}
+.routine-section>p{margin:0 0 12px;color:#6d5a3c;font-size:12px}
+.mission.routine{background:#eee0b8f2;border-style:dashed}
+.mission.routine>small{line-height:1.6;text-align:right}
 
 /* ===== 行动 / 挂机条 ===== */
 .actionbar,.idle{margin-top:13px;padding:18px 22px;display:grid;grid-template-columns:150px 1fr auto;gap:15px;align-items:center;border:1px solid #b08a4769;background:#0b1914ef}

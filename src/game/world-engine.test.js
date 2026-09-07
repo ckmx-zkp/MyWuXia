@@ -57,3 +57,26 @@ test('noncombat quest remains a deterministic timed check and legacy spar enters
   assert.equal(engine.tick(s).battle, null);
   assert.equal(engine.tick({ ...initial(), action: { type: 'spar', zone: 0, left: 3, total: 8 } }).action.type, 'combat');
 });
+test('repeatable practice grants levels and current martial mastery every completion', () => {
+  const base = { ...initial(), idle: false, action: { type: 'routine', zone: 0, id: 'practice', left: 1, total: 10 } };
+  const first = engine.tick(base);
+  assert.equal(first.routineDone['0:practice'], 1);
+  assert.ok(first.expTotal > base.expTotal);
+  assert.equal(first.training.styles['基本拳脚'], 30);
+  assert.equal(first.training.internals.basic, 30);
+  const second = engine.tick({ ...first, action: { ...base.action } });
+  assert.equal(second.routineDone['0:practice'], 2);
+  assert.equal(second.training.styles['基本拳脚'], 60);
+});
+test('routine timers are deterministic and escort retreat cannot farm rewards', () => {
+  const errand = { ...initial(), idle: false, action: { type: 'routine', zone: 2, id: 'errand', left: 1, total: 12 } };
+  assert.deepEqual(engine.tick(errand), engine.tick(migrateSave(encodeSave(errand), saveOptions)));
+  const escort = { ...initial(), idle: false, action: { type: 'routine', zone: 0, id: 'escort', left: 1, total: 15 } };
+  const fight = engine.tick(escort);
+  assert.equal(fight.battle.context.kind, 'routine');
+  const restored = migrateSave(encodeSave(fight), saveOptions);
+  const end = retreatCombat(restored, engine.settleStory);
+  assert.equal(end.expTotal, escort.expTotal);
+  assert.deepEqual(end.training, escort.training);
+  assert.equal(end.routineDone['0:escort'], undefined);
+});

@@ -54,7 +54,7 @@ src/
 ### P1：领域层与存档
 
 - 提取 `engine.ts`，为随机函数注入 `rng`，测试成功、软失败、消耗品、邻接旅行和切磋结算。
-- 存档格式使用 `{ version, savedAt, state }`；当前为 v3，`migrateSave()` 兼容 v1/v2。
+- 存档格式使用 `{ version, savedAt, state }`；当前为 v4，`migrateSave()` 兼容 v1/v2/v3。
 - 将任务进度从数字计数升级为节点、选择、奖励和世界标记，例如：
 
 ```js

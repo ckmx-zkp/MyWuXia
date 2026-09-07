@@ -18,8 +18,8 @@ test('legacy saves migrate nested defaults and independent mute switches', () =>
   assert.deepEqual(next.questChoices, {});
   assert.ok(next.loadout.style);
 });
-test('travel and quest timers survive refreshing, without offline catch-up', () => {
-  for (const action of [{ type: 'travel', to: 1, left: 4, total: 10 }, { type: 'quest', zone: 0, idx: 2, left: 3, total: 8 }]) {
+test('travel, quest and repeatable routine timers survive refreshing, without offline catch-up', () => {
+  for (const action of [{ type: 'travel', to: 1, left: 4, total: 10 }, { type: 'quest', zone: 0, idx: 2, left: 3, total: 8 }, { type: 'routine', zone: 0, id: 'practice', left: 6, total: 10 }]) {
     assert.deepEqual(migrateSave(encodeSave({ ...initial(), action })).action, action);
   }
 });

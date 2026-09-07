@@ -61,8 +61,8 @@ test('surviving a master encounter satisfies the objective without defeating the
   assert.ok(s.battle.enemy.hp > 0);
   assert.match(s.battle.result, /达成交手目标/);
 });
-test('travel and quest encounters restore valid target references', () => {
-  for (const context of [{ kind: 'travel', to: 1 }, { kind: 'quest', zone: 0, idx: 2 }]) {
+test('travel, quest and routine encounters restore valid target references', () => {
+  for (const context of [{ kind: 'travel', to: 1 }, { kind: 'quest', zone: 0, idx: 2 }, { kind: 'routine', zone: 0, id: 'escort' }]) {
     const s = startCombat(initial(), { opponent: 'bandit', context });
     assert.deepEqual(migrateSave(encodeSave(s), saveOptions).battle.context, context);
   }

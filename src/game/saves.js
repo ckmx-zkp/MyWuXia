@@ -5,7 +5,7 @@ import { FATES } from '../content/fates.js';
 import { QUEST_INDEX } from '../content/quest-index.js';
 
 export const SAVE_KEY = 'jianghu-save-v1';
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const SLOT_KEYS = [1, 2, 3].map(n => `jianghu-slot-${n}`);
 const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
 const finite = (x, min = 0, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -31,7 +31,7 @@ function validBattle(b, validateContext) {
 export function migrateSave(raw, { validateContext, validateTree } = {}) {
   const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   if (!object(parsed)) throw new Error('存档内容不是有效对象。');
-  if (parsed.version !== undefined && ![1, 2, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
+  if (parsed.version !== undefined && ![1, 2, 3, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
   const input = parsed.version !== undefined ? parsed.state : parsed;
   if (!object(input) || !finite(input.expTotal) || !finite(input.hp, 0, 100) || !finite(input.loc, 0, 12) || !Number.isInteger(input.loc)) throw new Error('存档缺少有效的角色与区域数据。');
   const state = initial();
@@ -57,6 +57,7 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
     internals: record(input.training?.internals, (v, k) => Object.hasOwn(INTERNALS, k) && Number.isInteger(v) && finite(v, 0, 8100)),
   };
   state.idleBank = { silver: finite(input.idleBank?.silver, 0, 1e9) ? Math.floor(input.idleBank.silver) : 0 };
+  state.routineDone = record(input.routineDone, (v, k) => /^\d+:(practice|errand|escort)$/.test(k) && +k.split(':')[0] < 13 && Number.isInteger(v) && finite(v, 0, 1e9));
   state.worldTime = finite(input.worldTime) && Number.isInteger(input.worldTime) ? input.worldTime : 0;
   state.factionRelations = record(input.factionRelations, (v, k) => ['north_east', 'north_west', 'east_west'].includes(k) && finite(v, -100, 100));
   if (input.fate !== undefined) {
@@ -80,9 +81,10 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
   const a = input.action;
   if (state.battle?.status === 'active') state.action = { type: 'combat' };
   else if (a?.type === 'combat') throw new Error('战斗记录缺失，无法安全恢复。');
-  else if (object(a) && ['travel', 'quest', 'spar'].includes(a.type)) {
+  else if (object(a) && ['travel', 'quest', 'routine', 'spar'].includes(a.type)) {
     if (!Number.isInteger(a.total) || !Number.isInteger(a.left) || !finite(a.total, 1, 86400) || !finite(a.left, 1, a.total)) throw new Error('行动计时损坏。');
     if (a.type === 'travel' && Number.isInteger(a.to) && finite(a.to, 0, 12)) state.action = { type: a.type, to: a.to, left: a.left, total: a.total };
+    else if (Number.isInteger(a.zone) && finite(a.zone, 0, 12) && a.type === 'routine' && ['practice', 'errand', 'escort'].includes(a.id)) state.action = { type: a.type, zone: a.zone, id: a.id, left: a.left, total: a.total };
     else if (Number.isInteger(a.zone) && finite(a.zone, 0, 12) && (a.type === 'spar' || Number.isInteger(a.idx) && finite(a.idx, 0, 3))) state.action = { type: a.type, zone: a.zone, idx: a.idx, left: a.left, total: a.total };
     else throw new Error('行动目标损坏。');
   }

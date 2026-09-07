@@ -1,6 +1,6 @@
 import { canResolveChoice } from './quest-guards.js';
 
-export function createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQuest, resolveTravel }) {
+export function createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQuest, resolveTravel, resolveRoutine }) {
   return function settleStory(s, context, success) {
     if (context.kind === 'quest') {
       const next = resolveQuest({ ...s, action: { type: 'quest', zone: context.zone, idx: context.idx } }, success);
@@ -10,6 +10,11 @@ export function createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQue
     if (context.kind === 'travel') {
       const next = resolveTravel({ ...s, action: { type: 'travel', to: context.to } }, success);
       next.battle = { ...next.battle, result: `${next.battle.result}\n\n${next.log[0]} 抵达${ZONES[context.to].name}。` };
+      return next;
+    }
+    if (context.kind === 'routine') {
+      const next = resolveRoutine({ ...s, action: { type: 'routine', zone: context.zone, id: context.id } }, success);
+      next.battle = { ...next.battle, result: `${next.battle.result}\n\n${next.log[0]}` };
       return next;
     }
     if (context.failedCheck) success = false;

@@ -23,6 +23,17 @@ export function pairing(state, loadout = state.loadout || {}) {
     recovery: inner.recovery + (innerLevel - 1) * 0.01,
     armor: inner.armor + (innerLevel - 1) * 0.005 };
 }
+export function trainingAbility(state, loadout = state.loadout || {}) {
+  const id = internalId(state, loadout.internal);
+  const style = loadout.style || '基本拳脚';
+  const styleExp = state.training?.styles?.[style] || 0;
+  const innerExp = state.training?.internals?.[id] || 0;
+  const pair = pairing(state, { ...loadout, internal: id, style });
+  const styleBonus = Math.floor(Math.sqrt(styleExp) / 2);
+  const innerBonus = Math.floor(Math.sqrt(innerExp) / 2);
+  const synergyBonus = pair.compatible && (styleExp > 0 || innerExp > 0) ? Math.min(10, Math.floor((styleBonus + innerBonus) / 4)) : 0;
+  return { total: styleBonus + innerBonus + synergyBonus, styleBonus, innerBonus, synergyBonus };
+}
 export function earnTraining(state, amount, style = state.loadout?.style || '基本拳脚', inner = internalId(state)) {
   const t = state.training || { styles: {}, internals: {} };
   return { ...state, training: {

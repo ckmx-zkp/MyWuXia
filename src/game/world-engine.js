@@ -4,6 +4,8 @@ import { startCombat, advanceCombat } from './combat.js';
 import { createEncounterSettlement } from './encounter-settlement.js';
 import { nextRandom } from './random.js';
 import { applyEff } from './effects.js';
+import { earnTraining } from './training.js';
+import { routinesForZone, routineReward } from '../content/routines.js';
 
 export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FAC, FAC_DEFAULT, levelUpLog }) {
   const treeKey = (zone, id) => `${zone}:${id}`;
@@ -61,7 +63,26 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
     n.log = n.log.slice(0, 8);
     return n;
   }
-  const settleStory = createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQuest, resolveTravel });
+  function resolveRoutine(s, combatResult, rng = Math.random) {
+    const { zone, id } = s.action;
+    const z = ZONES[zone], routine = routinesForZone(z).find(x => x.id === id);
+    if (!routine) return { ...s, action: null };
+    const escaped = s.battle?.status === 'escaped';
+    const chance = Math.max(0.35, Math.min(0.95, 0.55 + ability(s) / Math.max(20, z.danger) * 0.35));
+    const success = combatResult === undefined ? routine.always || rng() < chance : combatResult;
+    const reward = routineReward(z, routine, success);
+    const mult = s.devMult || 1;
+    let next = { ...s, action: null, fx: success ? 'quest' : 'click',
+      silver: s.silver + reward.silver * mult,
+      expTotal: s.expTotal + (escaped ? 0 : reward.exp * mult), routineDone: { ...s.routineDone } };
+    if (success) next.routineDone[`${zone}:${id}`] = (s.routineDone?.[`${zone}:${id}`] || 0) + 1;
+    if (!escaped) next = earnTraining(next, reward.training * mult);
+    const gain = escaped ? '你护住自身退回城中，本次没有获得修炼心得。'
+      : `历练 +${reward.exp * mult}、武学/内功心得 +${reward.training * mult}${reward.silver ? `、银两 +${reward.silver * mult}` : ''}。`;
+    next.log = [`循环支线「${routine.name}」${success ? '完成' : escaped ? '中止' : '受挫'}，${gain}`, ...s.log].slice(0, 8);
+    return levelUpLog(next, s);
+  }
+  const settleStory = createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQuest, resolveTravel, resolveRoutine });
   function tick(s) {
     if (s.action?.type === 'combat') return levelUpLog(advanceCombat(s, settleStory), s);
     if (s.action?.type === 'spar') {
@@ -72,17 +93,21 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
       const a = { ...s.action, left: s.action.left - 1 };
       const n = { ...s, action: a };
       if (a.left <= 0) {
-        const opponent = a.type === 'quest' && QUEST_COMBATS[ZONES[a.zone].quests[a.idx].name];
+        const routine = a.type === 'routine' && routinesForZone(ZONES[a.zone]).find(x => x.id === a.id);
+        const opponent = a.type === 'quest' ? QUEST_COMBATS[ZONES[a.zone].quests[a.idx].name] : routine?.opponent;
         if (opponent) return startCombat({ ...n, action: null }, { opponent, danger: ZONES[a.zone].danger,
-          place: ZONES[a.zone].quests[a.idx].name, context: { kind: 'quest', zone: a.zone, idx: a.idx } });
+          place: a.type === 'quest' ? ZONES[a.zone].quests[a.idx].name : routine.name,
+          context: a.type === 'quest' ? { kind: 'quest', zone: a.zone, idx: a.idx } : { kind: 'routine', zone: a.zone, id: a.id } });
         const random = nextRandom(n.rngState);
         const seeded = { ...n, rngState: random.seed };
-        return levelUpLog(a.type === 'quest' ? resolveQuest(seeded, undefined, () => random.value) : resolveTravel(seeded, undefined, () => random.value), s);
+        if (a.type === 'quest') return levelUpLog(resolveQuest(seeded, undefined, () => random.value), s);
+        if (a.type === 'routine') return resolveRoutine(seeded, undefined, () => random.value);
+        return levelUpLog(resolveTravel(seeded, undefined, () => random.value), s);
       }
       return n;
     }
     return s.fx ? { ...s, fx: null } : s;
   }
 
-  return { tick, settleStory, resolveQuest, resolveTravel };
+  return { tick, settleStory, resolveQuest, resolveTravel, resolveRoutine };
 }

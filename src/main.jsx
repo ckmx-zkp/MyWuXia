@@ -14,9 +14,11 @@ import './style.css';
 import { createIdleRuntime } from './game/idle-runtime.js';
 import { canResolveChoice } from './game/quest-guards.js';
 import { loadZoneQuests, prepareCharacter } from './content/quest-loader.js';
-import { mastery, masteryTarget, availableInternals, claimIdleRewards } from './game/training.js';
+import { mastery, masteryTarget, availableInternals, claimIdleRewards, trainingAbility, pairing } from './game/training.js';
+import { ability, abilityParts } from './game/ability.js';
 import { advanceFate, resolveFateChoice } from './game/fate-engine.js';
 import FatePanel from './features/fates/FatePanel.jsx';
+import { routinesForZone, routineReward } from './content/routines.js';
 
 /* ================= 音效（复用 Audio，避免每次点击新建） ================= */
 const SOUND = { click: '/audio/wood-pluck.wav', quest: '/audio/quest-complete.wav', bell: '/audio/breath-bell.wav' };
@@ -299,7 +301,6 @@ const CHATTER = {
 /* ================= 派生数值 ================= */
 const lv = e => Math.floor(e / 100) + 1;
 const grade = l => l < 20 ? '不堪一击' : l < 50 ? '初学乍练' : l < 80 ? '初出茅庐' : l < 150 ? '马马虎虎' : l < 300 ? '略有小成' : '已有大成';
-const ability = s => Math.round(lv(s.expTotal) * (0.35 + s.hp / 100)) + SKILLS.filter(k => lv(s.expTotal) >= k.lv).reduce((a, k) => a + k.bonus, 0) + (s.attrAb || 0) + (s.bonusSkill?.bonus || 0);
 const DANGER_TAGS = ['平和', '险恶', '凶险', '绝地'];
 const dangerTag = d => d < 40 ? 0 : d < 120 ? 1 : d < 260 ? 2 : 3;
 const questReward = (z, main) => main
@@ -374,6 +375,7 @@ function App({ saved }) {
   const [outcome, setOutcome] = useState(null); // 抉择回响文本
   const [panel, setPanel] = useState(null);     // attr | ach | let | rank | set
   const [questCard, setQuestCard] = useState(null); // 普通任务的剧情卡（任务索引）
+  const [routineCard, setRoutineCard] = useState(null); // 循环历练 ID
   const [speakI, setSpeakI] = useState(-1);        // 当前连播到的对白行
   const [leaf, setLeaf] = useState(0);             // 江湖纸卷页：0=本区历练，1+=任务树
   const [heroOpen, setHeroOpen] = useState(false);  // 手机：左栏「属性」打开角色浮层
@@ -383,7 +385,8 @@ function App({ saved }) {
   const [cSkill, setCSkill] = useState('taizu');
   const [alloc, setAlloc] = useState({ hp: 0, ab: 0, exp: 0 });
   const level = lv(s.expTotal), ab = ability(s), z = ZONES[s.loc];
-  const inner = Math.round(80 + level * 18 + ab * 3);
+  const pair = pairing(s);
+  const inner = Math.round((80 + level * 18 + ab * 3) * (1 + (pair.innerLevel - 1) * 0.05));
   const fac = FAC[s.loc] || FAC_DEFAULT;
   const doneArr = s.done[s.loc] || [];
   const busy = !!s.action || travelLoading;
@@ -449,6 +452,13 @@ function App({ saved }) {
     const q = z.quests[i], r = questReward(z, q.kind === 'main');
     setS(v => ({ ...v, action: { type: 'quest', zone: s.loc, idx: i, left: r.time, total: r.time }, log: [`着手「${q.name}」……`, ...v.log].slice(0, 8) }));
   };
+  const startRoutine = id => {
+    if (busy) return;
+    const routine = routinesForZone(z).find(x => x.id === id);
+    if (!routine) return;
+    setS(v => ({ ...v, action: { type: 'routine', zone: v.loc, id, left: routine.time, total: routine.time },
+      log: [`开始循环支线「${routine.name}」……`, ...v.log].slice(0, 8) }));
+  };
   /* 普通任务：先出剧情卡，再动身 */
   const openQuestCard = i => {
     click();
@@ -469,7 +479,7 @@ function App({ saved }) {
     if (!creating) writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions);
     writeSave(localStorage, state, SAVE_KEY, saveOptions);
     runtime.clear(); stopVoice(); setS(state);
-    setStory(null); setOutcome(null); setQuestCard(null); setPanel(null); setCombatSetup(null);
+    setStory(null); setOutcome(null); setQuestCard(null); setRoutineCard(null); setPanel(null); setCombatSetup(null);
     setCreating(false); setSavesOpen(false); setSaveNotice('存档已恢复。');
   };
   const askRumor = () => {
@@ -535,7 +545,7 @@ function App({ saved }) {
     travelRequest.current++; setTravelLoading(false);
     setCombatSetup(null); setSavesOpen(false);
     setS(initial());
-    setStory(null); setOutcome(null); setQuestCard(null); setPanel(null);
+    setStory(null); setOutcome(null); setQuestCard(null); setRoutineCard(null); setPanel(null);
     setCName(''); setOrigin('hunter'); setCSkill('taizu'); setAlloc({ hp: 0, ab: 0, exp: 0 });
     setCreating(true);
   };
@@ -701,6 +711,19 @@ function App({ saved }) {
                     <button disabled={busy} onClick={startSpar}><b>{fac.gym}</b><small>自动交手 · 战前配招</small></button>
                   </div>
                 </div>
+                <div className="routine-section">
+                  <h3>循环历练</h3>
+                  <p>可反复完成，提升角色等级，并训练当前装备的武学与内功。</p>
+                  <div className="mission-list">{routinesForZone(z).map(routine => {
+                    const reward = routineReward(z, routine);
+                    const count = s.routineDone?.[`${s.loc}:${routine.id}`] || 0;
+                    const active = s.action?.type === 'routine' && s.action.zone === s.loc && s.action.id === routine.id;
+                    return <button key={routine.id} className={`mission routine ${active ? 'active' : ''}`} disabled={busy} onClick={() => setRoutineCard(routine.id)}>
+                      <span>日常</span><div className="qbody"><b>{routine.name}</b><i>{routine.text}</i></div>
+                      <small>{active ? `行动中 ${s.action.left}s` : `历练 +${reward.exp} · 心得 +${reward.training}`}<br />已完成 {count} 次</small>
+                    </button>;
+                  })}</div>
+                </div>
                 {pager}
               </>;
             }
@@ -731,7 +754,7 @@ function App({ saved }) {
           </>}
         </article>
         {s.action && <div className="actionbar">
-          <b>{s.action.type === 'travel' ? `赶路 · ${ZONES[s.action.to].name}` : s.action.type === 'combat' ? `交手 · ${s.battle.enemy.name}` : s.action.type === 'spar' ? `${fac.gym} · 切磋` : `行事 · ${z.quests[s.action.idx].name}`}</b>
+          <b>{s.action.type === 'travel' ? `赶路 · ${ZONES[s.action.to].name}` : s.action.type === 'combat' ? `交手 · ${s.battle.enemy.name}` : s.action.type === 'spar' ? `${fac.gym} · 切磋` : s.action.type === 'routine' ? `历练 · ${routinesForZone(ZONES[s.action.zone]).find(r => r.id === s.action.id)?.name}` : `行事 · ${z.quests[s.action.idx].name}`}</b>
           <i><em style={{ width: `${s.action.type === 'combat' ? s.battle.round / 60 * 100 : ((s.action.total - s.action.left) / s.action.total) * 100}%` }} /></i>
           <span>{s.action.type === 'combat' ? `第 ${s.battle.round} 回合` : `${s.action.left}s`}</span>
         </div>}
@@ -755,7 +778,7 @@ function App({ saved }) {
           <small>侠客状态</small>
           <b>{s.hp > 70 ? '气息平稳' : s.hp > 40 ? '略有伤势' : '伤势沉重'}</b>
           <p>当前能力　<strong>{ab}</strong></p>
-          <em>能力随等级、气血与武学变化</em>
+          <em>挂机练功已计入能力 · 修炼 +{abilityParts(s).training}</em>
         </div>
         <div className="rep">
           {Object.keys(s.favor || {}).length === 0 && <span className="dim">尚无江湖交情</span>}
@@ -768,10 +791,10 @@ function App({ saved }) {
         <div className="quick-actions">{[['成就', 'ach', 'tag-achieve'], ['信件', 'let', 'tag-letter'], ['排行', 'rank', 'tag-rank'], ['设置', 'set', 'tag-setting']].map(([x, p, img]) => <button key={x} className="tag-btn" style={{ backgroundImage: `url('/art/ui/slices/${img}.webp')` }} onClick={() => { click(); setPanel(p); }}>{x}</button>)}</div>
         {tab === '武学' ? <div className="skills">
           {s.bonusSkill && <div className="skill on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
-          {SKILLS.map(k => {
+          {SKILLS.filter(k => STYLES[k.name]).map(k => {
             const on = level >= k.lv;
             return <div key={k.name} className={`skill ${on ? 'on' : ''}`}>
-              <b>{k.name}</b><em>{on ? `能力 +${k.bonus}` : `${k.lv} 级可悟`}</em>
+              <b>{k.name}</b><em>{on ? `${mastery(s.training.styles[k.name])}重 · 修炼能力 +${trainingAbility({ ...s, loadout: { ...s.loadout, style: k.name } }).styleBonus}` : `${k.lv} 级可悟`}</em>
               <small>{on ? k.text : '……'}</small>
             </div>;
           })}
@@ -806,7 +829,8 @@ function App({ saved }) {
             <div><small>内力</small><b>{inner}</b></div>
             <div><small>银两</small><b>{s.silver}</b></div>
             <div><small>声望</small><b>{s.rep || 0}</b></div>
-            <div><small>能力</small><b>{ab}（根基 {Math.round(level * (0.35 + s.hp / 100))} + 武学 {ab - Math.round(level * (0.35 + s.hp / 100))}）</b></div>
+            <div><small>能力</small><b>{ab}</b></div>
+            <div><small>能力拆解</small><b>{(() => { const p = abilityParts(s); return `根基 ${p.root} + 领悟 ${p.learned} + 天赋 ${p.origin} + 修炼 ${p.training}`; })()}</b></div>
           </div>
           <h3>江湖履历</h3>
           <div className="attr-grid">
@@ -900,6 +924,20 @@ function App({ saved }) {
             <button onClick={() => { startQuest(questCard); setQuestCard(null); }}>动身前往</button>
             <button onClick={() => { click(); setQuestCard(null); }}>暂且离开</button>
           </div>
+        </div>
+      </div>;
+    })()}
+    {routineCard && (() => {
+      const routine = routinesForZone(z).find(r => r.id === routineCard);
+      if (!routine) return null;
+      const reward = routineReward(z, routine);
+      return <div className="story-mask" onClick={() => setRoutineCard(null)}>
+        <div className="story scroll" onClick={e => e.stopPropagation()}>
+          {routine.opponent && <p className="combat-warning">途中可能遭遇{OPPONENTS[routine.opponent].name}，将使用当前武学与内功自动交手；主动脱身没有本次历练收益。</p>}
+          <small className="st-tag">循环支线 · {z.name}</small><h2>{routine.name}</h2>
+          <p className="scene">{routine.text}</p><p className="dlg"><b>{routine.dialogue[0]}</b>{routine.dialogue[1]}</p>
+          <p className="hint" style={{ color: '#6d5a3c' }}>约需 {routine.time} 息。完成可得历练 +{reward.exp}、武学/内功心得 +{reward.training}、银两 +{reward.silver}；收益倍率生效。</p>
+          <div className="choices"><button onClick={() => { startRoutine(routine.id); setRoutineCard(null); }}>开始历练</button><button onClick={() => setRoutineCard(null)}>暂且离开</button></div>
         </div>
       </div>;
     })()}

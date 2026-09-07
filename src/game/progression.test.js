@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initial } from './state.js';
 import { createIdleRuntime } from './idle-runtime.js';
-import { claimIdleRewards, mastery, pairing, earnTraining } from './training.js';
+import { claimIdleRewards, mastery, pairing, earnTraining, trainingAbility } from './training.js';
 import { startCombat, advanceCombat, retreatCombat } from './combat.js';
 import { encodeSave, migrateSave } from './saves.js';
+import { ability, abilityParts } from './ability.js';
 
 test('idle rewards train the selected pair and silver can only be claimed once', () => {
   const r = createIdleRuntime(s => s, exp => Math.floor(exp / 100));
@@ -12,6 +13,9 @@ test('idle rewards train the selected pair and silver can only be claimed once',
   for (let i = 0; i < 5; i++) s = r.advance(s);
   assert.equal(s.training.styles['基本拳脚'], 5);
   assert.equal(s.training.internals.basic, 5);
+  assert.ok(trainingAbility(s).total > trainingAbility(initial()).total);
+  assert.ok(ability(s) > ability(initial()));
+  assert.equal(ability(s), Object.values(abilityParts(s)).reduce((sum, value) => sum + value, 0));
   assert.equal(s.idleBank.silver, 5);
   const claimed = claimIdleRewards(s);
   assert.equal(claimed.silver, s.silver + 5);

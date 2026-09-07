@@ -4,6 +4,7 @@ import { ZONES } from '../src/content/world.js';
 import { loadZoneQuests } from '../src/content/quest-loader.js';
 import { OPPONENTS } from '../src/content/combat.js';
 import { FATES } from '../src/content/fates.js';
+import { routinesForZone } from '../src/content/routines.js';
 await Promise.all(ZONES.map((_, i) => loadZoneQuests(i)));
 const ids = new Set();
 for (const z of ZONES) for (const tree of z.trees || []) {
@@ -28,4 +29,12 @@ for (const [id, node] of Object.entries(FATES)) {
   if (node.choices.length) assert.ok(node.scene && node.dialogues.length && node.hearsay, id);
   for (const zone of node.zones || []) assert.ok(ZONES[zone], id);
 }
-console.log(`Validated ${ids.size} quest trees, audio references and ${Object.keys(FATES).length} fate nodes.`);
+for (const [zoneIndex, zone] of ZONES.entries()) {
+  const routines = routinesForZone(zone);
+  assert.equal(new Set(routines.map(r => r.id)).size, 3, `zone ${zoneIndex} routine ids`);
+  for (const routine of routines) {
+    assert.ok(routine.name && routine.text && routine.dialogue.length === 2 && routine.time > 0 && routine.training > 0, `zone ${zoneIndex}:${routine.id}`);
+    if (routine.opponent) assert.ok(OPPONENTS[routine.opponent], `zone ${zoneIndex}:${routine.id} opponent`);
+  }
+}
+console.log(`Validated ${ids.size} quest trees, audio references, ${Object.keys(FATES).length} fate nodes and ${ZONES.length * 3} repeatable routines.`);

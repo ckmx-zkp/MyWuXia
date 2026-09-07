@@ -10,6 +10,7 @@ export const initial = () => ({
   loadout: { style: '基本拳脚', strategy: 'balanced', breath: 'flowing', footwork: 'light', internal: 'basic' },
   battle: null, rngState: 2463534242,
   training: { styles: {}, internals: {} }, idleBank: { silver: 0 },
+  routineDone: {},
   worldTime: 0, fate: { node: 'locked', enteredAt: 0, history: [] }, factionRelations: {},
   log: ['江南密信已现端倪，下一步需寻访扬州盐商。'],
 });
