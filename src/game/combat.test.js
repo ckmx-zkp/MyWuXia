@@ -34,11 +34,13 @@ test('admin combat multiplier preserves distinct win and loss rewards', () => {
   assert.ok(won.expTotal - strong.expTotal > lost.expTotal);
 });
 test('retreat settles once without farming spar rewards', () => {
-  const state = startCombat(initial());
+  const state = startCombat({ ...initial(), mp: 40 });
+  assert.notEqual(state.battle.player.mp, state.battle.player.maxMp);
   const next = retreatCombat(state);
   assert.equal(next.expTotal, state.expTotal);
   assert.equal(next.action, null);
   assert.equal(next.battle.status, 'escaped');
+  assert.equal(next.mp, 40);
   assert.equal(retreatCombat(next), next);
 });
 test('story victory, defeat and retreat invoke the continuation exactly once', () => {

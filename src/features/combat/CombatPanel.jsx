@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { availableStyles, normalizeLoadout, STYLES, OPPONENTS, STRATEGIES, BREATHS, FOOTWORK } from '../../content/combat.js';
 import './combat.css';
 import { availableInternals, pairing, mastery } from '../../game/training.js';
+import { vitalStats } from '../../game/vitals.js';
 
 export function LoadoutEditor({ state, value, onChange, disabled = false }) {
   const config = normalizeLoadout(state, value);
@@ -39,6 +40,7 @@ export default function CombatPanel({ state, setup, onStart, onClose, onRetreat,
   useEffect(() => { heading.current?.focus(); }, []);
   useEffect(() => { if (logs.current && follow.current) logs.current.scrollTop = logs.current.scrollHeight; }, [battle?.round, battle?.status]);
   const enemy = OPPONENTS[battle?.opponent || opponent];
+  const reserves = vitalStats({ ...state, loadout });
   return <div className="story-mask combat-mask">
     <section className="combat-panel" role="dialog" aria-modal="true" aria-labelledby="combat-title">
       <div className="combat-heading"><div><small>{battle?.place || setup?.place} · {battle ? '交手实录' : '战前准备'}</small><h2 id="combat-title" tabIndex={-1} ref={heading}>{battle ? `${battle.player.name} · ${battle.enemy.name}` : '以武会友'}</h2></div>
@@ -47,7 +49,7 @@ export default function CombatPanel({ state, setup, onStart, onClose, onRetreat,
         {!setup?.context && <div className="combat-opponents">{['student', 'swordsman', 'instructor'].map(id => <button key={id} aria-pressed={opponent === id} className={opponent === id ? 'selected' : ''} onClick={() => setOpponent(id)}><b>{OPPONENTS[id].name}</b><small>{OPPONENTS[id].realm} · {OPPONENTS[id].danger}难度</small></button>)}</div>}
         <p className="combat-warning">{enemy.name} · {enemy.realm} · 危险度：{enemy.danger}。{enemy.text}</p>
         <LoadoutEditor state={state} value={loadout} onChange={setLoadout} />
-        <p className="combat-note">气血按当前伤势入场（{state.hp}/100），内力在每场交手前调匀。{setup?.context ? '胜负与脱身都会留下剧情后果，主线仍可继续。' : '胜得 15 历练，败或平手得 8；主动收招无奖励，切磋最多轻伤。'}管理员倍率在开战时固定，仅放大战斗历练与心得。</p>
+        <p className="combat-note">按当前状态入场：气血 {reserves.hp}/{reserves.maxHp}，内力 {reserves.mp}/{reserves.maxMp}。{setup?.context ? '胜负与脱身都会留下剧情后果，主线仍可继续。' : '胜得 15 历练，败或平手得 8；主动收招无奖励，切磋最多轻伤。'}战后会保留内力消耗，可在客栈投宿回满。管理员倍率在开战时固定，仅放大战斗历练与心得。</p>
         <div className="combat-actions"><button onClick={onClose}>暂不交手</button><button className="primary" onClick={() => onStart({ ...setup, opponent, loadout })}>开始自动交手</button></div>
       </> : <>
         {battle.context && <p className="combat-warning">{enemy.name} · {enemy.realm} · 危险度：{enemy.danger}。{enemy.text}</p>}

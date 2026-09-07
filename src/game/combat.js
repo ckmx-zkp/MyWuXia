@@ -1,6 +1,7 @@
 import { STYLES, STRATEGIES, BREATHS, FOOTWORK, OPPONENTS, normalizeLoadout } from '../content/combat.js';
 import { nextRandom } from './random.js';
 import { pairing, earnTraining } from './training.js';
+import { vitalStats } from './vitals.js';
 
 export const MAX_ROUNDS = 60;
 function draw(battle) {
@@ -21,12 +22,14 @@ export function startCombat(state, { opponent = 'student', danger = 20, place = 
   const enemy = OPPONENTS[opponent];
   const level = Math.floor(state.expTotal / 100) + 1;
   const enemyLevel = Math.max(1, Math.round(danger * enemy.scale));
+  const reserves = vitalStats({ ...state, loadout });
   const random = { seed: state.rngState || 1 };
   draw(random);
   const battle = {
     version: 1, opponent, place, context, seed: (seed === undefined ? random.seed : seed >>> 0) || 1, round: 0,
     status: 'active', settled: false, rewardMult: state.devMult === 10 ? 10 : 1,
-    player: fighter(state.name, level, state.hp, loadout, state.attrAb || 0),
+    player: { ...fighter(state.name, level, state.hp, loadout, state.attrAb || 0),
+      maxHp: reserves.maxHp, hp: reserves.hp, maxMp: reserves.maxMp, mp: reserves.mp },
     enemy: fighter(enemy.name, enemyLevel, 100, { style: enemy.style, strategy: enemy.strategy, breath: enemy.breath, footwork: enemy.footwork }),
     log: [`${state.name}在${place}站定，与${enemy.name}遥遥相对。`, '双方依照武学配置自行出招，内力不济时会自动调息。'],
   };
@@ -34,8 +37,6 @@ export function startCombat(state, { opponent = 'student', danger = 20, place = 
   battle.player.attack *= bonuses.damage;
   battle.player.recoveryBonus = bonuses.recovery;
   battle.player.armorBonus = bonuses.armor;
-  battle.player.maxMp = Math.round(battle.player.maxMp * (1 + (bonuses.innerLevel - 1) * 0.05));
-  battle.player.mp = battle.player.maxMp;
   battle.log.push(`主修${loadout.style} ${bonuses.styleLevel}重，${bonuses.inner.name} ${bonuses.innerLevel}重，${bonuses.compatible ? '招气相合' : '各循其法'}。`);
   return { ...state, rngState: random.seed, loadout, battle, action: { type: 'combat' }, fx: null };
 }
@@ -95,7 +96,8 @@ export function finishCombat(state, battle, settleStory) {
   // 切磋只造成轻伤；剧情遭遇将真实战斗伤势带回，但绝不死亡。
   const hp = battle.context ? Math.max(1, Math.round(battle.player.hp / battle.player.maxHp * 100))
     : won ? state.hp : Math.max(1, state.hp - 10);
-  let next = { ...state, hp, expTotal: state.expTotal + exp, action: null,
+  const mp = Math.max(0, Math.round(battle.player.mp / battle.player.maxMp * 100));
+  let next = { ...state, hp, mp, expTotal: state.expTotal + exp, action: null,
     battle: { ...battle, settled: true, result: `${label}。${exp ? `历练 +${exp}。` : ''}${battle.context ? '这场交手的余波已记入江湖。' : won ? '教头抱拳，点到为止。' : '切磋不伤性命，歇息后仍可再来。'}` },
     fx: won ? 'quest' : 'click', log: [`在${battle.place}与${battle.enemy.name}交手，${label}${exp ? `，历练 +${exp}` : ''}。`, ...state.log].slice(0, 8) };
   if (battle.context && settleStory) next = settleStory(next, battle.context, won);

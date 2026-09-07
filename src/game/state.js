@@ -1,6 +1,6 @@
 export const initial = () => ({
   name: '沈孤鸿', attrAb: 0, bonusSkill: null, devMult: 1,
-  expTotal: 1251, hp: 79, silver: 168, loc: 0, idle: true,
+  expTotal: 1251, hp: 79, mp: 100, silver: 168, loc: 0, idle: true,
   muteBgm: false, muteSfx: false, muteVoice: false,
   done: {}, items: { jinchuang: 1 }, action: null, fx: null,
   rep: 0, favor: {}, rumors: [], treeDone: {},

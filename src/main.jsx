@@ -14,8 +14,9 @@ import './style.css';
 import { createIdleRuntime } from './game/idle-runtime.js';
 import { canResolveChoice } from './game/quest-guards.js';
 import { loadZoneQuests, prepareCharacter } from './content/quest-loader.js';
-import { mastery, masteryTarget, availableInternals, claimIdleRewards, trainingAbility, pairing } from './game/training.js';
+import { mastery, masteryTarget, availableInternals, claimIdleRewards, trainingAbility } from './game/training.js';
 import { ability, abilityParts } from './game/ability.js';
+import { vitalStats, needsInnRest, restAtInn } from './game/vitals.js';
 import { advanceFate, resolveFateChoice } from './game/fate-engine.js';
 import FatePanel from './features/fates/FatePanel.jsx';
 import { routinesForZone, routineReward } from './content/routines.js';
@@ -344,8 +345,10 @@ function load() {
 /* ================= 行动结算 ================= */
 function levelUpLog(n, s) {
   if (lv(n.expTotal) > lv(s.expTotal)) {
+    const before = vitalStats(s);
+    const after = vitalStats(n);
     n.fx = 'bell';
-    n.log = [`突破！等级升至 ${lv(n.expTotal)}，境界「${grade(lv(n.expTotal))}」。`, ...n.log];
+    n.log = [`突破！等级升至 ${lv(n.expTotal)}，气血上限 ${before.maxHp}→${after.maxHp}，内力上限 ${before.maxMp}→${after.maxMp}，境界「${grade(lv(n.expTotal))}」。`, ...n.log];
   }
   return n;
 }
@@ -385,8 +388,7 @@ function App({ saved }) {
   const [cSkill, setCSkill] = useState('taizu');
   const [alloc, setAlloc] = useState({ hp: 0, ab: 0, exp: 0 });
   const level = lv(s.expTotal), ab = ability(s), z = ZONES[s.loc];
-  const pair = pairing(s);
-  const inner = Math.round((80 + level * 18 + ab * 3) * (1 + (pair.innerLevel - 1) * 0.05));
+  const vitals = vitalStats(s);
   const fac = FAC[s.loc] || FAC_DEFAULT;
   const doneArr = s.done[s.loc] || [];
   const busy = !!s.action || travelLoading;
@@ -511,9 +513,9 @@ function App({ saved }) {
     setS(v => ({ ...v, ...ITEMS[id].apply(v), items: { ...v.items, [id]: v.items[id] - 1 }, log: [`使用了${ITEMS[id].name}。`, ...v.log].slice(0, 8) }));
   };
   const rest = () => {
-    if (busy || s.silver < 5 || s.hp >= 100) return;
+    if (busy || s.silver < 5 || !needsInnRest(s)) return;
     play(SOUND.bell, s.muteSfx);
-    setS(v => ({ ...v, silver: v.silver - 5, hp: clamp(v.hp + 30), log: ['在客栈歇息半日，气血大复（银两 -5）。', ...v.log].slice(0, 8) }));
+    setS(v => ({ ...restAtInn(v), log: ['在客栈投宿一夜，气血与内力尽复（银两 -5）。', ...v.log].slice(0, 8) }));
   };
   const claimIdle = () => { click(); setS(claimIdleRewards); };
   /* 剧情节点：打开场景弹窗 */
@@ -711,6 +713,7 @@ function App({ saved }) {
                   <h3>城中去处</h3>
                   <div className="fac-grid">
                     <button disabled={busy || s.silver < 2} onClick={askRumor}><b>{fac.inn}</b><small>打听消息 · 银两 -2</small></button>
+                    <button disabled={busy || s.silver < 5 || !needsInnRest(s)} onClick={rest}><b>{fac.inn}</b><small>投宿休息 · 气血/内力全满 · 银两 -5</small></button>
                     <button disabled={busy || s.silver < 20} onClick={() => buyItem('jinchuang', 20)}><b>{fac.med}</b><small>金创药 · 银两 -20</small></button>
                     <button disabled={busy || s.silver < 15} onClick={() => buyItem('jiedu', 15)}><b>{fac.med}</b><small>解毒丸 · 银两 -15</small></button>
                     <button disabled={busy || s.silver < 60} onClick={() => buyItem('tianxiang', 60)}><b>{fac.med}</b><small>天香断续膏 · 银两 -60</small></button>
@@ -770,7 +773,7 @@ function App({ saved }) {
           <i><em style={{ width: `${s.expTotal % 100}%` }} /></i>
           <button onClick={() => { click(); setS(v => ({ ...v, idle: !v.idle })); }}>{s.idle ? '暂停' : '继续'}</button>
           <button className="claim" disabled={!s.idleBank.silver} onClick={claimIdle}>领取银两 {s.idleBank.silver}</button>
-          <button className="rest" disabled={s.silver < 5 || s.hp >= 100} onClick={rest}>客栈歇息<br />银两 -5</button>
+          <button className="rest" disabled={s.silver < 5 || !needsInnRest(s)} onClick={rest}>客栈投宿<br />气血/内力全满 · 银两 -5</button>
         </div>
       </section>
       {/* 右栏：角色 / 武学 / 行囊 / 传闻；手机由左栏「属性」浮层打开 */}
@@ -780,7 +783,7 @@ function App({ saved }) {
         <div className="portrait" />
         <h2>{s.name}</h2>
         <p>等级 {level}　·　{grade(level)}</p>
-        <div className="stats"><div className="stat hp"><span>♥ 气血</span><i><em style={{ width: `${s.hp}%` }} /></i><b>{s.hp}/100</b></div><div className="stat qi"><span>☯ 内力</span><i><em style={{ width: '100%' }} /></i><b>{inner}/{inner}</b></div><div className="stat fame"><span>✥ 声望</span><i><em style={{ width: `${Math.min(100, (s.rep || 0) / 25)}%` }} /></i><b>{s.rep || 0}</b></div></div>
+        <div className="stats"><div className="stat hp"><span>♥ 气血</span><i><em style={{ width: `${vitals.hpPercent}%` }} /></i><b>{vitals.hp}/{vitals.maxHp}</b></div><div className="stat qi"><span>☯ 内力</span><i><em style={{ width: `${vitals.mpPercent}%` }} /></i><b>{vitals.mp}/{vitals.maxMp}</b></div><div className="stat fame"><span>✥ 声望</span><i><em style={{ width: `${Math.min(100, (s.rep || 0) / 25)}%` }} /></i><b>{s.rep || 0}</b></div></div>
         <div className="ability">
           <small>侠客状态</small>
           <b>{s.hp > 70 ? '气息平稳' : s.hp > 40 ? '略有伤势' : '伤势沉重'}</b>
@@ -832,8 +835,8 @@ function App({ saved }) {
           <h2>详细属性</h2>
           <div className="attr-grid">
             <div><small>等级</small><b>{level} · {grade(level)}</b></div>
-            <div><small>气血</small><b>{s.hp}/100</b></div>
-            <div><small>内力</small><b>{inner}</b></div>
+            <div><small>气血</small><b>{vitals.hp}/{vitals.maxHp}</b></div>
+            <div><small>内力</small><b>{vitals.mp}/{vitals.maxMp}</b></div>
             <div><small>银两</small><b>{s.silver}</b></div>
             <div><small>声望</small><b>{s.rep || 0}</b></div>
             <div><small>能力</small><b>{ab}</b></div>
