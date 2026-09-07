@@ -15,6 +15,7 @@ export default function CityHub({ state:s, dispatch, onStory, onQuest, onTravel,
       const route = routeBetween(s.loc,zone);
       return <><small>路线：{route.map(i => ZONES[i].name).join(' → ')}</small><button disabled={busy || route.length < 2} onClick={() => onTravel(route[1])}>启程至{ZONES[route[1]]?.name}</button></>;
     }
+    if (!targetRoom) return <small>此事就在本区，抵达后即可过问。</small>;
     const path = roomRoute(room,targetRoom);
     return <><small>去向：{path.map(id => ROOMS[id].name).join(' → ') || ROOMS[targetRoom]?.name}</small><button disabled={busy || path.length < 2} onClick={() => dispatch({type:'MOVE_ROOM',id:path[1]})}>前往{ROOMS[path[1]]?.name || ROOMS[targetRoom]?.name}</button></>;
   };

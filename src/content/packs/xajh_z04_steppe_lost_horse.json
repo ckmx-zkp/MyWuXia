@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z04_steppe_lost_horse",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z04_steppe_lost_horse.json",
+  "zone": 4,
+  "design": {
+    "title": "塞外失马",
+    "hook": "教众余党随商队出塞，牧人却在营地丢马。",
+    "playerRole": "帮寻人、寻马或劝离，不剿教。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "日月神教余波会使普通教众与旁人都受牵连。",
+          "use": "只写余党求生，不写大规模教争。"
+        },
+        {
+          "beat": "原著多有商旅、山道与江湖人混行。",
+          "use": "借商队承载边地支线。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "张家口是北地商贸与出塞通道。",
+          "use": "让商队成为自然入口。"
+        },
+        {
+          "fact": "草原失马常直接关系牧人生计。",
+          "use": "把矛盾落到可追查的蹄印。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "不要把余党自动写成恶徒。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "马贼冲突只能是局部护队。"
+        }
+      ]
+    },
+    "echo": "改变张家口商队对白与牧人对余党的称呼。",
+    "facts": [
+      "xajh_z04_tracks_read",
+      "xajh_z04_refugees_heard",
+      "xajh_z04_bandits_turned"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "塞外失马",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 4,
+        "scene": "张家口外商队扎营，牧人牵着空缰绳来讨说法，说昨夜丢了两匹马。车队里又有人低声议论，几个教众余党想混队出塞。",
+        "dialogues": [
+          [
+            "牧人",
+            "我只找马，不问你们谁信谁。"
+          ],
+          [
+            "商队掌柜",
+            "真闹出教门追杀，我这队货也别走了。"
+          ]
+        ],
+        "hearsay": "丢马处有向北的蹄印，也有折回营地的脚印。所谓教众余党里有老有少，不像来寻仇。",
+        "choices": [
+          {
+            "id": "xajh_z04_tracks_read",
+            "text": "去营外辨蹄印。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z04_tracks_read": true
+              }
+            },
+            "outcome": "你看出一匹马受惊跑北，一匹被人牵回过。"
+          },
+          {
+            "id": "xajh_z04_refugees_heard",
+            "text": "给商队伙计酒钱，听清那几人的来意。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z04_refugees_heard": true
+              }
+            },
+            "outcome": "你确认他们只想随商队离开旧地。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 4,
+        "scene": "草沟里马蹄印被夜露压得发亮，旁边还有一截被踩断的麻绳。",
+        "dialogues": [
+          [
+            "牧人",
+            "北边那匹我能追，营里这一匹是谁牵的？"
+          ],
+          [
+            "车夫",
+            "昨夜有人怕马惊了货车，牵回来拴在后圈。"
+          ]
+        ],
+        "hearsay": "所谓偷马只成了一半。若先找回受惊马，牧人火气会小许多。",
+        "choices": [
+          {
+            "id": "xajh_z04_horse_found",
+            "text": "帮牧人追回受惊马。",
+            "requires": {
+              "flag": "xajh_z04_tracks_read"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 2
+            },
+            "outcome": "丢马之争少了一半，营里不再人人被当贼。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 4,
+        "scene": "商队后车旁，一个老妇抱着包袱，青年人只问过关后能否自谋生路。",
+        "dialogues": [
+          [
+            "老妇",
+            "我们不求谁替教门报仇，只求离开旧营。"
+          ],
+          [
+            "掌柜",
+            "我怕的是追兵，不是多几张嘴。"
+          ]
+        ],
+        "hearsay": "他们身上没有要与人火并的意思。若能让牧人安心，商队掌柜愿带人出塞。",
+        "choices": [
+          {
+            "id": "xajh_z04_safe_passage",
+            "text": "替几人出一份随队食水钱。",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "掌柜愿意给他们车尾一席，不再把人赶下去。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 4,
+        "scene": "营地北口忽有几名马贼来兜圈，认准商队乱了阵脚，想趁机夺马。",
+        "dialogues": [
+          [
+            "马贼",
+            "马丢不丢都一样，今夜归我们。"
+          ],
+          [
+            "牧人",
+            "这回倒真有贼了。"
+          ]
+        ],
+        "hearsay": "可护着商队退回营圈，不必追杀。也可用银钱先稳住牧人与掌柜，合力守马。",
+        "choices": [
+          {
+            "id": "xajh_z04_bandits_turned",
+            "text": "守住营门，把马贼赶远。",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z04_bandits_turned": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "马贼见抢不到便退了。",
+            "failText": "你守不住外圈，只得随众退进车阵，马贼也没敢硬冲。"
+          },
+          {
+            "id": "xajh_z04_camp_united",
+            "text": "出银请牧人和护队人手一同守马。",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2
+            },
+            "outcome": "营里不再互疑，马贼见人齐便绕开。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 4,
+        "scene": "晨光照上车辕，丢失的马只剩一匹未回，牧人已沿北坡去找。商队掌柜开始点人数准备出塞。",
+        "dialogues": [
+          [
+            "掌柜",
+            "昨夜若一直互咬，真贼一来就全散了。"
+          ],
+          [
+            "老妇",
+            "出了关，我们自己走，不拖谁的名声。"
+          ]
+        ],
+        "hearsay": "若你先听过余党来意，商队以后会把他们称作逃难人。若你先查过蹄印，牧人不会再说商队偷了两匹马。",
+        "choices": [
+          {
+            "id": "xajh_z04_finish",
+            "text": "补一袋草料钱，劝商队立刻启程。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "商队趁早风出塞，争端没有再扩大。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 4,
+        "scene": "车轮压过草地，营火只剩白灰。牧人牵回受惊马时，商队已经成了北方一线尘烟。",
+        "dialogues": [
+          [
+            "牧人",
+            "找马就是找马，别把每个人都说成仇家。"
+          ]
+        ],
+        "hearsay": "张家口后来有人说，那队所谓教众余党没有剿谁，只是随车去了更远的地方。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "商队里混着几个只想出塞的教众余党。牧人丢马一度把整队人都当成嫌疑。"
+}

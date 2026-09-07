@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z11_wuliang_false_manual",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z11_wuliang_false_manual.json",
+  "zone": 11,
+  "design": {
+    "title": "无量讹谱",
+    "hook": "过客把五岳剑谱讹成无量剑秘本。",
+    "playerRole": "用学识辨伪，不入剑湖宫夺秘籍。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "无量剑法与五岳诸派并非一脉。",
+          "use": "利用名称混淆制造讹传。"
+        },
+        {
+          "beat": "江湖秘笈传闻常引人争夺。",
+          "use": "让玩家通过辨伪消解风险。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "大理商旅与山道消息常经茶摊传播。",
+          "use": "任务从茶摊流言生发。"
+        },
+        {
+          "fact": "抄本在异地传播容易混杂不同名目。",
+          "use": "把错误留在可核验文字上。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "不得奖励无量剑法新教学。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "不得进入剑湖宫夺谱。"
+        }
+      ]
+    },
+    "echo": "改变大理茶摊对白与无量山口传闻。",
+    "facts": [
+      "xajh_z11_terms_checked",
+      "xajh_z11_youth_delayed",
+      "xajh_z11_school_cleared"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "无量讹谱",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 11,
+        "scene": "大理茶摊挂着一张抄得歪斜的剑谱目录，摊主说这是“五岳剑谱流到无量山”的证据。几个年轻人已准备去无量山找所谓秘本。",
+        "dialogues": [
+          [
+            "茶摊主",
+            "看，纸上真有无量二字。"
+          ],
+          [
+            "老行脚",
+            "无量剑法本来就叫无量，怎能见两个字就说是五岳流来。"
+          ]
+        ],
+        "hearsay": "目录上的招式名与五岳各派称谓混杂。没有人真正见过所谓秘本。",
+        "choices": [
+          {
+            "id": "xajh_z11_terms_checked",
+            "text": "按门派称谓逐项辨伪。",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z11_terms_checked": true
+              }
+            },
+            "outcome": "你发现抄单把不同来历的名字胡乱拼在一起。"
+          },
+          {
+            "id": "xajh_z11_youth_delayed",
+            "text": "请几个年轻人喝茶，劝他们先别上山。",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z11_youth_delayed": true
+              }
+            },
+            "outcome": "他们答应等你查清再走。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 11,
+        "scene": "茶桌上铺开抄单，你把无量剑法与五岳各派名目分开标记。",
+        "dialogues": [
+          [
+            "老行脚",
+            "这才对。名字相近，不等于一脉。"
+          ],
+          [
+            "茶摊主",
+            "那我这张纸岂不是不值钱了？"
+          ]
+        ],
+        "hearsay": "抄单最多算传闻杂抄。若公开说明，年轻人就没理由去夺秘籍。",
+        "choices": [
+          {
+            "id": "xajh_z11_false_list_exposed",
+            "text": "当众说明抄单混杂。",
+            "requires": {
+              "flag": "xajh_z11_terms_checked"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 2
+            },
+            "outcome": "围观者不再把它当真谱线索。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 11,
+        "scene": "几个年轻人捧着茶碗，仍说若真有秘本，晚一步便被别人拿走。",
+        "dialogues": [
+          [
+            "年轻人",
+            "江湖机缘哪等人。"
+          ],
+          [
+            "老行脚",
+            "假的机缘跑得更快。"
+          ]
+        ],
+        "hearsay": "只要给出一条可核验的错误，他们就肯停。也可让茶摊主承认抄单出处不明。",
+        "choices": [
+          {
+            "id": "xajh_z11_source_asked",
+            "text": "出一点钱让摊主说出抄单来处。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n3",
+            "effects": {
+              "knowledge": 1
+            },
+            "outcome": "摊主承认只是从过客包袱纸上抄来的。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 11,
+        "scene": "山道口有人自称无量东宗弟子，听见外乡人议论剑谱，冷着脸来问是不是要上山夺谱。",
+        "dialogues": [
+          [
+            "东宗弟子",
+            "无量剑法自有本门传承，谁说是五岳流来的？"
+          ],
+          [
+            "老行脚",
+            "正好，你也听听这张乱抄纸。"
+          ]
+        ],
+        "hearsay": "说明来龙去脉即可避免冲突。若动手，也只能脱身，不能闯山夺谱。",
+        "choices": [
+          {
+            "id": "xajh_z11_school_cleared",
+            "text": "把混抄处逐项讲给东宗弟子听。",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z11_school_cleared": true
+              }
+            },
+            "outcome": "对方收剑，反而替你作证这不是本门真谱。"
+          },
+          {
+            "id": "xajh_z11_wuliang_escape",
+            "text": "若对方误会不解，只求脱身。",
+            "combat": {
+              "opponent": "wuliang",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {},
+            "outcome": "你退离山口，没有向无量山内闯。",
+            "failText": "你被逼退数步，索性回到茶摊，让老行脚和摊主一同说明来历。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 11,
+        "scene": "茶摊主把那张抄单折起来，不再挂在最显眼处。几个年轻人也把行囊放回凳下。",
+        "dialogues": [
+          [
+            "茶摊主",
+            "以后我只说是杂抄，不说秘本。"
+          ],
+          [
+            "年轻人",
+            "省了一趟白跑，也省得挨剑。"
+          ]
+        ],
+        "hearsay": "若你辨过术语，茶摊以后会把无量剑法与五岳分开说。若东宗弟子作过证，谣言散得更快。",
+        "choices": [
+          {
+            "id": "xajh_z11_finish",
+            "text": "付茶钱，让摊主把更正写在旧抄单背面。",
+            "requires": {
+              "silver": 2
+            },
+            "cost": {
+              "silver": 2
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "一张假线索留下了可查询的更正。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 11,
+        "scene": "大理风从茶旗底下穿过。无量山仍在远处，没人因一张乱抄纸去剑湖宫夺什么秘籍。",
+        "dialogues": [
+          [
+            "老行脚",
+            "认得名字，不等于认得来路。"
+          ]
+        ],
+        "hearsay": "大理茶摊后来有人问五岳剑谱，摊主会先把那张背面写着更正的旧纸拿出来。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "有人把五岳剑谱讹传成无量山秘本。一张混抄目录差点引人上山夺谱。"
+}

@@ -1,0 +1,285 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z09_jianmen_toll",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z09_jianmen_toll.json",
+  "zone": 9,
+  "design": {
+    "title": "剑门过路钱",
+    "hook": "成都茶馆传林家旧案，青城旧人却在剑门借名收钱。",
+    "playerRole": "散银、作证或报官求助，不屠观。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "林家灭门与青城派结怨是原著重要旧案。",
+          "use": "只让它成为茶馆背景。"
+        },
+        {
+          "beat": "青城门人形象与林家旧案相连。",
+          "use": "把旧名声变成山道勒索资本。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "剑门关山道狭窄，商旅通行依赖道路秩序。",
+          "use": "让强收过路钱直接影响商路。"
+        },
+        {
+          "fact": "驿站与地方差役可处理道路纠纷。",
+          "use": "提供官面软解。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "不能把青城派整体写成山贼。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "必须允许报官或交涉完成。"
+        }
+      ]
+    },
+    "echo": "改变剑门山道告示、成都茶馆对白和过路费用。",
+    "facts": [
+      "xajh_z09_toll_witness",
+      "xajh_z09_official_help",
+      "xajh_z09_toll_bargained",
+      "xajh_z09_qingcheng_clash"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "剑门过路钱",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 9,
+        "scene": "成都茶馆里说书人口沫横飞，把林家灭门讲得半真半假。门外一个剑门脚夫却来抱怨，青城旧人正在山道收过路钱。",
+        "dialogues": [
+          [
+            "脚夫",
+            "茶馆里怎么说林家我不管，我只问明日货还能不能过剑门。"
+          ],
+          [
+            "茶客",
+            "青城旧账又翻出来了？"
+          ]
+        ],
+        "hearsay": "收钱的人自称青城门下旧人。附近驿差愿意受理，但要有人作证。",
+        "choices": [
+          {
+            "id": "xajh_z09_toll_witness",
+            "text": "请脚夫把收钱经过说全。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z09_toll_witness": true
+              }
+            },
+            "outcome": "你记下人数、时辰与山道位置。"
+          },
+          {
+            "id": "xajh_z09_official_help",
+            "text": "出银请驿差走一趟剑门。",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z09_official_help": true
+              }
+            },
+            "outcome": "驿差答应到山道看看，不让商旅独自担事。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 9,
+        "scene": "茶馆后桌安静些，脚夫说收钱者并未抢货，只拿青城名头逼人交银。",
+        "dialogues": [
+          [
+            "脚夫",
+            "给钱便放，没钱就叫你原路回。"
+          ],
+          [
+            "茶客",
+            "这倒像借门派旧名做生意。"
+          ]
+        ],
+        "hearsay": "作证可让驿差名正言顺出面。若直接去山道，青城弟子可能翻脸。",
+        "choices": [
+          {
+            "id": "xajh_z09_testimony_fixed",
+            "text": "把证词交给驿差。",
+            "requires": {
+              "flag": "xajh_z09_toll_witness"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "山道收钱有了官面可查的说法。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 9,
+        "scene": "驿差束好腰带，只带两个人，明说不替江湖门派报仇。",
+        "dialogues": [
+          [
+            "驿差",
+            "我只管强收过路钱。谁灭谁家，不在我的差事里。"
+          ],
+          [
+            "脚夫",
+            "这样最好。"
+          ]
+        ],
+        "hearsay": "有官面人在场，对方未必敢硬来。若不能定罪，也能先让商路放行。",
+        "choices": [
+          {
+            "id": "xajh_z09_go_with_official",
+            "text": "陪驿差去剑门山道。",
+            "requires": {
+              "flag": "xajh_z09_official_help"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你们把事情限定在过路钱，不谈林家血仇。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 9,
+        "scene": "剑门山道窄得只容两马并行。几名青城弟子横剑收钱，见驿差来也不肯立即退。",
+        "dialogues": [
+          [
+            "青城弟子",
+            "山路是我们照看的，收几个辛苦钱有何不可。"
+          ],
+          [
+            "驿差",
+            "照看可以，强收不行。"
+          ]
+        ],
+        "hearsay": "交涉可先保商旅通过。若遇洪人雄，也只能撤退或求官面收束，不能把击杀作为通关。",
+        "choices": [
+          {
+            "id": "xajh_z09_toll_bargained",
+            "text": "拿证词逼对方只收自愿茶水，不得堵路。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z09_toll_bargained": true
+              }
+            },
+            "outcome": "青城弟子顾忌官面与众口，先放开山道。"
+          },
+          {
+            "id": "xajh_z09_qingcheng_clash",
+            "text": "护着脚夫穿过山口。",
+            "combat": {
+              "opponent": "qingcheng",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z09_qingcheng_clash": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "你顶开一阵，商旅趁隙通过。",
+            "failText": "你不愿把事情打成死仇，护着脚夫退到驿差身后，由官面接手。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 9,
+        "scene": "山道终于通开，驿差在路旁钉下一张简短告示，只写不得强拦商旅。",
+        "dialogues": [
+          [
+            "脚夫",
+            "这就够了，我明日还得走货。"
+          ],
+          [
+            "茶客",
+            "林家旧事归旧事，不能什么都拿来收路钱。"
+          ]
+        ],
+        "hearsay": "若你先留过证词，后来的脚夫敢直接报驿站。若你先请过驿差，青城旧人收钱会收敛许多。",
+        "choices": [
+          {
+            "id": "xajh_z09_finish",
+            "text": "补给脚夫一顿路饭，叫他把通路消息带回成都。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 2
+            },
+            "outcome": "商旅重新敢走剑门，茶馆传闻也多了一层现实说法。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 9,
+        "scene": "成都茶馆仍有人讲林家灭门，可桌边脚夫更关心剑门明日是否能过。",
+        "dialogues": [
+          [
+            "脚夫",
+            "故事你们慢慢讲，我只记得山道现在通了。"
+          ]
+        ],
+        "hearsay": "后来成都再谈青城旧怨，有商旅会说：旧仇不能当路票卖。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "成都茶馆把林家旧案越说越烈。剑门有人借青城旧名强收过路钱。"
+}

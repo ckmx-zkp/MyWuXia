@@ -1,0 +1,301 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z12_eastsea_letter",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z12_eastsea_letter.json",
+  "zone": 12,
+  "design": {
+    "title": "潮里旧信",
+    "hook": "渔船捞到残谱与一封衡山退隐书，海上却有人把残谱传成神功。",
+    "playerRole": "送还曲友或交官府封存，不登侠客岛。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "《笑傲江湖》曲谱与衡山刘正风、曲洋的旧事相连。",
+          "use": "只借旧友与曲谱余波。"
+        },
+        {
+          "beat": "衡山退隐与江湖追逐在原著中留下余响。",
+          "use": "让一封旧信成为局部缝隙。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "沿海渔船常会打捞漂流物。",
+          "use": "让任务从码头抱怨生发。"
+        },
+        {
+          "fact": "官府对无主文书可登记封存。",
+          "use": "提供不私占的处理路径。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "不得前往侠客岛。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "残谱不得变成新武学或物品奖励。"
+        }
+      ]
+    },
+    "echo": "改变东海码头传闻、官府封存记录与曲友对白。",
+    "facts": [
+      "xajh_z12_papers_checked",
+      "xajh_z12_fisher_paid",
+      "xajh_z12_pirates_turned",
+      "xajh_z12_sealed_officially"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "潮里旧信",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 12,
+        "scene": "东海码头一艘渔船刚靠岸，船老大从湿网里捞出几张烂纸和一封封口尚在的旧信。纸上只剩零碎曲谱，信封却写着衡山旧友收。",
+        "dialogues": [
+          [
+            "船老大",
+            "海里捞来的东西，我不敢私拆。"
+          ],
+          [
+            "鱼贩",
+            "有人已经说这是海上神功残谱了。"
+          ]
+        ],
+        "hearsay": "信里似与衡山退隐旧事有关。附近也有人主张直接交官府封存。",
+        "choices": [
+          {
+            "id": "xajh_z12_papers_checked",
+            "text": "只看露在外面的残谱字样，不拆信。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z12_papers_checked": true
+              }
+            },
+            "outcome": "你确认烂纸更像曲谱残页，不像武学秘本。"
+          },
+          {
+            "id": "xajh_z12_fisher_paid",
+            "text": "补给渔船打捞损失，请船老大先别卖给好事人。",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z12_fisher_paid": true
+              }
+            },
+            "outcome": "船老大答应等来路说清再处置。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 12,
+        "scene": "湿纸铺在船板上，墨迹被海水泡散，只能认出曲调记号和几句旧友称呼。",
+        "dialogues": [
+          [
+            "船老大",
+            "若只是曲谱，也值不得拿命抢。"
+          ],
+          [
+            "鱼贩",
+            "偏有人听见残谱两个字就红眼。"
+          ]
+        ],
+        "hearsay": "旧信封口未坏，最好不要私拆。码头有人认识一位曾与衡山乐友往来的老琴客。",
+        "choices": [
+          {
+            "id": "xajh_z12_curve_to_friend",
+            "text": "去找老琴客辨认收信线索。",
+            "requires": {
+              "flag": "xajh_z12_papers_checked"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你把去向交给认识曲友的人，而非自己拆信。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 12,
+        "scene": "渔船舱里腥味很重。船老大把湿纸压在木盆下，不再让围观者伸手。",
+        "dialogues": [
+          [
+            "船老大",
+            "我拿你的银子，只保证今日不卖。"
+          ],
+          [
+            "鱼贩",
+            "再拖两日，海盗听见风声也会来。"
+          ]
+        ],
+        "hearsay": "官府可封存未知来历文书。曲友若能认出收信人，也可代为转交。",
+        "choices": [
+          {
+            "id": "xajh_z12_choose_record",
+            "text": "先去码头问清曲友与官府两条去处。",
+            "requires": {
+              "flag": "xajh_z12_fisher_paid"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "knowledge": 1
+            },
+            "outcome": "你没有私拆信，只把可选去处分清。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 12,
+        "scene": "暮色里一艘快船贴近外港，几个海盗扬声要买那几张“神功残谱”。",
+        "dialogues": [
+          [
+            "海盗头目",
+            "纸留下，银子好说。"
+          ],
+          [
+            "船老大",
+            "我就知道这破纸会招祸。"
+          ]
+        ],
+        "hearsay": "可以护船退回码头人多处。也可直接把文书送官府封存，断掉买卖念头。",
+        "choices": [
+          {
+            "id": "xajh_z12_pirates_turned",
+            "text": "护渔船退回内港。",
+            "combat": {
+              "opponent": "pirate",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z12_pirates_turned": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "海盗没敢追进密集船阵。",
+            "failText": "你挡不住快船，只得护着渔船钻进内港船阵，海盗怕惊动官差没有深追。"
+          },
+          {
+            "id": "xajh_z12_sealed_officially",
+            "text": "立即请码头差役封存文书。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z12_sealed_officially": true
+              }
+            },
+            "outcome": "残纸与旧信进入官面封存，海盗失去下手借口。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 12,
+        "scene": "内港灯火映在水面。老琴客看见信封上的称呼后沉默良久，说收信一脉确与衡山退隐旧友有关。",
+        "dialogues": [
+          [
+            "老琴客",
+            "若交我，我只代送信，不留曲页。"
+          ],
+          [
+            "差役",
+            "若你们不放心，也可封存，日后凭人证来取。"
+          ]
+        ],
+        "hearsay": "若你先辨过残谱，众人已不再称它神功。若曾封存，官府会留下可查询记录。",
+        "choices": [
+          {
+            "id": "xajh_z12_return_friend",
+            "text": "付船脚钱，请老琴客代送旧信，残谱另交官面记存。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 2
+            },
+            "outcome": "信回曲友一线，残谱不落入争夺者手里。"
+          },
+          {
+            "id": "xajh_z12_keep_sealed",
+            "text": "全部留官府封存，日后由收信人凭证来取。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "文书进入可查询封存记录，没有人私占。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 12,
+        "scene": "潮水退下木桩，渔船重新撒网。那封旧信或已上路，或安静封存在案，都没有被拆成新的江湖争夺。",
+        "dialogues": [
+          [
+            "船老大",
+            "海里捞上来的，不一定都该归捞到的人。"
+          ]
+        ],
+        "hearsay": "东海后来再传残谱，只说是一段曲谱和一封衡山旧友书，不再说什么神功。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "渔船捞到一段曲谱残页和衡山旧友书。海盗曾把残谱误当神功来抢。"
+}

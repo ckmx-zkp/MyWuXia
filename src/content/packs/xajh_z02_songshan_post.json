@@ -1,0 +1,279 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z02_songshan_post",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z02_songshan_post.json",
+  "zone": 2,
+  "design": {
+    "title": "茶棚一纸帖",
+    "hook": "嵩山并派风声借一张被添字的帖子传到少林门前。",
+    "playerRole": "做证人或散财息争，不攻山。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "左冷禅推动五岳并派。",
+          "use": "只取并派风声，不让玩家决定大局。"
+        },
+        {
+          "beat": "少林是独立江湖重镇。",
+          "use": "只处理山门外争执，不攻寺。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "手抄文书传播中容易增删误传。",
+          "use": "把真假差异做成调查核心。"
+        },
+        {
+          "fact": "寺门与茶棚常聚集香客、脚夫、行旅。",
+          "use": "让任务从茶棚自然发生。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "玩家只能修正一则本地误传。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "必须保留散财息争路线。"
+        }
+      ]
+    },
+    "echo": "改变嵩山茶棚传闻与少林门前对白。",
+    "facts": [
+      "xajh_z02_post_compared",
+      "xajh_z02_witness_kept",
+      "xajh_z02_brawl_stopped"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "茶棚一纸帖",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 2,
+        "scene": "嵩山道旁茶棚挂着一张被雨打湿的帖子。三桌人争说左盟主已叫少林一并听令，香客堵在路边不敢上山。",
+        "dialogues": [
+          [
+            "茶博士",
+            "纸上明明只写五岳，谁添出个少林来？"
+          ],
+          [
+            "香客",
+            "我不问掌门大事，只问今日还能不能进香。"
+          ]
+        ],
+        "hearsay": "有人手里还有更早的抄本。帖子末尾日期与今晨传本不同。",
+        "choices": [
+          {
+            "id": "xajh_z02_post_compared",
+            "text": "借两份抄本逐字比对。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z02_post_compared": true
+              }
+            },
+            "outcome": "你看出“少林同议”四字是后来添的。"
+          },
+          {
+            "id": "xajh_z02_witness_kept",
+            "text": "出茶钱请最早见帖的脚夫留下。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z02_witness_kept": true
+              }
+            },
+            "outcome": "脚夫愿意作证帖子初挂时没有那四字。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 2,
+        "scene": "两张帖子压在茶碗底下。旧抄本墨淡，新抄本却多出煽动语。",
+        "dialogues": [
+          [
+            "茶博士",
+            "原来真有人往上添字。"
+          ],
+          [
+            "过路剑客",
+            "并派风声是真的，也不能把假的当真。"
+          ]
+        ],
+        "hearsay": "争论从少林是否参与变成谁借寺门名头压人。寺门外已有年轻剑客逼香客让路。",
+        "choices": [
+          {
+            "id": "xajh_z02_compare_to_gate",
+            "text": "带着比对结果去寺门外作证。",
+            "requires": {
+              "flag": "xajh_z02_post_compared"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你只证明添字，不替任何掌门说话。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 2,
+        "scene": "脚夫捧着粗瓷碗，反复说帖子初挂时末尾只有日期，并无少林二字。",
+        "dialogues": [
+          [
+            "脚夫",
+            "我识字不多，可那四个字若有，我不会看漏。"
+          ],
+          [
+            "行商",
+            "有人是想借寺门的名头压住路人。"
+          ]
+        ],
+        "hearsay": "脚夫愿去寺门前说同样的话。若没人保他茶饭，他天黑前便要赶路。",
+        "choices": [
+          {
+            "id": "xajh_z02_keep_witness",
+            "text": "再补脚夫半日脚钱。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "他肯跟你去寺门作证。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 2,
+        "scene": "少林门前石阶上，两拨年轻人正为谁该先让路吵得脸红。",
+        "dialogues": [
+          [
+            "年轻剑客",
+            "帖子都说了，还不让开？"
+          ],
+          [
+            "老香客",
+            "佛门前也要拿一张湿纸压人么？"
+          ]
+        ],
+        "hearsay": "证明添字即可息去大半争论。若不愿卷入，可出钱请脚夫分开两拨人。",
+        "choices": [
+          {
+            "id": "xajh_z02_brawl_stopped",
+            "text": "当众说清帖子被添字。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z02_brawl_stopped": true
+              }
+            },
+            "outcome": "围观者散去一半，年轻剑客失了借口。"
+          },
+          {
+            "id": "xajh_z02_pay_peace",
+            "text": "替受惊香客付茶钱，请众人各退一步。",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "没人得胜，也没人再堵寺门。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 2,
+        "scene": "山门前重新留出一条路。湿帖子被收进茶棚，没人再敢说少林已经替五岳并派背书。",
+        "dialogues": [
+          [
+            "茶博士",
+            "风声归风声，添字归添字。"
+          ],
+          [
+            "香客",
+            "今日总算能上山了。"
+          ]
+        ],
+        "hearsay": "若此前比过抄本，茶棚以后会把旧本挂在内墙作比照。若只是花钱息争，众人只记得有人不让事情闹大。",
+        "choices": [
+          {
+            "id": "xajh_z02_finish",
+            "text": "把原帖交回茶博士留存。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "帖子留下，争执有了可查询的旧本。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 2,
+        "scene": "山风吹干石阶，香客重新上路。并派大局仍在远处翻涌，茶棚这边却只留下两张可供比照的纸。",
+        "dialogues": [
+          [
+            "脚夫",
+            "大人物的事我不懂，字是谁添的，我倒能说清。"
+          ]
+        ],
+        "hearsay": "嵩山道旁后来再传帖子，茶博士总先问一句：是不是又有人添了字。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "左盟主帖子在茶棚被人添过字。少林门前有人拿误传逼香客让路。"
+}

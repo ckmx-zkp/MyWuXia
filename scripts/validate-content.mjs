@@ -6,6 +6,7 @@ import { OPPONENTS } from '../src/content/combat.js';
 import { FATES } from '../src/content/fates.js';
 import { routinesForZone } from '../src/content/routines.js';
 import { validateP0 } from '../src/content/validate-p0.js';
+import { PACK_EVENTS } from '../src/content/side-packs.js';
 await Promise.all(ZONES.map((_, i) => loadZoneQuests(i)));
 const ids = new Set();
 for (const z of ZONES) for (const tree of z.trees || []) {
@@ -38,4 +39,5 @@ for (const [zoneIndex, zone] of ZONES.entries()) {
     if (routine.opponent) assert.ok(OPPONENTS[routine.opponent], `zone ${zoneIndex}:${routine.id} opponent`);
   }
 }
-console.log(`Validated ${ids.size} quest trees, audio references, ${Object.keys(FATES).length} fate nodes and ${ZONES.length * 3} repeatable routines; ${validateP0()}.`);
+assert.equal(Object.keys(PACK_EVENTS).length, 13);
+console.log(`Validated ${ids.size} quest trees, audio references, ${Object.keys(FATES).length} fate nodes, ${Object.keys(PACK_EVENTS).length} region packs and ${ZONES.length * 3} repeatable routines; ${validateP0()}.`);

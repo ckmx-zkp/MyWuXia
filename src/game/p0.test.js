@@ -156,3 +156,15 @@ test('complete legal command route earns, learns, trains, wins the actual escort
   assert.ok(s.p0.styles['华山剑法']); assert.ok(s.p0.facts.medicine_complete);
   assert.deepEqual(restore(s), { ...s, fx: null });
 });
+test('xiaoao pack events appear by zone, write numbered facts, and restore', () => {
+  assert.ok(SIDE_EVENTS.xajh_z00_fuwei_waybill && SIDE_EVENTS.xajh_z02_songshan_post);
+  let s = at(fresh(), 'dock');
+  s = cmd(s, 'DISCOVER_EVENT', { id: 'xajh_z00_fuwei_waybill' });
+  assert.equal(s.p0.quests.xajh_z00_fuwei_waybill.node, 'n0');
+  s = { ...s, loc: 2 };
+  s = cmd(s, 'DISCOVER_EVENT', { id: 'xajh_z02_songshan_post' });
+  s = { ...s, p0: { ...s.p0, knowledge: 5, potential: 10 } };
+  s = cmd(s, 'CHOOSE_EVENT', { id: 'xajh_z02_songshan_post', choice: 'xajh_z02_post_compared' });
+  assert.equal(s.p0.facts.xajh_z02_post_compared, true);
+  assert.equal(restore(s).p0.facts.xajh_z02_post_compared, true);
+});

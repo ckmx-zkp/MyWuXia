@@ -1,0 +1,289 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z08_huashan_grain",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z08_huashan_grain.json",
+  "zone": 8,
+  "design": {
+    "title": "华山脚下先吃饭",
+    "hook": "华山脚下杂役缺粮，客栈却翻起气宗剑宗旧争。",
+    "playerRole": "运粮、劝架，不入派夺掌门。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "华山派长期受气宗剑宗旧争影响。",
+          "use": "只作为客栈旧话，不让玩家改写掌门权力。"
+        },
+        {
+          "beat": "华山剑法已有教学门槛。",
+          "use": "事件不发放任何新教学。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "关中山道运输受地形和关口影响。",
+          "use": "让粮车堵在坡道产生现实后果。"
+        },
+        {
+          "fact": "粮食短缺往往先影响杂役与后厨。",
+          "use": "把支线中心放在普通人。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "旧争只能被暂时压住，不能由玩家终结。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "战斗只能为开路，不能成为唯一解。"
+        }
+      ]
+    },
+    "echo": "改变华山脚下客栈对白、粮路与杂役态度。",
+    "facts": [
+      "xajh_z08_grain_counted",
+      "xajh_z08_carriers_paid",
+      "xajh_z08_road_opened",
+      "xajh_z08_sparred_clear"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "华山脚下先吃饭",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 8,
+        "scene": "华山脚下客栈米缸见底。几个杂役为谁该先运粮争得脸红，旁桌又有人翻起气宗剑宗旧账。",
+        "dialogues": [
+          [
+            "杂役",
+            "山上缺的是米，不是你们旧日道理。"
+          ],
+          [
+            "过客",
+            "剑宗气宗谁误了华山，总得有人说。"
+          ]
+        ],
+        "hearsay": "潼关来的粮车因山路争执停在城外。华山剑法只有已有资格者才能谈教学。",
+        "choices": [
+          {
+            "id": "xajh_z08_grain_counted",
+            "text": "先核山脚缺粮数。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z08_grain_counted": true
+              }
+            },
+            "outcome": "你把争论从门户旧账拉回到几日口粮。"
+          },
+          {
+            "id": "xajh_z08_carriers_paid",
+            "text": "先出银雇脚夫把第一批米送上山。",
+            "requires": {
+              "silver": 7
+            },
+            "cost": {
+              "silver": 7
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z08_carriers_paid": true
+              }
+            },
+            "outcome": "杂役得到一批急粮，不必等争论分胜负。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 8,
+        "scene": "客栈后院摆着几只空米袋。账房算来算去，只够两日。",
+        "dialogues": [
+          [
+            "账房",
+            "若潼关那车今日不上来，后厨明晚就断火。"
+          ],
+          [
+            "杂役",
+            "旧争可以明日再吵。"
+          ]
+        ],
+        "hearsay": "粮车被几名年轻剑客堵在坡道。他们争的是谁有资格先用山道，不是真要夺粮。",
+        "choices": [
+          {
+            "id": "xajh_z08_grain_priority",
+            "text": "拿缺粮数去坡道劝人先让车。",
+            "requires": {
+              "flag": "xajh_z08_grain_counted"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你有实数在手，争执不再只是口舌。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 8,
+        "scene": "脚夫挑起第一批米袋，客栈里顿时少了几分火气。",
+        "dialogues": [
+          [
+            "杂役",
+            "有米进锅，人就肯听话。"
+          ],
+          [
+            "过客",
+            "你这是拿银子压旧争？"
+          ],
+          [
+            "掌柜",
+            "不，是先叫人吃饭。"
+          ]
+        ],
+        "hearsay": "急粮能撑一日。大车仍得从坡道上来。",
+        "choices": [
+          {
+            "id": "xajh_z08_food_first",
+            "text": "让杂役先开火熬粥，再去处理坡道。",
+            "requires": {
+              "flag": "xajh_z08_carriers_paid"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "山脚人心稳住，没人再拿饿肚子添火。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 8,
+        "scene": "坡道上两名年轻剑客横在粮车前，话里全是旧日气剑之争。",
+        "dialogues": [
+          [
+            "年轻剑客甲",
+            "这条路本是我们一边先守的。"
+          ],
+          [
+            "车把式",
+            "我只管把米送到，不认你们哪一宗。"
+          ]
+        ],
+        "hearsay": "可凭缺粮实数劝开。若动手，也只需撑开道路，不能杀伤成仇。",
+        "choices": [
+          {
+            "id": "xajh_z08_road_opened",
+            "text": "把缺粮数和急粮现状摆明，请双方各退一步。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z08_road_opened": true
+              }
+            },
+            "outcome": "两边都不愿背上误粮的名声，终于让车。"
+          },
+          {
+            "id": "xajh_z08_sparred_clear",
+            "text": "只求让出一条车道，与拦路者过几招。",
+            "combat": {
+              "opponent": "swordsman",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z08_sparred_clear": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "粮车趁空隙上坡，争执没有扩大。",
+            "failText": "你未占上风，便退到粮车旁护着车把式改走侧坡，仍把粮送了过去。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 8,
+        "scene": "米袋落进山脚仓房，客栈里那桌旧争也低了声。",
+        "dialogues": [
+          [
+            "杂役",
+            "今日谁也没赢，米倒是到了。"
+          ],
+          [
+            "掌柜",
+            "旧账要吵，先把饭吃完。"
+          ]
+        ],
+        "hearsay": "若你先核过粮数，客栈以后再争会先问仓里还有几日米。若你雇过脚夫，山脚杂役会记得有人肯替他们垫一趟运费。",
+        "choices": [
+          {
+            "id": "xajh_z08_finish",
+            "text": "补足最后一段脚钱，让车把式连夜回潼关。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 2
+            },
+            "outcome": "运粮路恢复，旧争没有再堵住山道。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 8,
+        "scene": "夜里客栈终于有了米香。山上的门户旧争仍在，却没再压住山脚一锅饭。",
+        "dialogues": [
+          [
+            "杂役",
+            "剑理我不懂，粮路通了就行。"
+          ]
+        ],
+        "hearsay": "华山脚下后来再提气剑旧争，总有人先说：别堵粮车。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "华山脚下缺粮时还有人在吵气剑旧账。一辆潼关粮车曾被门户争执堵在坡道。"
+}

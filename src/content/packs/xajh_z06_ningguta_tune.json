@@ -1,0 +1,279 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z06_ningguta_tune",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z06_ningguta_tune.json",
+  "zone": 6,
+  "design": {
+    "title": "雪营残曲",
+    "hook": "流人营里有人会吹《笑傲江湖》残谱，外头却把它传成秘学。",
+    "playerRole": "买通狱卒传信，不劫狱杀官。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "《笑傲江湖》曲谱在原著中承载曲洋、刘正风等人的知音之意。",
+          "use": "只作曲谱和旧友记忆，不当武学奖励。"
+        },
+        {
+          "beat": "原著中曲谱容易因江湖争夺而被误解。",
+          "use": "制造残谱传闻。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "宁古塔长期与流放、边地营所联系。",
+          "use": "让传信发生在流人营。"
+        },
+        {
+          "fact": "边地看守与外来行旅接触受限。",
+          "use": "把买通限制为一次传话。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "绝不能写劫狱。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "残谱不可转化为新物品或武学。"
+        }
+      ]
+    },
+    "echo": "改变流人营外传闻与狱卒允许的传话对白。",
+    "facts": [
+      "xajh_z06_tune_confirmed",
+      "xajh_z06_guard_bribed",
+      "xajh_z06_message_taken"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "雪营残曲",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 6,
+        "scene": "宁古塔流人营外的小药摊前，有人低声说营里一个老流人会吹一段《笑傲江湖》残谱。狱卒却不许外人靠近营门。",
+        "dialogues": [
+          [
+            "药贩",
+            "曲子只剩半段，老人吹一次就咳半夜。"
+          ],
+          [
+            "车夫",
+            "有人想托句话进去，不是要劫人。"
+          ]
+        ],
+        "hearsay": "老流人只愿把一句话传给南来的曲友。狱卒近来缺钱买御寒酒食。",
+        "choices": [
+          {
+            "id": "xajh_z06_tune_confirmed",
+            "text": "先问清残谱的曲调来历。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z06_tune_confirmed": true
+              }
+            },
+            "outcome": "你确认传闻说的是《笑傲江湖》残段，不是什么武学口诀。"
+          },
+          {
+            "id": "xajh_z06_guard_bribed",
+            "text": "拿银子探狱卒口风。",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z06_guard_bribed": true
+              }
+            },
+            "outcome": "狱卒愿让你递一句话，但不许带人离营。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 6,
+        "scene": "药摊后风声尖冷。药贩哼出几个断续音，旋律散而不厉，听不出半点练功门径。",
+        "dialogues": [
+          [
+            "药贩",
+            "老人只说这是旧友合过的曲子。"
+          ],
+          [
+            "车夫",
+            "外头偏有人传成绝学，越传越邪。"
+          ]
+        ],
+        "hearsay": "若把曲子说成武学，只会招来更多窥探。老流人真正想传的是一句平安话。",
+        "choices": [
+          {
+            "id": "xajh_z06_rumor_corrected",
+            "text": "在营外茶火旁说明这只是曲谱。",
+            "requires": {
+              "flag": "xajh_z06_tune_confirmed"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "围观人少了大半，狱卒也不再怕有人来夺秘籍。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 6,
+        "scene": "营门木栅结着霜。狱卒把银子收进袖口，却只肯给一盏茶工夫。",
+        "dialogues": [
+          [
+            "狱卒",
+            "传话可以，劫人免谈。出了事我先丢命。"
+          ],
+          [
+            "药贩",
+            "老人只要一句话，不求你开锁。"
+          ]
+        ],
+        "hearsay": "买通只能换一次短话。若外头谣言不散，狱卒随时会反悔。",
+        "choices": [
+          {
+            "id": "xajh_z06_message_window",
+            "text": "答应只传话，不碰锁门。",
+            "requires": {
+              "flag": "xajh_z06_guard_bribed"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "狱卒给了你一个隔栅说话的时辰。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 6,
+        "scene": "木栅内一个老人裹着旧毡，手里没有笛，只用指节轻轻敲着膝头打拍子。",
+        "dialogues": [
+          [
+            "老流人",
+            "告诉南边听过这曲的人，我还记得最后那一转。别叫人来救。"
+          ],
+          [
+            "狱卒",
+            "一句话说完就走。"
+          ]
+        ],
+        "hearsay": "老人明确不求劫狱。他更怕残谱被传成武学，引来杀身之祸。",
+        "choices": [
+          {
+            "id": "xajh_z06_message_taken",
+            "text": "记下原话，不添曲谱细节。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z06_message_taken": true
+              }
+            },
+            "outcome": "老人放下心，你也没有留下可供争夺的东西。"
+          },
+          {
+            "id": "xajh_z06_guard_paid_more",
+            "text": "再补一点银钱，请狱卒日后别让闲人围听。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "狱卒答应至少不拿残谱传闻招揽好事者。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 6,
+        "scene": "营外雪粉被风卷过车辙。药贩把火拨旺，问你要不要把老人那句话带回南路。",
+        "dialogues": [
+          [
+            "药贩",
+            "曲子能留半段，人能留一句话，也够了。"
+          ],
+          [
+            "车夫",
+            "最怕的是旁人非说这里藏着什么绝学。"
+          ]
+        ],
+        "hearsay": "若你曾纠正谣言，营外以后只称它残曲。若你买通过狱卒，传话这条窄路暂时还在。",
+        "choices": [
+          {
+            "id": "xajh_z06_finish",
+            "text": "付车脚钱，请南下车夫捎走那句原话。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "口信离开宁古塔，老人没有被卷进新的争夺。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 6,
+        "scene": "车铃渐远，流人营重新只剩风声。没有人开锁，也没有人从木栅里带出所谓秘籍。",
+        "dialogues": [
+          [
+            "药贩",
+            "一首曲子还是一首曲子，这就好。"
+          ]
+        ],
+        "hearsay": "宁古塔后来再有人提那段《笑傲江湖》，只说是老人怀旧的残曲。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "流人营老人只记得《笑傲江湖》一段残曲。有人误把残曲传成秘学。"
+}

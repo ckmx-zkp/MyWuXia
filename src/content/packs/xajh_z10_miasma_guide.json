@@ -1,0 +1,283 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z10_miasma_guide",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z10_miasma_guide.json",
+  "zone": 10,
+  "design": {
+    "title": "烟瘴驿路",
+    "hook": "教众南逃与驿丞缺向导撞在一条烟瘴山路上。",
+    "playerRole": "带路或买药，不追杀东方。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "日月神教余波会带来南逃与避祸。",
+          "use": "只取普通逃难者，不碰东方不败追杀。"
+        },
+        {
+          "beat": "原著江湖人物常借偏远山路隐遁。",
+          "use": "让逃路与驿路交叉。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "云贵山地历史上常以烟瘴、山路艰险著称。",
+          "use": "把药物和路线选择做成真实代价。"
+        },
+        {
+          "fact": "驿路需要向导维持文书与商旅通行。",
+          "use": "让玩家身份落在带路者。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "不得把护路写成清剿教众。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "必须允许救助病者。"
+        }
+      ]
+    },
+    "echo": "改变昆明驿馆对白、药铺抱怨与驿路恢复速度。",
+    "facts": [
+      "xajh_z10_route_known",
+      "xajh_z10_herbs_bought",
+      "xajh_z10_sick_spared"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "烟瘴驿路",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 10,
+        "scene": "昆明驿馆药铺前挤着几辆车。驿丞缺向导，偏又有人说几个教众南逃钻进烟瘴山路，谁带路谁会惹祸。",
+        "dialogues": [
+          [
+            "驿丞",
+            "我要的是认路的人，不是追杀谁的人。"
+          ],
+          [
+            "药铺掌柜",
+            "烟瘴不认正邪，药不备足谁都倒。"
+          ]
+        ],
+        "hearsay": "南逃者里有人病倒。驿路若无人带，公文和商货都得停。",
+        "choices": [
+          {
+            "id": "xajh_z10_route_known",
+            "text": "先问清驿路水源与避瘴处。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z10_route_known": true
+              }
+            },
+            "outcome": "你把能走的路和不能久留的谷地记下。"
+          },
+          {
+            "id": "xajh_z10_herbs_bought",
+            "text": "在药铺多备一份避瘴草药。",
+            "requires": {
+              "herbs": 2
+            },
+            "cost": {
+              "herbs": 2
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z10_herbs_bought": true
+              }
+            },
+            "outcome": "队伍至少有应付烟瘴的药材。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 10,
+        "scene": "驿丞铺开旧路图，几处墨点已经被水渍晕开。",
+        "dialogues": [
+          [
+            "驿丞",
+            "东谷近，瘴重；西岭远，水稳。"
+          ],
+          [
+            "赶车人",
+            "绕路总比倒在谷里强。"
+          ]
+        ],
+        "hearsay": "南逃教众也多半会选有水的西岭。绕路会多耗一日口粮。",
+        "choices": [
+          {
+            "id": "xajh_z10_west_route",
+            "text": "选择西岭稳路。",
+            "requires": {
+              "flag": "xajh_z10_route_known"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "队伍多走一日，却避开最重烟瘴。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 10,
+        "scene": "药铺掌柜把草药分成小包，反复嘱咐不要见人就当追兵。",
+        "dialogues": [
+          [
+            "药铺掌柜",
+            "病人先看脉，身份以后再问。"
+          ],
+          [
+            "驿卒",
+            "若真碰上逃教众呢？"
+          ],
+          [
+            "药铺掌柜",
+            "不拦路就各走各的。"
+          ]
+        ],
+        "hearsay": "药材可救同行，也可救路边病者。把病者交给驿丞登记即可，不必追杀。",
+        "choices": [
+          {
+            "id": "xajh_z10_mercy_route",
+            "text": "答应只护驿路，不追人。",
+            "requires": {
+              "flag": "xajh_z10_herbs_bought"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "驿丞接受你的边界，只求车队安全通过。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 10,
+        "scene": "西岭林雾贴地，一名年轻人倒在路边，衣角沾着教众旧色。更远处还有几个人影匆匆南去。",
+        "dialogues": [
+          [
+            "赶车人",
+            "追不追？"
+          ],
+          [
+            "病者",
+            "我走不动了，你们要拿就拿。"
+          ]
+        ],
+        "hearsay": "玩家的任务是带路，不是追杀。救下病者也会耽误半个时辰。",
+        "choices": [
+          {
+            "id": "xajh_z10_sick_spared",
+            "text": "给病者用药，登记后留在路边棚屋。",
+            "requires": {
+              "herbs": 1
+            },
+            "cost": {
+              "herbs": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z10_sick_spared": true
+              }
+            },
+            "outcome": "病者活下来，车队也未改变护路任务。"
+          },
+          {
+            "id": "xajh_z10_keep_moving",
+            "text": "不追远处人影，只带车队继续走。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你守住驿丞所托，没有把护路变成追杀。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 10,
+        "scene": "傍晚车队抵达有水的山坳。驿丞清点文袋，一件未失。",
+        "dialogues": [
+          [
+            "驿丞",
+            "路带到了，人没乱追，这差事就算成。"
+          ],
+          [
+            "赶车人",
+            "烟瘴里最怕自己先乱。"
+          ]
+        ],
+        "hearsay": "若你救过病者，后来药铺会说有人把正邪放到病情之后。若你只护路，驿路时刻会恢复得更快。",
+        "choices": [
+          {
+            "id": "xajh_z10_finish",
+            "text": "补一份草药给返程车队。",
+            "requires": {
+              "herbs": 1
+            },
+            "cost": {
+              "herbs": 1
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "驿路重新有人敢走，南逃者也没有被你追杀。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 10,
+        "scene": "山雾退去，远处驿铃一声声传来。谁往南逃自有他的路，你只把这一队人带出了烟瘴。",
+        "dialogues": [
+          [
+            "驿丞",
+            "能认得路，也认得自己的差事边界，难得。"
+          ]
+        ],
+        "hearsay": "昆明驿馆后来请向导时，会先说明一句：只护路，不追人。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "昆明驿丞缺认路向导。南逃教众与驿路商旅在烟瘴山地擦肩。"
+}

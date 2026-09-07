@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z03_yanmen_token",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z03_yanmen_token.json",
+  "zone": 3,
+  "design": {
+    "title": "关城旧腰牌",
+    "hook": "恒山弟子避祸北上，关城却因一块魔教旧腰牌加紧盘查。",
+    "playerRole": "可交出或暂藏线索，只护过客不替其做主。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "恒山弟子在原著后段多次卷入江湖追逐与避祸。",
+          "use": "只借其避祸处境。"
+        },
+        {
+          "beat": "日月神教名号令正道与官面人物多有戒心。",
+          "use": "把腰牌变成误牵连源头。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "北方关城对行旅身份和可疑物件盘查严格。",
+          "use": "让冲突落在口供。"
+        },
+        {
+          "fact": "边关消息传播依赖驿路、茶摊与商旅。",
+          "use": "任务由茶摊生发。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "允许藏匿，但要有后续压力。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "允许交出，不得因此把恒山弟子写成魔教。"
+        }
+      ]
+    },
+    "echo": "改变雁门关盘查对白与茶摊传闻。",
+    "facts": [
+      "xajh_z03_token_examined",
+      "xajh_z03_token_hidden",
+      "xajh_z03_spy_checked"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "关城旧腰牌",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 3,
+        "scene": "雁门关外风卷黄沙，茶摊老板把一块旧腰牌压在碗底，说昨夜有恒山女弟子借火后匆匆北去。",
+        "dialogues": [
+          [
+            "茶摊老板",
+            "关城近来专查魔教腰牌，谁沾上谁麻烦。"
+          ],
+          [
+            "骡夫",
+            "那几位姑娘不像惹事，只像躲事。"
+          ]
+        ],
+        "hearsay": "腰牌不是恒山弟子的东西，是在路边捡到的。守关士卒已沿路盘问。",
+        "choices": [
+          {
+            "id": "xajh_z03_token_examined",
+            "text": "先看清腰牌磨损与系绳。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z03_token_examined": true
+              }
+            },
+            "outcome": "你判断腰牌在泥里泡过，不像随身佩戴。"
+          },
+          {
+            "id": "xajh_z03_token_hidden",
+            "text": "给茶摊钱，让老板先别把腰牌摆在明处。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z03_token_hidden": true
+              }
+            },
+            "outcome": "腰牌暂时离开众目，恒山过客没有立刻被牵连。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 3,
+        "scene": "关城告示被风吹得卷边，守卒正让行旅挨个解包。",
+        "dialogues": [
+          [
+            "守卒",
+            "见过黑木崖旧腰牌的都留下说话。"
+          ],
+          [
+            "商人",
+            "捡来的东西也能算在人头上么？"
+          ]
+        ],
+        "hearsay": "若能说明腰牌在泥里泡过，守卒愿先记为拾得物。有人暗中盯着哪位旅客替恒山弟子说话。",
+        "choices": [
+          {
+            "id": "xajh_z03_testify_token",
+            "text": "把磨损情况照实说给守卒。",
+            "requires": {
+              "flag": "xajh_z03_token_examined"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "守卒把腰牌记作拾得物，不再直接扣恒山过客。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 3,
+        "scene": "茶摊后棚只剩火星。老板把腰牌裹进旧布，低声说北去的姑娘留下话：若有人问，只说没见过。",
+        "dialogues": [
+          [
+            "茶摊老板",
+            "我能闭嘴一时，闭不了一路。"
+          ],
+          [
+            "骡夫",
+            "关城查得紧，总得有人把话说圆。"
+          ]
+        ],
+        "hearsay": "藏腰牌能保一时，却会让之后的盘查更重。主动交出也可，只要不把恒山弟子扯进去。",
+        "choices": [
+          {
+            "id": "xajh_z03_surrender_token",
+            "text": "由你把腰牌交到关城，只说路边拾得。",
+            "requires": {
+              "flag": "xajh_z03_token_hidden"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "腰牌离手，恒山过客的名字没有进入口供。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 3,
+        "scene": "关城阴影里，一个渡口探子拦住你，问腰牌是否从几个尼姑手里拿来。",
+        "dialogues": [
+          [
+            "探子",
+            "说清来处，我替你省掉官面麻烦。"
+          ],
+          [
+            "老卒",
+            "关城只认口供，不认你们江湖猜话。"
+          ]
+        ],
+        "hearsay": "探子想把拾得物说成恒山私藏。退回关城也能避开争斗。",
+        "choices": [
+          {
+            "id": "xajh_z03_spy_checked",
+            "text": "拒答并逼探子让路。",
+            "combat": {
+              "opponent": "spy",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6,
+              "flag": {
+                "xajh_z03_spy_checked": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "探子没拿到恒山去向。",
+            "failText": "你被逼退到守关士卒身边，探子不敢再追问。"
+          },
+          {
+            "id": "xajh_z03_leave_clean",
+            "text": "当众重述拾得地点，不与探子私谈。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "knowledge": 1
+            },
+            "outcome": "官面口供固定下来，探子再难添油加醋。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 3,
+        "scene": "关城文案上添了一行：旧腰牌，路旁拾得，未见持有人。恒山弟子的名字始终没有落笔。",
+        "dialogues": [
+          [
+            "老卒",
+            "有话写在纸上，比私下互咬强。"
+          ],
+          [
+            "茶摊老板",
+            "姑娘们若真只是避祸，也该够走远了。"
+          ]
+        ],
+        "hearsay": "若你曾检查磨损，士卒之后会先辨物再扣人。若你曾藏过腰牌，茶摊老板会记得你替过客争过一刻。",
+        "choices": [
+          {
+            "id": "xajh_z03_finish",
+            "text": "缴一笔关城抄录钱，把口供留档。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "腰牌来路有了可查记录，过客也得以继续北上。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 3,
+        "scene": "雁门风更紧，北去官道只剩几点人影。腰牌留在关城，不再挂在任何逃难者身上。",
+        "dialogues": [
+          [
+            "骡夫",
+            "有些东西藏着是祸，交得明白也是路。"
+          ]
+        ],
+        "hearsay": "后来关城再查魔教旧物，会先问一句是不是路上拾得。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "恒山过客曾在雁门茶摊借火。一块魔教旧腰牌险些把她们牵连进去。"
+}

@@ -1,0 +1,305 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z00_fuwei_waybill",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z00_fuwei_waybill.json",
+  "zone": 0,
+  "design": {
+    "title": "潮声里的旧镖旗",
+    "hook": "福州福威镖局余波牵上钱塘盐船路引。",
+    "playerRole": "押信护药的过路人，只替船户分清文书与旧怨。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "福威镖局灭门令林家与青城结下深仇。",
+          "use": "只取余波与码头闲话，不替林平之复仇。"
+        },
+        {
+          "beat": "江湖消息常沿酒肆、镖路与水路流转。",
+          "use": "任务从客栈和码头自然长出。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "东南盐漕运输依赖沿途文书与关防。",
+          "use": "把冲突落在路引真假和船期损失。"
+        },
+        {
+          "fact": "码头脚夫与船户是水路消息的重要传播者。",
+          "use": "让旧怨以闲话进入玩家视野。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "玩家只能改变码头一桩小事，不能改写林家主线。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "青城冲突必须保留交涉和撤退。"
+        }
+      ]
+    },
+    "echo": "改变钱塘码头对白与船期传闻；核清文书后船户价格更稳。",
+    "facts": [
+      "xajh_z00_waybill_checked",
+      "xajh_z00_grudge_named",
+      "xajh_z00_boatmen_spared",
+      "xajh_z00_alley_settled",
+      "xajh_z00_alley_fought"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "潮声里的旧镖旗",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "room": "dock",
+        "scene": "钱塘潮水顶着石阶，一面褪色旧镖旗塞在麻包底下。盐船未离岸，两个脚夫却因路引印色发浅被账房扣住。",
+        "dialogues": [
+          [
+            "老船户",
+            "旗是福州来的旧物。谁结的仇我不管，只怕再拖半日，船上药材也要误。"
+          ],
+          [
+            "挑夫",
+            "昨夜客栈有人问福威镖局旧人，还说青城那边没有忘账。"
+          ]
+        ],
+        "hearsay": "回春堂今日也有药包等船北上。有人故意把旧印泥抹在路引边角。",
+        "choices": [
+          {
+            "id": "xajh_z00_waybill_checked",
+            "text": "先核船号与路引编号。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z00_waybill_checked": true
+              }
+            },
+            "outcome": "你把旧印与真号分开，脚夫肯把昨夜见闻细说。"
+          },
+          {
+            "id": "xajh_z00_grudge_named",
+            "text": "出茶钱问清旧镖旗从谁手里流来。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z00_grudge_named": true
+              }
+            },
+            "outcome": "银钱落桌，船户说出一个四川口音的问路人。"
+          }
+        ]
+      },
+      "n1": {
+        "room": "inn",
+        "scene": "水乡客栈油灯压得低，两份船册摊在桌上。昨日登记的船号与路引相合，只有印边被人故意揉脏。",
+        "dialogues": [
+          [
+            "掌柜",
+            "船号是真的，脏印是后来添的。"
+          ],
+          [
+            "盐商",
+            "旧怨归旧怨，拿一船苦力垫账算什么本事。"
+          ]
+        ],
+        "hearsay": "背街有人拿旧印泥换过酒钱。若路引能洗清，今日船期还赶得上。",
+        "choices": [
+          {
+            "id": "xajh_z00_boatmen_spared",
+            "text": "替脚夫把船号证据送到府衙门前。",
+            "requires": {
+              "flag": "xajh_z00_waybill_checked"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z00_boatmen_spared": true
+              }
+            },
+            "outcome": "差役开始查谁动过文书，不再先扣船户。"
+          }
+        ]
+      },
+      "n2": {
+        "room": "pharmacy",
+        "scene": "回春堂门口晒着草药。沈药师听见福州、青城几个字，只把药绳又勒紧一扣。",
+        "dialogues": [
+          [
+            "沈药师",
+            "旧仇你管不了，只管别让无辜人断了生路。"
+          ],
+          [
+            "伙计",
+            "昨夜确有人来问金创药，说同门手上添了伤。"
+          ]
+        ],
+        "hearsay": "背街的赌徒收过一盒旧印泥。药铺不肯替任何门派藏人，只求药船今日能走。",
+        "choices": [
+          {
+            "id": "xajh_z00_grudge_to_alley",
+            "text": "循旧印泥去背街问个明白。",
+            "requires": {
+              "flag": "xajh_z00_grudge_named"
+            },
+            "cost": {
+              "herbs": 1
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 2
+            },
+            "outcome": "你盯住污路引的人，不去追林家旧事。"
+          }
+        ]
+      },
+      "n3": {
+        "room": "alley",
+        "scene": "背街水沟发黑。两个青城弟子堵着一个赌徒，脚边正是半盒干掉的旧印泥。",
+        "dialogues": [
+          [
+            "青城弟子",
+            "我们问旧账，不问盐船。你若退开，此事与你无关。"
+          ],
+          [
+            "赌徒",
+            "我只拿钱抹了路引，哪认得什么林家人！"
+          ]
+        ],
+        "hearsay": "青城弟子更在意福州旧线索。赌徒愿意拿出污路引的口供，只求别被两边都记恨。",
+        "choices": [
+          {
+            "id": "xajh_z00_alley_settled",
+            "text": "给赌徒一笔散钱，让他当面说清污路引经过。",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "next": "n4",
+            "effects": {
+              "knowledge": 1,
+              "rep": 1,
+              "flag": {
+                "xajh_z00_alley_settled": true
+              }
+            },
+            "outcome": "口供说清，青城弟子也不再拿盐船作文章。"
+          },
+          {
+            "id": "xajh_z00_alley_fought",
+            "text": "挡住青城弟子，逼他们先放赌徒去作证。",
+            "combat": {
+              "opponent": "qingcheng",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z00_alley_fought": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "你逼开一条路，赌徒跑向府衙门前。",
+            "failText": "几招下来你讨不到便宜，只得护着赌徒退向府衙。"
+          },
+          {
+            "id": "xajh_z00_alley_withdraw",
+            "text": "不碰旧怨，转去府衙只说船号与误工。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你绕开门派恩怨，从官面保住船期。"
+          }
+        ]
+      },
+      "n4": {
+        "room": "court",
+        "scene": "府衙门前风里带着潮腥。差役把船号、口供与旧印泥摆在一处，终于把旧怨和盐船分开。",
+        "dialogues": [
+          [
+            "差役",
+            "旧仇谁结谁算，官面只看谁污了文书。"
+          ],
+          [
+            "老船户",
+            "能把两笔账分开，今日就算救了我们的饭碗。"
+          ]
+        ],
+        "hearsay": "若此前核过路引，码头已改口说这是有人借旧怨坏船期。若此前只花钱问话，船户仍记得有人肯替他们跑这一趟。",
+        "choices": [
+          {
+            "id": "xajh_z00_finish",
+            "text": "补给误工脚夫一点茶饭钱，催船趁潮开。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 2
+            },
+            "outcome": "船离石阶，药包与盐货都未再被扣。"
+          }
+        ]
+      },
+      "n5": {
+        "room": "dock",
+        "scene": "缆绳一松，船身顺潮而下。那面褪色旧镖旗仍压在麻包底下，没有谁把它举成新的战旗。",
+        "dialogues": [
+          [
+            "老船户",
+            "今日记的是你替人分清一笔账，不是谁替谁报了仇。"
+          ]
+        ],
+        "hearsay": "钱塘码头后来再提福州旧事，多会补一句：旧怨可以追，苦力的饭碗不该抵账。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "福州来的旧镖旗在钱塘码头露过面。有人借青城旧怨故意污损盐船路引。"
+}

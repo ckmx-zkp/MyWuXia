@@ -1,3 +1,4 @@
+import { PACK_EVENTS } from './side-packs.js';
 export const BASICS = { fist: '基本拳脚', blade: '基本兵器', internal: '基本内功', dodge: '基本轻功', parry: '基本招架' };
 export const WEAPONS = {
   hands: { name: '徒手', type: 'fist', price: 0, attack: 0 },
@@ -90,6 +91,7 @@ export const SIDE_EVENTS = {
     ] },
     end: { terminal: true, scene: '救命药已送达，城南人家记下这份恩情。', dialogues: [], hearsay: '护药旧事在街坊口中传开。', choices: [] },
   } },
+  ...PACK_EVENTS,
 };
 
 // Fixed variants are content, selected by the same world query used for choices.

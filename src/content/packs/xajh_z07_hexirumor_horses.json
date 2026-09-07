@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z07_hexirumor_horses",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z07_hexirumor_horses.json",
+  "zone": 7,
+  "design": {
+    "title": "河西假谱换马",
+    "hook": "河西商队有人拿《辟邪》谣言换马，结果招来贼眼。",
+    "playerRole": "拆穿或护送，不学辟邪。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "辟邪剑谱在原著中因林家旧事引起巨大争夺。",
+          "use": "这里只允许作为谣言名头出现。"
+        },
+        {
+          "beat": "对辟邪剑法的觊觎会扭曲江湖判断。",
+          "use": "把影响落在马价与盗匪注意。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "河西商路以马匹、驼队和长途贸易著称。",
+          "use": "让谣言直接影响交易。"
+        },
+        {
+          "fact": "商旅谣言常能引发抢掠和价格波动。",
+          "use": "制造可见世界回响。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "绝不奖励或教授辟邪剑法。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "战斗只为护商队，不追杀马贼。"
+        }
+      ]
+    },
+    "echo": "改变河西马价对白与商队对假谱的传闻。",
+    "facts": [
+      "xajh_z07_rumor_tested",
+      "xajh_z07_horse_price_fixed",
+      "xajh_z07_raid_turned"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "河西假谱换马",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 7,
+        "scene": "河西客栈门口拴满商队骡马。一个马贩拿“辟邪”二字压价，说中原剑谱能换上等马，几个年轻伙计听得眼热。",
+        "dialogues": [
+          [
+            "马贩",
+            "有谱便有价，没有就别吹。"
+          ],
+          [
+            "商队掌柜",
+            "我只怕有人拿谣言换马，最后把刀兵招来。"
+          ]
+        ],
+        "hearsay": "所谓剑谱只是口耳相传，没有谁拿出真本。昨夜已有河西马贼盯上商队。",
+        "choices": [
+          {
+            "id": "xajh_z07_rumor_tested",
+            "text": "逐句追问谣言出处。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z07_rumor_tested": true
+              }
+            },
+            "outcome": "三轮追问后，所谓亲见者一个也说不出原处。"
+          },
+          {
+            "id": "xajh_z07_horse_price_fixed",
+            "text": "先给掌柜垫一笔定金，按普通马价成交。",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z07_horse_price_fixed": true
+              }
+            },
+            "outcome": "商队不再拿“辟邪”谣言抬高或压低马价。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 7,
+        "scene": "客栈灶边热气腾腾，几个伙计被你问得面面相觑。",
+        "dialogues": [
+          [
+            "伙计",
+            "我是听前队说的。"
+          ],
+          [
+            "前队脚夫",
+            "我又是听酒摊说的。"
+          ]
+        ],
+        "hearsay": "谣言没有可核实的谱本。有人故意借禁忌名头抬高货值。",
+        "choices": [
+          {
+            "id": "xajh_z07_rumor_broken",
+            "text": "当众指出这只是传话套传话。",
+            "requires": {
+              "flag": "xajh_z07_rumor_tested"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "年轻伙计不再拿它当真本去换马。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 7,
+        "scene": "马圈里风沙扑面。掌柜收下定金，把两匹普通坐骑按市价写进账。",
+        "dialogues": [
+          [
+            "掌柜",
+            "真谱假谱我都不要，只按马牙口算钱。"
+          ],
+          [
+            "马贩",
+            "肯按市价，就少一桩邪门买卖。"
+          ]
+        ],
+        "hearsay": "价格一稳，谣言就少了实际好处。马贼仍可能把商队当肥羊。",
+        "choices": [
+          {
+            "id": "xajh_z07_trade_clean",
+            "text": "让账房把成交价念给全队听。",
+            "requires": {
+              "flag": "xajh_z07_horse_price_fixed"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "众人知道没有所谓剑谱溢价。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 7,
+        "scene": "商队刚出客栈两里，坡后便有马贼兜上来，张口就问“中原剑谱”藏在哪辆车上。",
+        "dialogues": [
+          [
+            "马贼",
+            "把谱留下，人马都能走。"
+          ],
+          [
+            "掌柜",
+            "看吧，谣言真把贼招来了。"
+          ]
+        ],
+        "hearsay": "可以守车阵逼退马贼。也可以把空口谣言当众拆穿后转道离开。",
+        "choices": [
+          {
+            "id": "xajh_z07_raid_turned",
+            "text": "护着车阵逼退马贼。",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z07_raid_turned": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "马贼搜不到便宜，退回坡后。",
+            "failText": "你守不住外圈，只得随车阵撤回驿路，马贼不敢追进人多处。"
+          },
+          {
+            "id": "xajh_z07_leave_falsebait",
+            "text": "高声说清全队没有谱本，舍一段近路转走。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 2
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "商队多绕了路，却没为假谱拼命。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 7,
+        "scene": "黄昏时商队停在河西驿边。账房把今日马价和货单重新核过，没有一栏写所谓剑谱。",
+        "dialogues": [
+          [
+            "掌柜",
+            "谣言若不能换钱，自会瘪下去一半。"
+          ],
+          [
+            "马贩",
+            "马还是看牙口，人还是看真话。"
+          ]
+        ],
+        "hearsay": "若你拆穿过谣言，后队会把“辟邪换马”当笑话。若你稳过价格，河西马价不会因这阵风声乱跳。",
+        "choices": [
+          {
+            "id": "xajh_z07_finish",
+            "text": "补一笔绕路食水钱，护送到下一处驿站。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "商队离开风口，谣言没有变成新的血案。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 7,
+        "scene": "驼铃在暮色里远去。没人学到什么辟邪，也没人拿一张不存在的谱换走一匹马。",
+        "dialogues": [
+          [
+            "账房",
+            "假东西最怕有人肯认真记账。"
+          ]
+        ],
+        "hearsay": "河西后来再有人说“辟邪换马”，商队多半先问一句：谱在哪儿。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "河西有人拿“辟邪”二字给普通马抬价。假谱风声引来了马贼。"
+}

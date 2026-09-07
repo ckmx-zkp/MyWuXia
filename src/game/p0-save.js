@@ -16,7 +16,7 @@ export function validateProgression(p) {
     || !Object.hasOwn(ROOMS, p.room) || !Array.isArray(p.discovered) || !p.discovered.every(id => Object.hasOwn(ROOMS, id))
     || !Object.hasOwn(WEAPONS, p.weapon) || !Array.isArray(p.weapons) || !p.weapons.includes(p.weapon) || !p.weapons.every(id => Object.hasOwn(WEAPONS, id))
     || !object(p.materials) || !number(p.materials.herbs) || ![null, 'wudang'].includes(p.sect)
-    || !object(p.facts) || !Object.entries(p.facts).every(([k, v]) => /^[a-z_]+$/.test(k) && typeof v === 'boolean')
+    || !object(p.facts) || !Object.entries(p.facts).every(([k, v]) => /^[a-z][a-z0-9_]*$/.test(k) && typeof v === 'boolean')
     || !object(p.npcs) || !Object.entries(p.npcs).every(([k, v]) => /^[a-z_]+$/.test(k) && text(v))
     || !knownRecord(p.quests, SIDE_EVENTS, q => object(q) && typeof q.done === 'boolean')
     || !Array.isArray(p.journal) || p.journal.length > 200 || !p.journal.every(j => object(j) && number(j.id, p.sequence) && number(j.at) && ['eventId', 'nodeId', 'choiceId', 'result', 'text'].every(k => text(j[k])))) fail();

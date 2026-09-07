@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z01_hanshui_boat",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z01_hanshui_boat.json",
+  "zone": 1,
+  "design": {
+    "title": "汉水迟舟",
+    "hook": "武当门下照应伤者，五岳过客却在汉水争船。",
+    "playerRole": "传口信、护伤的过路人，不代令狐冲论剑。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "冲虚道长与武当自有立场，并非五岳附属。",
+          "use": "武当只照应伤者与山门秩序。"
+        },
+        {
+          "beat": "五岳诸派既有盟名又有猜忌。",
+          "use": "把冲突缩成船期争执。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "汉水是荆襄重要交通水道。",
+          "use": "让船期成为实在资源。"
+        },
+        {
+          "fact": "寺观常给远行者和伤者短暂停留之所。",
+          "use": "让武当提供有限照应。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "必须存在完全不动剑的护送路线。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "比武只可作护送小冲突，不能替主角论剑。"
+        }
+      ]
+    },
+    "echo": "改变武当山门对白与汉水船户排船规矩。",
+    "facts": [
+      "xajh_z01_wounded_first",
+      "xajh_z01_boat_oath",
+      "xajh_z01_spy_exposed"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "汉水迟舟",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "room": "wudang-gate",
+        "scene": "武当山门前石阶还湿，一个五岳过客靠墙坐着，腿上布条浸出血色。送他来的船夫连连望向山下。",
+        "dialogues": [
+          [
+            "武当弟子",
+            "伤能照应，船期却不由山门定。你若下山，替我们传一句：伤者只求过江。"
+          ],
+          [
+            "船夫",
+            "汉水边几拨人争头船，再拖，官船一到谁都走不了。"
+          ]
+        ],
+        "hearsay": "有人混在争船人中，专问伤者是否带帖。武当门下不愿替五岳过客裁先后。",
+        "choices": [
+          {
+            "id": "xajh_z01_wounded_first",
+            "text": "先帮忙稳住伤势。",
+            "requires": {
+              "herbs": 1
+            },
+            "cost": {
+              "herbs": 1
+            },
+            "next": "n1",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z01_wounded_first": true
+              }
+            },
+            "outcome": "伤者缓过气，肯把口信说清。"
+          },
+          {
+            "id": "xajh_z01_boat_oath",
+            "text": "先下山约定各方不得强占民船。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z01_boat_oath": true
+              }
+            },
+            "outcome": "船户肯再等一刻，不再有人拔剑逼船。"
+          }
+        ]
+      },
+      "n1": {
+        "room": "wudang-yard",
+        "scene": "练功院廊下滴着雨。伤者喝了半碗温水，才说自己只带一句同伴平安的口信。",
+        "dialogues": [
+          [
+            "伤者",
+            "我不是来替谁议五岳大事。"
+          ],
+          [
+            "武当弟子",
+            "那就只传平安，别多添一字。"
+          ]
+        ],
+        "hearsay": "争船者中有一人从不报名号。若伤者先稳住，山下即使起冲突也不至于误伤他。",
+        "choices": [
+          {
+            "id": "xajh_z01_message_plain",
+            "text": "记下口信，只传平安二字。",
+            "requires": {
+              "flag": "xajh_z01_wounded_first"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "knowledge": 1
+            },
+            "outcome": "你把事情压回一封口信的分量。"
+          }
+        ]
+      },
+      "n2": {
+        "room": "wudang-hall",
+        "scene": "静室里只闻风过窗纸。年长道人听完争船经过，淡淡写下四字：先伤后舟。",
+        "dialogues": [
+          [
+            "年长道人",
+            "谁急，也不能拿船户性命来赌。"
+          ],
+          [
+            "小道童",
+            "山下那陌生人只盯着伤者问。"
+          ]
+        ],
+        "hearsay": "有人借船期混乱打听五岳过客。先前口头约定若有人见证，船户就敢照规矩排船。",
+        "choices": [
+          {
+            "id": "xajh_z01_keep_oath",
+            "text": "下山重申先前约定。",
+            "requires": {
+              "flag": "xajh_z01_boat_oath"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "船户认你这个见证，愿意照伤情排船。"
+          }
+        ]
+      },
+      "n3": {
+        "room": "wudang-gate",
+        "scene": "山门外那陌生人终于横在石径上，问伤者身上是否藏着五岳密帖。",
+        "dialogues": [
+          [
+            "陌生人",
+            "我只问一句，有帖没有？"
+          ],
+          [
+            "船夫",
+            "你问船是假，盯人是真。"
+          ]
+        ],
+        "hearsay": "这人像渡口探子。不回答他的问话，也能护伤者下山。",
+        "choices": [
+          {
+            "id": "xajh_z01_spy_exposed",
+            "text": "当众拆穿他挑拨船期。",
+            "combat": {
+              "opponent": "spy",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 7,
+              "flag": {
+                "xajh_z01_spy_exposed": true
+              }
+            },
+            "failEffects": {},
+            "outcome": "探子见身份败露，退下石径。",
+            "failText": "你未能拿住他，只得护着船夫退回山门，但伤者去向没有泄露。"
+          },
+          {
+            "id": "xajh_z01_buy_passage",
+            "text": "不答他的话，替伤者补足误船钱。",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2
+            },
+            "outcome": "船户收下补偿，按约载伤者过江。"
+          }
+        ]
+      },
+      "n4": {
+        "room": "wudang-yard",
+        "scene": "伤者换了干净布条，山下传来长橹声。几拨过客都没再敢强抢民船。",
+        "dialogues": [
+          [
+            "武当弟子",
+            "口信传到便够。江湖话多一字，常多一场祸。"
+          ],
+          [
+            "伤者",
+            "今日我记的是谁护我过江，不是谁替我门派争脸。"
+          ]
+        ],
+        "hearsay": "若探子曾被拆穿，汉水船户后来见陌生人问帖都会多留一个心眼。若先护过伤者，武当门下会在山门对白中提起这份情。",
+        "choices": [
+          {
+            "id": "xajh_z01_end_boat",
+            "text": "扶伤者下山登船。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 2
+            },
+            "outcome": "伤者过江，争船一事也自行散去。"
+          }
+        ]
+      },
+      "n5": {
+        "room": "wudang-gate",
+        "scene": "船影渐远，山门前只剩水汽。那句口信传完，再没有被添成什么江湖大义。",
+        "dialogues": [
+          [
+            "武当弟子",
+            "能把一件小事做小，也是一种本事。"
+          ]
+        ],
+        "hearsay": "汉水船户后来提起五岳过客争船，总会补一句：先让伤者走。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "武当门下只肯照应伤者，不替五岳争船。有人借船期混乱打听伤者是否带帖。"
+}

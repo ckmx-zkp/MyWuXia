@@ -1,0 +1,279 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z05_border_mistranslation",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z05_border_mistranslation.json",
+  "zone": 5,
+  "design": {
+    "title": "边市误军情",
+    "hook": "边市通事把五岳剑会错译成军情。",
+    "playerRole": "辨口风、花钱销帖，不涉军政大局。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "五岳并派与会剑在原著中属于江湖门派事务。",
+          "use": "明确其不是边军调动。"
+        },
+        {
+          "beat": "左冷禅等人的盟主称谓容易被局外人误解。",
+          "use": "制造通事误译。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "辽东边市多语言往来，通事负责翻译与沟通。",
+          "use": "把误译作为事件核心。"
+        },
+        {
+          "fact": "边市对军情与封市高度敏感。",
+          "use": "让错误情报产生真实价格和交易后果。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "支线讨论位一",
+          "use": "不要把江湖会盟写成真实军事计划。"
+        },
+        {
+          "slot": "支线讨论位二",
+          "use": "玩家只能纠正一份地方误报。"
+        }
+      ]
+    },
+    "echo": "改变辽阳边市价格、告示和通事对白。",
+    "facts": [
+      "xajh_z05_terms_sorted",
+      "xajh_z05_runner_paid",
+      "xajh_z05_false_intel_cleared"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "边市误军情",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 5,
+        "scene": "辽阳边市茶棚里，通事拿着一张抄得潦草的“五岳剑会”消息，竟把它解释成中原诸军会盟。商户因此不敢开市。",
+        "dialogues": [
+          [
+            "通事",
+            "五岳会盟，不是军情是什么？"
+          ],
+          [
+            "汉商",
+            "江湖门派吵架，怎能算边军调动。"
+          ]
+        ],
+        "hearsay": "原帖只提掌门与剑派，没有兵马粮秣。边市已经有人准备把误报送往上京。",
+        "choices": [
+          {
+            "id": "xajh_z05_terms_sorted",
+            "text": "逐句解释帖子里的江湖称谓。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "xajh_z05_terms_sorted": true
+              }
+            },
+            "outcome": "通事开始明白掌门不是将军，剑派也不是军镇。"
+          },
+          {
+            "id": "xajh_z05_runner_paid",
+            "text": "花钱截住正要送帖的跑腿。",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z05_runner_paid": true
+              }
+            },
+            "outcome": "误报暂未送出边市。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 5,
+        "scene": "通事把几处词圈出来，一一与你核对。",
+        "dialogues": [
+          [
+            "通事",
+            "左盟主这个盟主，不是兵盟之主？"
+          ],
+          [
+            "汉商",
+            "江湖人自抬名号，别往军报上套。"
+          ]
+        ],
+        "hearsay": "只要能补一份释词，边市文案就能改写。有人故意把“会剑”译成“会兵”。",
+        "choices": [
+          {
+            "id": "xajh_z05_gloss_written",
+            "text": "替通事整理一份简短释词。",
+            "requires": {
+              "flag": "xajh_z05_terms_sorted"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "误解有了可查询的文字依据。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 5,
+        "scene": "跑腿少年在市门口捏着封帖，听说只是江湖误传后仍怕回去挨骂。",
+        "dialogues": [
+          [
+            "跑腿",
+            "帖送不送，我都得有个说法。"
+          ],
+          [
+            "货郎",
+            "销一张错帖，总比封一日边市便宜。"
+          ]
+        ],
+        "hearsay": "给他一份改正说明即可交差。若只把帖烧了，之后还会有人重抄。",
+        "choices": [
+          {
+            "id": "xajh_z05_notice_bought",
+            "text": "再出纸墨钱，请通事重写一张更正。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "跑腿有新帖可送，旧误报不必继续流传。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 5,
+        "scene": "边市门下已经贴出半张封市告示，几个守卒只等通事盖印。",
+        "dialogues": [
+          [
+            "守卒",
+            "军情若真，今日就得闭市。"
+          ],
+          [
+            "通事",
+            "我现在只怕前头译错了。"
+          ]
+        ],
+        "hearsay": "若能当场说明“五岳剑会”不涉兵马，封市可缓。也可花钱把已经誊写的错帖全部收回。",
+        "choices": [
+          {
+            "id": "xajh_z05_false_intel_cleared",
+            "text": "当众按词义解释，要求暂缓封市。",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "xajh_z05_false_intel_cleared": true
+              }
+            },
+            "outcome": "守卒把告示收回，等候更正文书。"
+          },
+          {
+            "id": "xajh_z05_copies_bought",
+            "text": "买下市面几份错抄本。",
+            "requires": {
+              "silver": 7
+            },
+            "cost": {
+              "silver": 7
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "最容易继续传错的几张纸被收走。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 5,
+        "scene": "茶棚重新摆出热水，商户把半落的门板又推开。通事在新帖上写明：江湖会剑，非军伍调动。",
+        "dialogues": [
+          [
+            "通事",
+            "原来一个词译错，就能关一条街。"
+          ],
+          [
+            "汉商",
+            "边市最怕的就是把传闻当军报。"
+          ]
+        ],
+        "hearsay": "若你先解释过术语，通事以后见掌门、盟主都会先问语境。若你花钱收过错帖，市面价格会少一次无端上涨。",
+        "choices": [
+          {
+            "id": "xajh_z05_finish",
+            "text": "付纸墨钱，把更正抄三份分贴。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1
+            },
+            "outcome": "边市恢复交易，误报有了公开更正。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 5,
+        "scene": "午后的边市重新响起秤砣碰盘声。五岳风声仍是江湖风声，没有被写成北地军报。",
+        "dialogues": [
+          [
+            "通事",
+            "以后遇上江湖名号，我先问一句到底是哪一路人。"
+          ]
+        ],
+        "hearsay": "辽阳边市后来把这事叫作一张帖子险封一条街。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "边市曾把五岳剑会误传成军情。一张错帖差点让整条街闭市。"
+}
