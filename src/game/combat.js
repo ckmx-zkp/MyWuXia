@@ -2,6 +2,7 @@ import { STYLES, STRATEGIES, BREATHS, FOOTWORK, OPPONENTS, normalizeLoadout } fr
 import { nextRandom } from './random.js';
 import { pairing, earnTraining } from './training.js';
 import { vitalStats } from './vitals.js';
+import { equippedWeapon, styleFamily } from './progression.js';
 
 export const MAX_ROUNDS = 60;
 function draw(battle) {
@@ -35,8 +36,12 @@ export function startCombat(state, { opponent = 'student', danger = 20, place = 
   };
   const bonuses = pairing(state, loadout);
   battle.player.attack *= bonuses.damage;
+  if (state.p0) {
+    battle.player.attack += equippedWeapon(state).attack + Math.sqrt(state.p0.basics[styleFamily(loadout.style)]) * 0.3;
+    battle.player.speed += Math.sqrt(state.p0.basics.dodge) * 0.15;
+  }
   battle.player.recoveryBonus = bonuses.recovery;
-  battle.player.armorBonus = bonuses.armor;
+  battle.player.armorBonus = bonuses.armor + (state.p0 ? Math.min(0.15, Math.sqrt(state.p0.basics.parry) / 600) : 0);
   battle.log.push(`主修${loadout.style} ${bonuses.styleLevel}重，${bonuses.inner.name} ${bonuses.innerLevel}重，${bonuses.compatible ? '招气相合' : '各循其法'}。`);
   return { ...state, rngState: random.seed, loadout, battle, action: { type: 'combat' }, fx: null };
 }

@@ -1,7 +1,9 @@
 import { canResolveChoice } from './quest-guards.js';
+import { settleP0Combat } from './p0-engine.js';
 
 export function createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQuest, resolveTravel, resolveRoutine }) {
   return function settleStory(s, context, success) {
+    if (context.kind === 'side' || context.kind === 'exam') return settleP0Combat(s, context, success);
     if (context.kind === 'quest') {
       const next = resolveQuest({ ...s, action: { type: 'quest', zone: context.zone, idx: context.idx } }, success);
       next.battle = { ...next.battle, result: `${next.battle.result}\n\n${next.log[0]}` };

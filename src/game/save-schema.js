@@ -1,8 +1,11 @@
 import { ZONES } from '../content/world.js';
 import { QUEST_COMBATS } from '../content/combat.js';
 import { routinesForZone } from '../content/routines.js';
+import { SIDE_EVENTS } from '../content/p0.js';
 export const saveOptions = {
-  validateContext: c => c.kind === 'travel' ? Number.isInteger(c.to) && !!ZONES[c.to]
+  validateContext: c => c.kind === 'exam' ? true
+    : c.kind === 'side' ? !!SIDE_EVENTS[c.eventId]?.nodes[c.nodeId]?.choices.find(x => x.id === c.choiceId && x.combat)
+    : c.kind === 'travel' ? Number.isInteger(c.to) && !!ZONES[c.to]
     : c.kind === 'quest' ? Number.isInteger(c.zone) && Number.isInteger(c.idx) && !!QUEST_COMBATS[ZONES[c.zone]?.quests[c.idx]?.name]
     : c.kind === 'routine' ? Number.isInteger(c.zone) && !!routinesForZone(ZONES[c.zone] || { cities: '' }).find(r => r.id === c.id && r.opponent)
     : Number.isInteger(c.zone) && Number.isInteger(c.ti) && Number.isInteger(c.ni) && Number.isInteger(c.ci)

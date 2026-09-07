@@ -1,3 +1,4 @@
+import { trainingCap } from './progression.js';
 export const INTERNALS = {
   basic: { name: '基础吐纳功', lv: 1, recovery: 0.02, armor: 0, family: 'any', text: '平和绵长，诸般招式皆可相容。' },
   luohan: { name: '罗汉伏魔功', lv: 1, recovery: 0.01, armor: 0.06, family: 'fist', text: '拳掌相合，劲力沉稳。' },
@@ -7,7 +8,7 @@ export const INTERNALS = {
 };
 export const mastery = exp => Math.min(10, 1 + Math.floor(Math.sqrt(Math.max(0, exp || 0) / 100)));
 export const masteryTarget = exp => mastery(exp) >= 10 ? null : mastery(exp) ** 2 * 100;
-export const availableInternals = state => Object.entries(INTERNALS).filter(([, x]) => Math.floor(state.expTotal / 100) + 1 >= x.lv);
+export const availableInternals = state => Object.entries(INTERNALS).filter(([id, x]) => state.p0 ? Object.hasOwn(state.p0.internals, id) : Math.floor(state.expTotal / 100) + 1 >= x.lv);
 export function internalId(state, id = state.loadout?.internal) {
   return availableInternals(state).some(([key]) => key === id) ? id : 'basic';
 }
@@ -37,8 +38,8 @@ export function trainingAbility(state, loadout = state.loadout || {}) {
 export function earnTraining(state, amount, style = state.loadout?.style || '基本拳脚', inner = internalId(state)) {
   const t = state.training || { styles: {}, internals: {} };
   return { ...state, training: {
-    styles: { ...t.styles, [style]: Math.min(8100, (t.styles[style] || 0) + amount) },
-    internals: { ...t.internals, [inner]: Math.min(8100, (t.internals[inner] || 0) + amount) },
+    styles: { ...t.styles, [style]: Math.min(trainingCap(state, 'styles', style), (t.styles[style] || 0) + amount) },
+    internals: { ...t.internals, [inner]: Math.min(trainingCap(state, 'internals', inner), (t.internals[inner] || 0) + amount) },
   } };
 }
 export function claimIdleRewards(state) {

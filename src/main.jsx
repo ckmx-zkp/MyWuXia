@@ -1,23 +1,24 @@
 import { createWorldEngine } from './game/world-engine.js';
+import { createGameReducer } from './game/commands.js';
+import { beginProgression, ownsStyle } from './game/progression.js';
+import { p0Command, currentRoom } from './game/p0-engine.js';
+import ProgressionPanel, { OfflineReport } from './features/progression/ProgressionPanel.jsx';
 import { saveOptions } from './game/save-schema.js';
 import { ZONES } from './content/world.js';
 import { QUEST_COMBATS, OPPONENTS, STYLES } from './content/combat.js';
 import CombatPanel, { LoadoutEditor } from './features/combat/CombatPanel.jsx';
 import SavePanel from './features/saves/SavePanel.jsx';
-import { startCombat, retreatCombat } from './game/combat.js';
 import { SAVE_KEY, readSave, writeSave, clearAutoSave } from './game/saves.js';
 import { initial } from './game/state.js';
 import { SKILLS, START_SKILLS } from './content/martial.js';
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
-import { createIdleRuntime } from './game/idle-runtime.js';
 import { canResolveChoice } from './game/quest-guards.js';
 import { loadZoneQuests, prepareCharacter } from './content/quest-loader.js';
-import { mastery, masteryTarget, availableInternals, claimIdleRewards, trainingAbility } from './game/training.js';
+import { mastery, masteryTarget, availableInternals, trainingAbility } from './game/training.js';
 import { ability, abilityParts } from './game/ability.js';
-import { vitalStats, needsInnRest, restAtInn } from './game/vitals.js';
-import { advanceFate, resolveFateChoice } from './game/fate-engine.js';
+import { vitalStats, needsInnRest } from './game/vitals.js';
 import FatePanel from './features/fates/FatePanel.jsx';
 import { routinesForZone, routineReward } from './content/routines.js';
 
@@ -354,18 +355,19 @@ function levelUpLog(n, s) {
 }
 /* 剧情效果统一结算（docs/gdd/07 判定与回响模块） */
 const { tick, settleStory } = createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FAC, FAC_DEFAULT, levelUpLog });
+const reduceGame = createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS, ITEMS, RUMORS, ORIGINS, START_SKILLS, questReward, clamp, ability });
 
 function App({ saved }) {
-  const [s, commitState] = useState(() => saved.state || initial());
-  const runtimeRef = useRef(null);
-  if (!runtimeRef.current) runtimeRef.current = createIdleRuntime(levelUpLog, lv);
-  const runtime = runtimeRef.current;
+  const [s, commitState] = useState(() => saved.state ? p0Command(beginProgression(saved.state, true), { type: 'RESUME' }, Date.now()) : beginProgression(initial()));
   const sRef = useRef(s);
-  const setS = update => {
-    const previous = runtime.flush(sRef.current);
-    const next = typeof update === 'function' ? update(previous) : update;
+  const dispatch = command => {
+    const next = reduceGame(sRef.current, command, Date.now());
     sRef.current = next;
     commitState(next);
+    if (!creating && command.type !== 'RESET') {
+      try { writeSave(localStorage, next, SAVE_KEY, saveOptions); }
+      catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
+    }
   };
   const [combatSetup, setCombatSetup] = useState(null);
   const [savesOpen, setSavesOpen] = useState(false);
@@ -397,20 +399,27 @@ function App({ saved }) {
   useEffect(() => {
     if (creating || savesOpen) return;
     const timer = setInterval(() => {
-      const next = advanceFate(tick(runtime.advance(sRef.current)));
+      if (document.hidden) return;
+      const next = reduceGame(sRef.current, { type: 'HEARTBEAT' }, Date.now());
       sRef.current = next;
       commitState(next);
     }, 1000);
     return () => clearInterval(timer);
-  }, [creating, savesOpen, runtime]);
+  }, [creating, savesOpen]);
   useEffect(() => {
     if (creating) return;
     const persist = () => {
-      try { writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions); } catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
+      try { writeSave(localStorage, sRef.current, SAVE_KEY, saveOptions); } catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
     };
     persist();
     const timer = setInterval(persist, 2500);
-    const onVis = () => { if (document.hidden) persist(); };
+    const onVis = () => {
+      if (!document.hidden) {
+        const next = p0Command(sRef.current, { type: 'RESUME' }, Date.now());
+        sRef.current = next; commitState(next);
+      }
+      persist();
+    };
     window.addEventListener('beforeunload', persist);
     window.addEventListener('pagehide', persist);
     document.addEventListener('visibilitychange', onVis);
@@ -420,31 +429,27 @@ function App({ saved }) {
       window.removeEventListener('pagehide', persist);
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, [creating, savesOpen, runtime]);
+  }, [creating, savesOpen]);
   useEffect(() => {
     if (creating || (!s.action && !s.battle)) return;
-    try { writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions); }
+    try { writeSave(localStorage, sRef.current, SAVE_KEY, saveOptions); }
     catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
-  }, [s.action, s.battle, creating, runtime]);
+  }, [s.action, s.battle, creating]);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.muteSfx); }, [s.fx, s.muteSfx]);
   useEffect(() => { bgmSwitch(s.loc, s.muteBgm); }, [s.loc, s.muteBgm]);
   useEffect(() => { if (s.muteVoice) stopVoice(); }, [s.muteVoice]);
   useEffect(() => { setLeaf(0); }, [s.loc]);
 
   const click = () => { play(SOUND.click, s.muteSfx); bgmSwitch(s.loc, s.muteBgm); };
-  const toggleAudio = key => setS(v => ({ ...v, [key]: !v[key] }));
+  const toggleAudio = key => dispatch({ type: 'AUDIO', key });
   const toggleCombatMultiplier = () => {
     click();
-    setS(v => {
-      const devMult = v.devMult === 10 ? 1 : 10;
-      return { ...v, devMult, log: [`管理员：战斗测试收益调整为 ×${devMult}。`, ...v.log].slice(0, 8) };
-    });
+    dispatch({ type: 'MULTIPLIER' });
   };
   const go = async i => {
     click();
     if (busy || i === s.loc) return;
     if (!LINKS[s.loc].includes(i)) {
-      setS(v => ({ ...v, log: [`道路不通：${ZONES[v.loc].name}与${ZONES[i].name}并不相邻，需经邻区辗转。`, ...v.log].slice(0, 8) }));
       return;
     }
     const request = ++travelRequest.current;
@@ -452,21 +457,19 @@ function App({ saved }) {
     try {
       await loadZoneQuests(i);
       if (request !== travelRequest.current || sRef.current.action) return;
-      setS(v => ({ ...v, action: { type: 'travel', to: i, left: 10, total: 10 }, log: [`启程前往${ZONES[i].name}……`, ...v.log].slice(0, 8) }));
+      dispatch({ type: 'TRAVEL', to: i });
     } catch (error) { setSaveNotice(`地域记事读取失败：${error.message}，可再次启程重试。`); }
     finally { if (request === travelRequest.current) setTravelLoading(false); }
   };
   const startQuest = i => {
     if (busy) return;
-    const q = z.quests[i], r = questReward(z, q.kind === 'main');
-    setS(v => ({ ...v, action: { type: 'quest', zone: s.loc, idx: i, left: r.time, total: r.time }, log: [`着手「${q.name}」……`, ...v.log].slice(0, 8) }));
+    dispatch({ type: 'QUEST', index: i });
   };
   const startRoutine = id => {
     if (busy) return;
     const routine = routinesForZone(z).find(x => x.id === id);
     if (!routine) return;
-    setS(v => ({ ...v, action: { type: 'routine', zone: v.loc, id, left: routine.time, total: routine.time },
-      log: [`开始循环支线「${routine.name}」……`, ...v.log].slice(0, 8) }));
+    dispatch({ type: 'ROUTINE', id });
   };
   /* 普通任务：先出剧情卡，再动身 */
   const openQuestCard = i => {
@@ -479,15 +482,16 @@ function App({ saved }) {
     setCombatSetup({ opponent: 'student', place: fac.gym, danger: z.danger });
   };
   const beginCombat = config => {
-    setS(v => startCombat({ ...v, loadout: config.loadout }, config));
+    dispatch({ type: 'COMBAT', config });
     setCombatSetup(null); setStory(null); setOutcome(null); stopVoice();
   };
   const loadCharacter = async state => {
     await prepareCharacter(state);
     travelRequest.current++; setTravelLoading(false);
-    if (!creating) writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions);
-    writeSave(localStorage, state, SAVE_KEY, saveOptions);
-    runtime.clear(); stopVoice(); setS(state);
+    if (!creating) writeSave(localStorage, sRef.current, SAVE_KEY, saveOptions);
+    const restored = p0Command(beginProgression(state, true), { type: 'RESUME' }, Date.now());
+    writeSave(localStorage, restored, SAVE_KEY, saveOptions);
+    stopVoice(); dispatch({ type: 'LOAD', state: restored });
     setStory(null); setOutcome(null); setQuestCard(null); setRoutineCard(null); setPanel(null); setCombatSetup(null);
     setCreating(false); setSavesOpen(false); setSaveNotice('存档已恢复。');
   };
@@ -496,28 +500,24 @@ function App({ saved }) {
     if (s.silver < 2) return;
     const vp = INN_VOICES[s.loc];
     if (vp) playVoice(`/audio/voice/${vp[Math.floor(Math.random() * vp.length)]}`, s.muteVoice);
-    setS(v => {
-      const unk = RUMORS.filter(r => !(v.rumors || []).includes(r));
-      const got = unk.length ? unk[Math.floor(Math.random() * unk.length)] : null;
-      return { ...v, silver: v.silver - 2, rumors: got ? [...(v.rumors || []), got] : v.rumors, log: [got ? `${fac.inn}中听闻：${got}` : '近日并无新鲜传闻。', ...v.log].slice(0, 8) };
-    });
+    dispatch({ type: 'RUMOR' });
   };
   const buyItem = (id, cost) => {
     click();
     if (s.silver < cost) return;
-    setS(v => ({ ...v, silver: v.silver - cost, items: { ...v.items, [id]: (v.items[id] || 0) + 1 }, log: [`在${fac.med}购得${ITEMS[id].name} ×1（银两 -${cost}）。`, ...v.log].slice(0, 8) }));
+    dispatch({ type: 'BUY_ITEM', id });
   };
   const useItem = id => {
     if (busy || !(s.items[id] > 0)) return;
     play(SOUND.bell, s.muteSfx);
-    setS(v => ({ ...v, ...ITEMS[id].apply(v), items: { ...v.items, [id]: v.items[id] - 1 }, log: [`使用了${ITEMS[id].name}。`, ...v.log].slice(0, 8) }));
+    dispatch({ type: 'USE_ITEM', id });
   };
   const rest = () => {
     if (busy || s.silver < 5 || !needsInnRest(s)) return;
     play(SOUND.bell, s.muteSfx);
-    setS(v => ({ ...restAtInn(v), log: ['在客栈投宿一夜，气血与内力尽复（银两 -5）。', ...v.log].slice(0, 8) }));
+    dispatch({ type: 'REST' });
   };
-  const claimIdle = () => { click(); setS(claimIdleRewards); };
+  const claimIdle = () => { click(); dispatch({ type: 'CLAIM_LEGACY' }); };
   /* 剧情节点：打开场景弹窗 */
   const openStory = (ti, ni) => {
     click();
@@ -542,7 +542,7 @@ function App({ saved }) {
     const eff = ok ? c.ok : c.fail;
     play(ok ? SOUND.quest : SOUND.click, s.muteSfx);
     if (eff.voice) playVoice(eff.voice, s.muteVoice);
-    setS(v => levelUpLog(settleStory(v, { zone, ti, ni, ci }, ok), v));
+    dispatch({ type: 'STORY', context: { zone, ti, ni, ci } });
     setOutcome(eff.text + (ni === t.nodes.length - 1 ? `\n\n${t.reward.text}` : ''));
   };
 
@@ -550,10 +550,9 @@ function App({ saved }) {
     if (!window.confirm('重开将清空全部江湖进度，确定？')) return;
     try { clearAutoSave(localStorage); } catch (error) { setSaveNotice(`重开失败：${error.message}`); return; }
     stopVoice();
-    runtime.clear();
     travelRequest.current++; setTravelLoading(false);
     setCombatSetup(null); setSavesOpen(false);
-    setS(initial());
+    dispatch({ type: 'RESET' });
     setStory(null); setOutcome(null); setQuestCard(null); setRoutineCard(null); setPanel(null);
     setCName(''); setOrigin('hunter'); setCSkill('taizu'); setAlloc({ hp: 0, ab: 0, exp: 0 });
     setCreating(true);
@@ -561,21 +560,7 @@ function App({ saved }) {
   /* 开局创角：名号 + 出身 + 天赋加点 + 家传武学 */
   const finishCreate = () => {
     click();
-    const o = ORIGINS.find(x => x.id === origin), sk = START_SKILLS.find(x => x.id === cSkill);
-    const name = cName.trim() || '沈孤鸿';
-    const base = initial();
-    setS({
-      ...base,
-      name,
-      hp: clamp(base.hp + (o.apply.hp || 0) + alloc.hp * 5 + (sk.hp || 0)),
-      silver: base.silver + (o.apply.silver || 0),
-      expTotal: base.expTotal + (o.apply.exp || 0) + alloc.exp * 15 + (sk.exp || 0),
-      attrAb: (o.apply.ab || 0) + alloc.ab * 2,
-      bonusSkill: { name: sk.name, text: sk.text, bonus: sk.bonus || 0 },
-      loadout: { style: sk.name, strategy: 'balanced', breath: 'flowing', footwork: 'light', internal: 'basic' },
-      rngState: crypto.getRandomValues(new Uint32Array(1))[0] || 1,
-      log: [`${name}踏入江湖。出身${o.name}，家传「${sk.name}」。`, ...base.log],
-    });
+    dispatch({ type: 'CREATE', name: cName, origin, skill: cSkill, alloc, seed: crypto.getRandomValues(new Uint32Array(1))[0] || 1 });
     setCreating(false);
   };
 
@@ -598,7 +583,7 @@ function App({ saved }) {
     <div className="layout">
       {/* 左栏：主导航；舆图在游历状态展开 */}
       <aside className="map-col">
-        <nav className="primary-nav">{[['江湖','♟'],['行囊','♜'],['武学','▥'],['门派','⌂'],['游历','⌁'],['命运','◇']].map(([name,icon]) => <button key={name} className={side === name ? 'on' : ''} onClick={() => { click(); setHeroOpen(false); setSide(name); }}><i>{icon}</i><b>{name}</b></button>)}
+        <nav className="primary-nav">{[['江湖','♟'],['修炼','☯'],['行囊','♜'],['武学','▥'],['门派','⌂'],['游历','⌁'],['命运','◇']].map(([name,icon]) => <button key={name} className={side === name ? 'on' : ''} onClick={() => { click(); setHeroOpen(false); setSide(name); }}><i>{icon}</i><b>{name}</b></button>)}
           <button type="button" className={`nav-hero${heroOpen ? ' on' : ''}`} onClick={() => { click(); setHeroOpen(v => !v); }}><i>☯</i><b>属性</b></button>
         </nav>
         <div className="world"><h3>天下大势</h3><p>{WORLD_INTRO}</p></div>
@@ -607,7 +592,7 @@ function App({ saved }) {
       {/* 中栏：当前区域与任务 */}
       <section>
         <article className="paper">
-          {side === '游历' ? <>
+          {(side === '江湖' && currentRoom(s)) || side === '修炼' || side === '门派' ? <ProgressionPanel state={s} dispatch={dispatch} mode={side} onLegacy={() => setSide('旧闻')} onSpar={startSpar} /> : side === '游历' ? <>
             <div className="chapter">
               <small>江湖舆图 · 十三大区 · 道路相连处皆可前往</small>
               <h1>天下风物</h1>
@@ -627,19 +612,19 @@ function App({ saved }) {
                 </button>;
               })}
             </div>
-          </> : side === '命运' ? <FatePanel state={s} onChoose={(node, choice) => setS(v => resolveFateChoice(v, node, choice))} /> : side === '武学' ? <>
+          </> : side === '命运' ? <FatePanel state={s} onChoose={(node, choice) => dispatch({ type: 'FATE', node, choice })} /> : side === '武学' ? <>
             <div className="chapter">
               <small>{s.name} · 等级 {level} · {grade(level)}</small>
               <h1>武学</h1>
               <p>当前能力 {ab} · 主修 {s.loadout.style} {mastery(s.training.styles[s.loadout.style])}重</p>
             </div>
-            <LoadoutEditor state={s} value={s.loadout} disabled={busy} onChange={loadout => setS(v => ({ ...v, loadout }))} />
+            <LoadoutEditor state={s} value={s.loadout} disabled={busy} onChange={loadout => dispatch({ type: 'EQUIP_LOADOUT', loadout })} />
             <div className="page-list">
               {s.bonusSkill && <div className="page-item on"><b>{s.bonusSkill.name}</b><em>家传 · {mastery(s.training.styles[s.bonusSkill.name])}重</em><small>心得 {s.training.styles[s.bonusSkill.name] || 0} / {masteryTarget(s.training.styles[s.bonusSkill.name]) || '圆满'}</small></div>}
               {SKILLS.filter(k => STYLES[k.name]).map(k => {
-                const on = level >= k.lv;
+                const on = ownsStyle(s, k.name);
                 return <div key={k.name} className={`page-item ${on ? 'on' : ''}`}>
-                  <b>{k.name}</b><em>{on ? `${mastery(s.training.styles[k.name])}重 · 能力 +${k.bonus}` : `${k.lv} 级可悟`}</em>
+                  <b>{k.name}</b><em>{on ? `${mastery(s.training.styles[k.name])}重 · 能力 +${k.bonus}` : '尚待师承或机缘'}</em>
                   <small>{on ? k.text : '……'}</small>
                   {on && <small>心得 {s.training.styles[k.name] || 0} / {masteryTarget(s.training.styles[k.name]) || '圆满'}</small>}
                 </div>;
@@ -769,9 +754,9 @@ function App({ saved }) {
           <span>{s.action.type === 'combat' ? `第 ${s.battle.round} 回合` : `${s.action.left}s`}</span>
         </div>}
         <div className="idle">
-          <b>挂机修行</b>
+          <b>修行安排</b>
           <i><em style={{ width: `${s.expTotal % 100}%` }} /></i>
-          <button onClick={() => { click(); setS(v => ({ ...v, idle: !v.idle })); }}>{s.idle ? '暂停' : '继续'}</button>
+          <button onClick={() => { click(); setSide('修炼'); }}>查看修炼</button>
           <button className="claim" disabled={!s.idleBank.silver} onClick={claimIdle}>领取银两 {s.idleBank.silver}</button>
           <button className="rest" disabled={s.silver < 5 || !needsInnRest(s)} onClick={rest}>客栈投宿<br />气血/内力全满 · 银两 -5</button>
         </div>
@@ -802,9 +787,9 @@ function App({ saved }) {
         {tab === '武学' ? <div className="skills">
           {s.bonusSkill && <div className="skill on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
           {SKILLS.filter(k => STYLES[k.name]).map(k => {
-            const on = level >= k.lv;
+            const on = ownsStyle(s, k.name);
             return <div key={k.name} className={`skill ${on ? 'on' : ''}`}>
-              <b>{k.name}</b><em>{on ? `${mastery(s.training.styles[k.name])}重 · 修炼能力 +${trainingAbility({ ...s, loadout: { ...s.loadout, style: k.name } }).styleBonus}` : `${k.lv} 级可悟`}</em>
+              <b>{k.name}</b><em>{on ? `${mastery(s.training.styles[k.name])}重 · 修炼能力 +${trainingAbility({ ...s, loadout: { ...s.loadout, style: k.name } }).styleBonus}` : '尚待师承或机缘'}</em>
               <small>{on ? k.text : '……'}</small>
             </div>;
           })}
@@ -822,11 +807,11 @@ function App({ saved }) {
         </div>}
       </aside>
     </div>
-    <footer><strong>江<br />湖<br />日<br />志</strong><div className="log-lines">{s.log.slice(0, 5).map((x, i) => <span key={x}>[{['夜亥时','夜戌时','夜子时','夜丑时','夜寅时'][i]}]　{x}</span>)}</div><button onClick={() => { click(); setS(v => ({ ...v, log: ['翻阅了更早的江湖见闻。', ...v.log].slice(0, 8) })); }}>查看更多　⌃</button></footer>
+    <footer><strong>江<br />湖<br />日<br />志</strong><div className="log-lines">{s.log.slice(0, 5).map((x, i) => <span key={`${i}:${x}`}>[{['夜亥时','夜戌时','夜子时','夜丑时','夜寅时'][i]}]　{x}</span>)}</div><button onClick={() => { click(); setSide('修炼'); }}>查看经历　⌃</button></footer>
     {(combatSetup || s.battle) && !savesOpen && <CombatPanel state={s} setup={combatSetup} onStart={beginCombat}
-      onClose={() => { setCombatSetup(null); if (s.battle?.settled) setS(v => ({ ...v, battle: null })); }}
-      onRetreat={() => setS(v => levelUpLog(retreatCombat(v, settleStory), v))} onSaves={() => setSavesOpen(true)} />}
-    {savesOpen && <SavePanel snapshot={() => runtime.snapshot(sRef.current)} options={saveOptions} notice={saveNotice} onLoad={loadCharacter} onClose={() => setSavesOpen(false)} />}
+      onClose={() => { setCombatSetup(null); dispatch({ type: 'CLOSE_COMBAT' }); }}
+      onRetreat={() => dispatch({ type: 'RETREAT' })} onSaves={() => setSavesOpen(true)} />}
+    {savesOpen && <SavePanel snapshot={() => sRef.current} options={saveOptions} notice={saveNotice} onLoad={loadCharacter} onClose={() => setSavesOpen(false)} />}
     {/* 功能面板：详细属性 / 成就 / 信件 / 排行 / 设置 */}
     {panel && <div className="story-mask" onClick={() => setPanel(null)}>
       <div className="panel" onClick={e => e.stopPropagation()}>
@@ -977,6 +962,7 @@ function App({ saved }) {
         </div>}
       </div>
     </div>}
+    {!creating && !savesOpen && <OfflineReport state={s} dispatch={dispatch} />}
   </main>;
 }
 

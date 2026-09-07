@@ -1,5 +1,6 @@
 import { SKILLS, START_SKILLS } from './martial.js';
 import { internalId } from '../game/training.js';
+import { ownsStyle, equippedWeapon, styleFamily } from '../game/progression.js';
 
 // 招名用于战斗演绎；未解锁的武学不能配入战斗。
 const forms = {
@@ -77,11 +78,10 @@ export const QUEST_COMBATS = {
   '青城破阵': 'qingcheng', '贵阳护商队': 'bandit', '神龙岛查海盗': 'pirate',
 };
 export function availableStyles(state) {
-  const level = Math.floor(state.expTotal / 100) + 1;
   return [...new Set([
-    ...SKILLS.filter(s => level >= s.lv && STYLES[s.name]).map(s => s.name),
+    ...SKILLS.filter(s => ownsStyle(state, s.name) && STYLES[s.name]).map(s => s.name),
     ...START_SKILLS.filter(s => s.name === state.bonusSkill?.name).map(s => s.name),
-  ])];
+  ])].filter(name => !state.p0 || styleFamily(name) === 'fist' || equippedWeapon(state).type === 'blade');
 }
 export function normalizeLoadout(state, input = state.loadout || {}) {
   const available = availableStyles(state);
