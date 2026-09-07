@@ -18,19 +18,20 @@ test('combat is immutable, deterministic and resumes the exact next move', () =>
   assert.deepEqual(advanceCombat(migrateSave(encodeSave(next))), advanceCombat(next));
   assert.deepEqual(finish(migrateSave(encodeSave(next))), finish(next));
 });
-test('battle resolves once; wins award scaled experience and losses never kill', () => {
-  const strong = startCombat({ ...initial(), devMult: 5, expTotal: 60000 }, { danger: 1 });
+test('admin combat multiplier preserves distinct win and loss rewards', () => {
+  const strong = startCombat({ ...initial(), devMult: 10, expTotal: 60000 }, { danger: 1 });
   const won = finish(strong);
   assert.equal(won.battle.status, 'won');
-  assert.equal(won.expTotal - strong.expTotal, 75);
+  assert.equal(won.expTotal - strong.expTotal, 150);
   assert.equal(advanceCombat(won), won);
   assert.equal(finishCombat(won, won.battle), won);
   assert.equal(migrateSave(encodeSave(won)).battle.settled, true);
-  const weak = startCombat({ ...initial(), hp: 1, expTotal: 0 }, { opponent: 'instructor', danger: 100 });
+  const weak = startCombat({ ...initial(), devMult: 10, hp: 1, expTotal: 0 }, { opponent: 'instructor', danger: 100 });
   const lost = finish(weak);
   assert.equal(lost.battle.status, 'lost');
   assert.equal(lost.hp, 1);
-  assert.equal(lost.expTotal, 8);
+  assert.equal(lost.expTotal, 80);
+  assert.ok(won.expTotal - strong.expTotal > lost.expTotal);
 });
 test('retreat settles once without farming spar rewards', () => {
   const state = startCombat(initial());
@@ -76,7 +77,7 @@ test('automatic breathing restores mana and every encounter has a finite ending'
   }
 });
 test('busy game rejects a second fight; multiplier is frozen at entry', () => {
-  const s = startCombat({ ...initial(), expTotal: 60000, devMult: 2 });
+  const s = startCombat({ ...initial(), expTotal: 60000, devMult: 10 });
   assert.equal(startCombat(s), s);
-  assert.equal(finish({ ...s, devMult: 10 }).expTotal - s.expTotal, 30);
+  assert.equal(finish({ ...s, devMult: 1 }).expTotal - s.expTotal, 150);
 });

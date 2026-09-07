@@ -57,8 +57,8 @@ test('noncombat quest remains a deterministic timed check and legacy spar enters
   assert.equal(engine.tick(s).battle, null);
   assert.equal(engine.tick({ ...initial(), action: { type: 'spar', zone: 0, left: 3, total: 8 } }).action.type, 'combat');
 });
-test('repeatable practice grants levels and current martial mastery every completion', () => {
-  const base = { ...initial(), idle: false, action: { type: 'routine', zone: 0, id: 'practice', left: 1, total: 10 } };
+test('repeatable practice grants normal levels and mastery independently of the combat test multiplier', () => {
+  const base = { ...initial(), idle: false, devMult: 10, action: { type: 'routine', zone: 0, id: 'practice', left: 1, total: 10 } };
   const first = engine.tick(base);
   assert.equal(first.routineDone['0:practice'], 1);
   assert.ok(first.expTotal > base.expTotal);

@@ -39,7 +39,7 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
   if (finite(input.rep, -1e12)) state.rep = input.rep;
   state.loc = input.loc;
   if (text(input.name) && input.name.trim()) state.name = input.name.slice(0, 40);
-  if ([1, 2, 5, 10].includes(input.devMult)) state.devMult = input.devMult;
+  if (input.devMult === 10) state.devMult = 10;
   for (const k of ['idle', 'muteBgm', 'muteSfx', 'muteVoice']) {
     if (typeof input[k] === 'boolean') state[k] = input[k];
     else if (k.startsWith('mute') && typeof input.mute === 'boolean') state[k] = input.mute;

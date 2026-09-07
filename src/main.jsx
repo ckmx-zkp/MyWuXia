@@ -578,7 +578,7 @@ function App({ saved }) {
     <header>
       <div className="brand"><small>THE LONG NIGHT OF</small><strong>江湖长夜</strong></div>
       <div className="currency"><span><i className="em em-silver" />银两 <b>{s.silver}</b></span><span className="cultivate"><i className="em em-cult" />修为 <b>{s.expTotal % 100}</b></span></div>
-      <button className="hbtn dev" onClick={() => { click(); setS(v => { const nx = (v.devMult || 1) === 1 ? 2 : v.devMult === 2 ? 5 : v.devMult === 5 ? 10 : 1; return { ...v, devMult: nx, log: [`开发者：收益调整为 ×${nx}。`, ...v.log].slice(0, 8) }; }); }}>收益 ×{s.devMult || 1}</button>
+      <button className="hbtn dev" title="仅用于比较自动交手的胜负收益" onClick={() => { click(); setS(v => { const nx = v.devMult === 10 ? 1 : 10; return { ...v, devMult: nx, log: [`管理员：战斗测试收益调整为 ×${nx}。`, ...v.log].slice(0, 8) }; }); }}>战斗测试 ×{s.devMult === 10 ? 10 : 1}</button>
       <div className="audio-toggles">
         <button className={`hbtn${s.muteBgm ? ' off' : ''}`} title="背景音乐" onClick={() => toggleAudio('muteBgm')}>{s.muteBgm ? '音乐关' : '音乐'}</button>
         <button className={`hbtn${s.muteSfx ? ' off' : ''}`} title="界面音效" onClick={() => toggleAudio('muteSfx')}>{s.muteSfx ? '音效关' : '音效'}</button>
@@ -936,7 +936,7 @@ function App({ saved }) {
           {routine.opponent && <p className="combat-warning">途中可能遭遇{OPPONENTS[routine.opponent].name}，将使用当前武学与内功自动交手；主动脱身没有本次历练收益。</p>}
           <small className="st-tag">循环支线 · {z.name}</small><h2>{routine.name}</h2>
           <p className="scene">{routine.text}</p><p className="dlg"><b>{routine.dialogue[0]}</b>{routine.dialogue[1]}</p>
-          <p className="hint" style={{ color: '#6d5a3c' }}>约需 {routine.time} 息。完成可得历练 +{reward.exp}、武学/内功心得 +{reward.training}、银两 +{reward.silver}；收益倍率生效。</p>
+          <p className="hint" style={{ color: '#6d5a3c' }}>约需 {routine.time} 息。完成可得历练 +{reward.exp}、武学/内功心得 +{reward.training}、银两 +{reward.silver}。</p>
           <div className="choices"><button onClick={() => { startRoutine(routine.id); setRoutineCard(null); }}>开始历练</button><button onClick={() => setRoutineCard(null)}>暂且离开</button></div>
         </div>
       </div>;

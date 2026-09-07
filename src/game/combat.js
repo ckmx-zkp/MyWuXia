@@ -25,7 +25,7 @@ export function startCombat(state, { opponent = 'student', danger = 20, place = 
   draw(random);
   const battle = {
     version: 1, opponent, place, context, seed: (seed === undefined ? random.seed : seed >>> 0) || 1, round: 0,
-    status: 'active', settled: false, rewardMult: state.devMult || 1,
+    status: 'active', settled: false, rewardMult: state.devMult === 10 ? 10 : 1,
     player: fighter(state.name, level, state.hp, loadout, state.attrAb || 0),
     enemy: fighter(enemy.name, enemyLevel, 100, { style: enemy.style, strategy: enemy.strategy, breath: enemy.breath, footwork: enemy.footwork }),
     log: [`${state.name}在${place}站定，与${enemy.name}遥遥相对。`, '双方依照武学配置自行出招，内力不济时会自动调息。'],

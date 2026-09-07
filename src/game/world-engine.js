@@ -18,12 +18,11 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
     const ab = ability(s);
     const p = main ? 1 : Math.max(0.25, Math.min(0.95, 0.45 + (ab / z.danger) * 0.55));
     if (combatResult === undefined ? rng() < p : combatResult || main) {
-      const m = s.devMult || 1;
       arr[idx] = true;
-      n.silver += r.silver * m;
-      n.expTotal += r.exp * m;
+      n.silver += r.silver;
+      n.expTotal += r.exp;
       if (combatResult === undefined) n.hp = clamp(n.hp + r.hp);
-      let gain = `银两 +${r.silver * m}、历练 +${r.exp * m}`;
+      let gain = `银两 +${r.silver}、历练 +${r.exp}`;
       if (q.item) {
         n.items = { ...n.items, [q.item]: (n.items[q.item] || 0) + 1 };
         gain += `、${ITEMS[q.item].name} ×1`;
@@ -34,7 +33,7 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
       n.log = [msg, ...s.log];
     } else {
       if (combatResult === undefined) n.hp = clamp(n.hp - 12);
-      n.expTotal += 5 * (s.devMult || 1);
+      n.expTotal += 5;
       n.fx = 'click';
       n.log = [`「${q.name}」行事受挫，带伤而返，仅得历练 5。养足气血或提升实力再来。`, ...s.log];
     }
@@ -46,7 +45,7 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
     const n = { ...s, action: null, fx: 'bell', loc: to, log: [`抵达${ZONES[to].name}。`, ...s.log] };
     if (!(s.visited || []).includes(to)) n.visited = [...(s.visited || [0]), to];
     if (combatResult !== undefined) {
-      n.silver = Math.max(0, n.silver + (combatResult ? 15 * (s.battle?.rewardMult || s.devMult || 1) : -10));
+      n.silver = Math.max(0, n.silver + (combatResult ? 15 : -10));
       n.log = [combatResult ? '你逼退拦路山贼，收回被劫的盘缠，继续赶路。' : '你舍下少许盘缠脱身，带伤走完余下路程。', ...n.log].slice(0, 8);
       return n;
     }
@@ -71,14 +70,13 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
     const chance = Math.max(0.35, Math.min(0.95, 0.55 + ability(s) / Math.max(20, z.danger) * 0.35));
     const success = combatResult === undefined ? routine.always || rng() < chance : combatResult;
     const reward = routineReward(z, routine, success);
-    const mult = s.devMult || 1;
     let next = { ...s, action: null, fx: success ? 'quest' : 'click',
-      silver: s.silver + reward.silver * mult,
-      expTotal: s.expTotal + (escaped ? 0 : reward.exp * mult), routineDone: { ...s.routineDone } };
+      silver: s.silver + reward.silver,
+      expTotal: s.expTotal + (escaped ? 0 : reward.exp), routineDone: { ...s.routineDone } };
     if (success) next.routineDone[`${zone}:${id}`] = (s.routineDone?.[`${zone}:${id}`] || 0) + 1;
-    if (!escaped) next = earnTraining(next, reward.training * mult);
+    if (!escaped) next = earnTraining(next, reward.training);
     const gain = escaped ? '你护住自身退回城中，本次没有获得修炼心得。'
-      : `历练 +${reward.exp * mult}、武学/内功心得 +${reward.training * mult}${reward.silver ? `、银两 +${reward.silver * mult}` : ''}。`;
+      : `历练 +${reward.exp}、武学/内功心得 +${reward.training}${reward.silver ? `、银两 +${reward.silver}` : ''}。`;
     next.log = [`循环支线「${routine.name}」${success ? '完成' : escaped ? '中止' : '受挫'}，${gain}`, ...s.log].slice(0, 8);
     return levelUpLog(next, s);
   }

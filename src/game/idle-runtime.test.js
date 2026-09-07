@@ -25,12 +25,12 @@ test('reset and independent games never inherit pending experience', () => {
   assert.equal(r.snapshot(initial()).expTotal, 0);
 });
 
-test('earned experience retains its original multiplier', () => {
+test('admin combat multiplier does not affect idle rewards', () => {
   const r = runtime();
   const s = initial();
   r.advance(s);
   r.advance({ ...s, devMult: 10 });
-  assert.equal(r.flush(s).expTotal, 22);
+  assert.equal(r.flush(s).expTotal, 4);
 });
 
 test('pause and timed actions settle pending rewards without earning more', () => {

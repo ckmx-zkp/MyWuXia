@@ -1,5 +1,4 @@
-// Each mounted game owns its pending rewards. Store earned points, not seconds,
-// so changing the reward multiplier cannot reprice earlier ticks.
+// Each mounted game owns its pending rewards. Store earned points, not seconds.
 import { earnTraining, internalId } from './training.js';
 export function createIdleRuntime(levelUp, level) {
   let points = 0;
@@ -19,8 +18,8 @@ export function createIdleRuntime(levelUp, level) {
   };
   const advance = state => {
     if (!state.idle || state.action) return flush(state);
-    points += 2 * (state.devMult || 1);
-    earned.push({ amount: state.devMult || 1, style: state.loadout?.style || '基本拳脚', inner: internalId(state) });
+    points += 2;
+    earned.push({ amount: 1, style: state.loadout?.style || '基本拳脚', inner: internalId(state) });
     ticks += 1;
     if (ticks < 5 && level(state.expTotal + points) === level(state.expTotal)) return state;
     return flush(state);

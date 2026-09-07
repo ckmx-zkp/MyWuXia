@@ -47,7 +47,7 @@ export default function CombatPanel({ state, setup, onStart, onClose, onRetreat,
         {!setup?.context && <div className="combat-opponents">{['student', 'swordsman', 'instructor'].map(id => <button key={id} aria-pressed={opponent === id} className={opponent === id ? 'selected' : ''} onClick={() => setOpponent(id)}><b>{OPPONENTS[id].name}</b><small>{OPPONENTS[id].realm} · {OPPONENTS[id].danger}难度</small></button>)}</div>}
         <p className="combat-warning">{enemy.name} · {enemy.realm} · 危险度：{enemy.danger}。{enemy.text}</p>
         <LoadoutEditor state={state} value={loadout} onChange={setLoadout} />
-        <p className="combat-note">气血按当前伤势入场（{state.hp}/100），内力在每场交手前调匀。{setup?.context ? '胜负与脱身都会留下剧情后果，主线仍可继续。' : '胜得 15 历练，败或平手得 8；主动收招无奖励，切磋最多轻伤。'}收益按开战时倍率计算。</p>
+        <p className="combat-note">气血按当前伤势入场（{state.hp}/100），内力在每场交手前调匀。{setup?.context ? '胜负与脱身都会留下剧情后果，主线仍可继续。' : '胜得 15 历练，败或平手得 8；主动收招无奖励，切磋最多轻伤。'}管理员倍率在开战时固定，仅放大战斗历练与心得。</p>
         <div className="combat-actions"><button onClick={onClose}>暂不交手</button><button className="primary" onClick={() => onStart({ ...setup, opponent, loadout })}>开始自动交手</button></div>
       </> : <>
         {battle.context && <p className="combat-warning">{enemy.name} · {enemy.realm} · 危险度：{enemy.danger}。{enemy.text}</p>}

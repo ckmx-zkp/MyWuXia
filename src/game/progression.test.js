@@ -22,16 +22,16 @@ test('idle rewards train the selected pair and silver can only be claimed once',
   assert.equal(claimIdleRewards(claimed), claimed);
   assert.deepEqual(migrateSave(encodeSave(claimed)), { ...claimed, fx: null });
 });
-test('pending mastery keeps its original style and multiplier through save and switching', () => {
+test('pending mastery keeps its original style and ignores the combat test multiplier', () => {
   const r = createIdleRuntime(s => s, exp => Math.floor(exp / 100));
   const s = initial(); r.advance(s);
   const other = { ...s, devMult: 10, loadout: { ...s.loadout, style: '罗汉拳', internal: 'luohan' } };
   r.advance(other);
   const snapshot = r.snapshot(other);
   assert.equal(snapshot.training.styles['基本拳脚'], 1);
-  assert.equal(snapshot.training.styles['罗汉拳'], 10);
-  assert.equal(snapshot.training.internals.luohan, 10);
-  assert.equal(snapshot.idleBank.silver, 11);
+  assert.equal(snapshot.training.styles['罗汉拳'], 1);
+  assert.equal(snapshot.training.internals.luohan, 1);
+  assert.equal(snapshot.idleBank.silver, 2);
   assert.deepEqual(r.snapshot(other), snapshot);
 });
 test('mastery and compatible internal skills change actual combat and survive an exact resume', () => {
