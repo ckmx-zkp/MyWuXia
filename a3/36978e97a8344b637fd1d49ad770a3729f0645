@@ -1,0 +1,30 @@
+docs/PROGRESS.md
+  s_106aca82155d0d::t_1e4576cf6dcb97 60-61
+AGENTS.md
+  s_106aca82155d0d::t_d17d61305c8756 279
+  s_106aca82155d0d::t_1e4576cf6dcb97 21
+docs/gdd/11-idle-rpg-roadmap.md
+  s_106aca82155d0d::t_1e4576cf6dcb97 1-313
+docs/gdd/08-jiangnan-daily-quests.md
+  s_106aca82155d0d::t_d17d61305c8756 9
+docs/architecture-optimization.md
+  s_106aca82155d0d::t_d17d61305c8756 57
+docs/gdd/README.md
+  s_106aca82155d0d::t_1e4576cf6dcb97 15-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "a336978e97a8344b637fd1d49ad770a3729f0645",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
