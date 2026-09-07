@@ -9,7 +9,7 @@ if "location /api/" in text:
 block = """    location /api/ {
         proxy_pass http://127.0.0.1:8083;
         proxy_http_version 1.1;
-        proxy_read_timeout 20s;
+        proxy_read_timeout 45s;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $remote_addr;
     }
