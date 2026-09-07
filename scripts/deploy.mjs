@@ -71,7 +71,7 @@ function sshReachable(alias) {
 }
 
 function deployApi(host) {
-  const files = ['index.mjs', 'db.mjs', 'keys.mjs', 'minimax.mjs', 'narrative.mjs'];
+  const files = ['index.mjs', 'db.mjs', 'keys.mjs', 'minimax.mjs', 'narrative.mjs', 'json-store.mjs'];
   run('ssh', ['-o', 'BatchMode=yes', host, 'mkdir -p /srv/jianghu-api/server /srv/jianghu-api/src/game /srv/jianghu-api/data']);
   run('scp', ['-o', 'BatchMode=yes', ...files.map(name => join('server', name)), `${host}:/srv/jianghu-api/server/`]);
   run('scp', ['-o', 'BatchMode=yes', 'src/game/narrative-overlay.js', 'src/game/memory-doc.js', 'src/game/save-id.js', `${host}:/srv/jianghu-api/src/game/`]);
@@ -85,8 +85,12 @@ export JIANGHU_DB_PATH=/srv/jianghu-api/data/jianghu.sqlite
 export JIANGHU_KEY_PATH=/srv/jianghu-api/Key.txt
 nohup node server/index.mjs >/srv/jianghu-api/api.log 2>&1 &
 echo $! > api.pid
-sleep 1
-curl --fail --silent --show-error http://127.0.0.1:8083/api/health >/dev/null
+sleep 2
+if ! curl --fail --silent --show-error http://127.0.0.1:8083/api/health; then
+  echo 'API health failed:' >&2
+  tail -n 40 /srv/jianghu-api/api.log >&2 || true
+  exit 1
+fi
 if [ -f /etc/nginx/conf.d/jianghu.conf ]; then python3 /srv/jianghu-api/patch-nginx-api.py /etc/nginx/conf.d/jianghu.conf; fi
 `;
   run('ssh', ['-o', 'BatchMode=yes', host, 'bash', '-s'], { input: start, stdio: ['pipe', 'inherit', 'inherit'] });

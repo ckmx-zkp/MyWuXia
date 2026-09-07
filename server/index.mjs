@@ -6,7 +6,9 @@ import { createNarrativeService } from './narrative.mjs';
 
 const PORT = Number(process.env.JIANGHU_API_PORT || 8083);
 const key = loadMinimaxKey();
-const store = bindDatabase(openDatabase());
+const opened = openDatabase();
+const store = bindDatabase(opened);
+const engine = opened?.engine === 'json' ? 'json' : 'sqlite';
 const completeChat = key && process.env.JIANGHU_LLM !== '0' ? createMinimaxChat({ key }) : null;
 const narrative = createNarrativeService({ store, completeChat });
 const hits = new Map();
@@ -57,7 +59,7 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url || '/', 'http://127.0.0.1');
   try {
     if (req.method === 'GET' && url.pathname === '/api/health') {
-      return send(res, 200, { ok: true, llm: !!completeChat, model: process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5' });
+      return send(res, 200, { ok: true, llm: !!completeChat, store: engine, model: process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5' });
     }
     if (req.method === 'GET' && url.pathname.startsWith('/api/memory/')) {
       const saveId = url.pathname.slice('/api/memory/'.length);
@@ -88,5 +90,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`jianghu api http://127.0.0.1:${PORT} llm=${completeChat ? 'on' : 'off'}`);
+  console.log(`jianghu api http://127.0.0.1:${PORT} llm=${completeChat ? 'on' : 'off'} store=${engine}`);
 });

@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { bindDatabase, openDatabase } from './db.mjs';
+import { openJsonStore } from './json-store.mjs';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createNarrativeService } from './narrative.mjs';
 import { parseModelJson } from './minimax.mjs';
 import { newSaveId } from '../src/game/save-id.js';
@@ -48,6 +52,17 @@ test('broken model output falls back to the static template', async () => {
   assert.equal(result.overlay, null);
 });
 
+test('json store isolates generated copy by save id', async () => {
+  const store = openJsonStore(join(mkdtempSync(join(tmpdir(), 'jh-')), 'mem.json'));
+  const api = createNarrativeService({ store, completeChat: async () => ({ parsed: {
+    scene: '改写后的场景。', dialogues: [['执事', '走一遭。']], hearsay: '考核仍开。',
+    choices: { test: { text: '请考', outcome: '通过。', failText: '再试。' } },
+  }, model: 'fake' }) });
+  const saveId = newSaveId();
+  const first = await api.personalize({ saveId, eventId: 'wudang_exam', nodeId: 'test', character: { name: '沈孤鸿' }, template });
+  assert.equal(first.source, 'generated');
+  assert.equal((await api.personalize({ saveId, eventId: 'wudang_exam', nodeId: 'test', character: { name: '沈孤鸿' }, template })).source, 'cache');
+});
 test('model json parser accepts fenced objects', () => {
   assert.equal(parseModelJson('```json\n{"scene":"a"}\n```').scene, 'a');
   assert.equal(parseModelJson('<think>plan</think>{"scene":"a"}').scene, 'a');

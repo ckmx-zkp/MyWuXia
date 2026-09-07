@@ -1,13 +1,18 @@
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DatabaseSync } from 'node:sqlite';
+import { openJsonStore } from './json-store.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const sqlite = await import('node:sqlite').catch(() => null);
 
 export function openDatabase(path = process.env.JIANGHU_DB_PATH || join(ROOT, 'data', 'jianghu.sqlite')) {
+  if (!sqlite?.DatabaseSync) {
+    const jsonPath = path === ':memory:' ? join(ROOT, 'data', 'jianghu-memory.json') : path.replace(/\.sqlite$/i, '.json');
+    return openJsonStore(jsonPath);
+  }
   if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
-  const db = new DatabaseSync(path);
+  const db = new sqlite.DatabaseSync(path);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   db.exec(`
     CREATE TABLE IF NOT EXISTS saves (
@@ -40,6 +45,7 @@ export function openDatabase(path = process.env.JIANGHU_DB_PATH || join(ROOT, 'd
 }
 
 export function bindDatabase(db) {
+  if (db?.engine === 'json' || typeof db.prepare !== 'function') return db;
   const upsertSave = db.prepare('INSERT INTO saves(id,name,created_at,updated_at) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, updated_at=excluded.updated_at');
   const putMemory = db.prepare('INSERT INTO memories(save_id,version,summary,payload_json,updated_at) VALUES (?,?,?,?,?) ON CONFLICT(save_id) DO UPDATE SET version=excluded.version, summary=excluded.summary, payload_json=excluded.payload_json, updated_at=excluded.updated_at');
   const getMemory = db.prepare('SELECT version, summary, payload_json, updated_at FROM memories WHERE save_id = ?');
