@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 const run = (command, args, options = {}) => execFileSync(command, args, { stdio: 'inherit', ...options });
 const npmCli = process.env.npm_execpath;
 if (!npmCli) throw new Error('请使用 npm run deploy 启动发布。');
-const host = process.env.JIANGHU_DEPLOY_HOST || 'aliyun_ecs';
+const host = process.env.JIANGHU_DEPLOY_HOST || 'aliyun-prayer';
 run(process.execPath, [npmCli, 'test']);
 run(process.execPath, [npmCli, 'run', 'build']);
 

@@ -1,0 +1,287 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "bxj_z07_hexi_unpaid_garrison",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/bxj_z07_hexi_unpaid_garrison.json",
+  "zone": 7,
+  "design": {
+    "title": "河西欠饷",
+    "hook": "河西军屯欠饷，守卒与商队都开始拿粮草抵账。",
+    "playerRole": "替军屯民户讨清一笔小账，不受封赏",
+    "sources": {
+      "novel": [
+        {
+          "beat": "明末财政困顿是小说时代背景。",
+          "use": "只落在河西军屯欠饷。"
+        },
+        {
+          "beat": "《碧血剑》主线政治人物不在此授予玩家官职。",
+          "use": "避免封爵与军职。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "河西军屯依赖粮饷与运输。",
+          "use": "欠饷会外溢到商旅。"
+        },
+        {
+          "fact": "边地马贼会利用军屯松弛。",
+          "use": "提供局部战斗压力。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "弱区不强行嫁接主角人物。",
+          "use": "用时代背景支撑即可。"
+        },
+        {
+          "slot": "欠饷解决只能是一笔账，不是财政改革。",
+          "use": "控制规模。"
+        }
+      ]
+    },
+    "echo": "改变河西军屯赊账价格与商队对白。",
+    "facts": [
+      "bxj_z07_heard",
+      "bxj_z07_evidence",
+      "bxj_z07_safe",
+      "bxj_z07_recorded"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "河西欠饷",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "zone": 7,
+        "scene": "河西军屯欠饷，守卒与商队都开始拿粮草抵账。 茶摊与路边行旅把事情越说越乱，真正受影响的是眼前几户普通人。",
+        "dialogues": [
+          [
+            "过路人",
+            "大势我不懂，只怕今日这条路断了。"
+          ],
+          [
+            "老者",
+            "先把眼前人的去路说清。"
+          ]
+        ],
+        "hearsay": "欠饷久了，军户和商户都开始拿下一顿饭抵旧账。",
+        "choices": [
+          {
+            "id": "bxj_z07_heard",
+            "text": "先把当事人的说法听全。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "bxj_z07_heard": true
+              }
+            },
+            "outcome": "你分清传闻与眼前事实。"
+          },
+          {
+            "id": "bxj_z07_pay",
+            "text": "先出一笔小钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人暂时不必冒险硬闯。"
+          }
+        ]
+      },
+      "n1": {
+        "zone": 7,
+        "scene": "当事人把能核实的时辰、人数和去向逐一说清，许多吓人的话其实都只是转述。",
+        "dialogues": [
+          [
+            "当事人",
+            "我只说我亲眼见的，其余不敢担。"
+          ],
+          [
+            "过路人",
+            "有这一句就够查了。"
+          ]
+        ],
+        "hearsay": "只要留下一个可复述的具体事实，事情就不会全被大势传闻吞掉。",
+        "choices": [
+          {
+            "id": "bxj_z07_evidence",
+            "text": "把可核实的事实记下来。",
+            "requires": {
+              "flag": "bxj_z07_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "bxj_z07_evidence": true
+              }
+            },
+            "outcome": "后续交涉有了明确依据。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 7,
+        "scene": "收了垫付银钱的人缓过气来，也愿意指出哪条路最危险、哪处关口还能讲理。",
+        "dialogues": [
+          [
+            "当事人",
+            "钱不是买命，只是让我不用今晚就赌命。"
+          ],
+          [
+            "行脚人",
+            "有余地，才有交涉。"
+          ]
+        ],
+        "hearsay": "花钱只买到时间，不会自动解决后续盘查。",
+        "choices": [
+          {
+            "id": "bxj_z07_route",
+            "text": "趁这点时间换一条稳妥路线。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你避开了最容易爆发冲突的正路。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 7,
+        "scene": "前路果然有人拦查。对方先问身份，再问货物或去向，周围人都屏着气。",
+        "dialogues": [
+          [
+            "拦路者",
+            "说清楚，便放你们过去。"
+          ],
+          [
+            "当事人",
+            "我们只求过路。"
+          ]
+        ],
+        "hearsay": "有证据可交涉；若局面翻脸，也应以脱身收束，而不是追杀。",
+        "choices": [
+          {
+            "id": "bxj_z07_safe",
+            "text": "把前面核实的事实摆出来交涉。",
+            "requires": {
+              "flag": "bxj_z07_evidence"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "bxj_z07_safe": true
+              }
+            },
+            "outcome": "对方找不到继续扣人的借口，只得放行。"
+          },
+          {
+            "id": "bxj_z07_clash",
+            "text": "护住同行者，逼出退路。",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -7
+            },
+            "outcome": "你只求脱身，没有追击。",
+            "failText": "你没能硬顶过去，只得退到人多或有官面见证处，再凭口供收束。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 7,
+        "scene": "事情回到一张路单、一笔银钱或一句口供的尺度，没有被抬成改朝换代的大事。",
+        "dialogues": [
+          [
+            "当事人",
+            "能活着过去，比争谁说得响更要紧。"
+          ],
+          [
+            "老者",
+            "小账写清，大话少说。"
+          ]
+        ],
+        "hearsay": "若此前留下事实，后来人会照此询问；若只靠银钱，路仍能走但代价更高。",
+        "choices": [
+          {
+            "id": "bxj_z07_recorded",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "bxj_z07_recorded": true
+              }
+            },
+            "outcome": "这件小事有了存档与世界回响。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 7,
+        "scene": "天色渐暗，同行者各自上路。大势仍在变化，但这一小群人的去路没有被无端吞没。",
+        "dialogues": [
+          [
+            "当事人",
+            "你没替天下作主，只替我们把这一程走完。"
+          ]
+        ],
+        "hearsay": "后来本区再提此事，会先引用 bxj_z07_recorded 所留下的那条可查记录。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "欠饷久了，军户和商户都开始拿下一顿饭抵旧账。"
+}

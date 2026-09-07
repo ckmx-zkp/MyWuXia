@@ -1,0 +1,290 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "bxj_z00_jiangnan_grain_letter",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/bxj_z00_jiangnan_grain_letter.json",
+  "zone": 0,
+  "design": {
+    "title": "江南一封粮单",
+    "hook": "茶客议袁督师旧案，华山下院却缺一车实粮。",
+    "playerRole": "送信送粮的过路人，不代袁承志平反。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "袁崇焕冤案是《碧血剑》重要背景。",
+          "use": "只作民间议论与见闻，不赋予玩家国策平反权。"
+        },
+        {
+          "beat": "袁承志与华山关系深厚。",
+          "use": "只借华山下院募粮，不让玩家成为掌门门人。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "明末江南是南逃官民与漕运汇集之地。",
+          "use": "让逃难与运粮在码头相遇。"
+        },
+        {
+          "fact": "乱世中的民粮与军粮区分会影响查验。",
+          "use": "把冲突放在文书与船货。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "袁崇焕评价争议：玩家只能保存目击与民间说法。",
+          "use": "防止支线把历史争论写成一锤定音。"
+        },
+        {
+          "slot": "华山线边界：允许下院杂役和募粮，不开放金蛇洞核心传承。",
+          "use": "把华山只作为受援对象。"
+        }
+      ]
+    },
+    "echo": "改变扬州茶客对白、码头查粮态度与华山下院粮价。",
+    "facts": [
+      "bxj_z00_grain_note",
+      "bxj_z00_refugee_heard",
+      "bxj_z00_manifest_checked",
+      "bxj_z00_grain_released",
+      "bxj_z00_recorded"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "江南一封粮单",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "room": "inn",
+        "scene": "扬州水边客栈里，茶客正低声说袁督师旧案，门外却有华山弟子为下院募粮。一个南京来的降官家眷也在等南下船。",
+        "dialogues": [
+          [
+            "茶客",
+            "冤不冤，自有后人说，我只知道当年边军不是一句话能说清。"
+          ],
+          [
+            "华山弟子",
+            "山下缺粮，不求你论朝廷，只求把这封粮单送到码头。"
+          ]
+        ],
+        "hearsay": "袁督师旧案在茶客口中仍有争议，华山下院缺粮却是眼前实事。",
+        "choices": [
+          {
+            "id": "bxj_z00_take_grain_note",
+            "text": "接下粮单去码头。",
+            "requires": {
+              "knowledge": 1
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "bxj_z00_grain_note": true
+              }
+            },
+            "outcome": "你只替下院送信送粮，不替任何人翻案。"
+          },
+          {
+            "id": "bxj_z00_help_refugee",
+            "text": "先替南逃家眷付一晚房钱。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "bxj_z00_refugee_heard": true
+              }
+            },
+            "outcome": "家眷愿意说清南京一路见闻。"
+          }
+        ]
+      },
+      "n1": {
+        "room": "dock",
+        "scene": "钱塘码头样的水埠上堆着米袋，船户却怕官兵临检，不肯替华山下院装货。",
+        "dialogues": [
+          [
+            "船户",
+            "米我能装，查起来谁替我说？"
+          ],
+          [
+            "华山弟子",
+            "只是一车口粮，不是军粮。"
+          ]
+        ],
+        "hearsay": "只要有人把粮单与船号对上，船户就肯开舱。",
+        "choices": [
+          {
+            "id": "bxj_z00_check_manifest",
+            "text": "核对粮单与船号。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "knowledge": 1,
+              "flag": {
+                "bxj_z00_manifest_checked": true
+              }
+            },
+            "outcome": "粮货来路有了说法。"
+          }
+        ]
+      },
+      "n2": {
+        "room": "inn",
+        "scene": "客栈后堂里，南逃家眷说南京城里人人自保，有人把降官、逃官、商人混作一谈。",
+        "dialogues": [
+          [
+            "妇人",
+            "我们只想渡江，不求你替谁洗名。"
+          ],
+          [
+            "茶客",
+            "乱世里一顶帽子能压死人。"
+          ]
+        ],
+        "hearsay": "她知道码头今夜有兵巡查，却不知道查的是谁。",
+        "choices": [
+          {
+            "id": "bxj_z00_buy_pass",
+            "text": "出银请熟船户安排夜渡。",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你替家眷买到一条路，没有替他们改身份。"
+          }
+        ]
+      },
+      "n3": {
+        "room": "dock",
+        "scene": "码头巡兵拦住装粮与上船的人，问这一批米是不是私运军粮。",
+        "dialogues": [
+          [
+            "巡兵",
+            "粮从哪里来，送到哪里去？"
+          ],
+          [
+            "船户",
+            "就是山下院口粮。"
+          ]
+        ],
+        "hearsay": "若先核过粮单，可凭文书解释；若没有，也能护人退回客栈再走别路。",
+        "choices": [
+          {
+            "id": "bxj_z00_words_clear",
+            "text": "拿核过的粮单解释。",
+            "requires": {
+              "flag": "bxj_z00_manifest_checked"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "bxj_z00_grain_released": true
+              }
+            },
+            "outcome": "巡兵只记民粮，不再扣船。"
+          },
+          {
+            "id": "bxj_z00_dock_clash",
+            "text": "护着船户退开。",
+            "combat": {
+              "opponent": "soldiers",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -7
+            },
+            "outcome": "你逼出一条退路，粮未被夺。",
+            "failText": "你挡不住巡兵，只得退回客栈，改由白日补文书放行。"
+          }
+        ]
+      },
+      "n4": {
+        "room": "court",
+        "scene": "府衙门前有人愿意给民粮补一张简短查验凭据，条件只是把来去写清。",
+        "dialogues": [
+          [
+            "书吏",
+            "别把袁督师旧案、南京降官和这车米混成一桩。"
+          ],
+          [
+            "华山弟子",
+            "正是这个理。"
+          ]
+        ],
+        "hearsay": "官面只处理粮货与行旅，不处理旧案平反。",
+        "choices": [
+          {
+            "id": "bxj_z00_register_grain",
+            "text": "付纸墨钱办妥民粮查验。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "bxj_z00_recorded": true
+              }
+            },
+            "outcome": "粮车和南逃船客都获得可查询的放行记录。"
+          }
+        ]
+      },
+      "n5": {
+        "room": "dock",
+        "scene": "夜潮起来，粮船与客船先后离岸。茶客仍在谈袁督师，可这一夜没有谁被你变成忠臣或逆臣。",
+        "dialogues": [
+          [
+            "船户",
+            "大事你没断，小路你倒替人走通了。"
+          ]
+        ],
+        "hearsay": "扬州茶客后来再谈旧案，会有人提醒：议论可以，别拿一车民粮和几个逃难人作证据。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "江南有人议袁督师冤案，也有人只关心一车粮能否送到。"
+}
