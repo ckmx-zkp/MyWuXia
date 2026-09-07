@@ -30,8 +30,10 @@ test('overlay merge keeps choice ids and drops extra fields', () => {
 
 test('invalid overlay falls back instead of rewriting the graph', () => {
   const template = extractTemplate(node);
-  assert.equal(mergeOverlay(template, { scene: 'x', hearsay: 'y', dialogues: [], choices: {} }), null);
-  assert.equal(mergeOverlay(template, { scene: 'x', hearsay: 'y', dialogues: [['沈药师', '改']], choices: { other: { text: '错' } } }), null);
+  assert.equal(mergeOverlay(template, null), null);
+  const partial = mergeOverlay(template, { scene: '改写后的药堂门口。', hearsay: '药铺近日缺人。', dialogues: [], choices: { other: { text: '错' } } });
+  assert.equal(partial.choices.accept.text, '应下护送');
+  assert.deepEqual(partial.dialogues[0], ['沈药师', '药要送去城南。']);
   assert.deepEqual(applyOverlay(node, null), node);
 });
 

@@ -5,7 +5,7 @@
 
 ## 当前交付：P1 支线个人文案与后端（2026-09-08）
 
-全部固定支线（`SIDE_EVENTS`，含区域内容包）经本地 API 接入 MiniMax-M2.5：程序仍决定事实、奖励和分支，模型只改写情境、对白、选项字面与传闻。按 `saveId` 隔离记忆文档与生成缓存（Node 22+ 用 SQLite，线上 Node 20 回退 JSON 文件）；密钥仅服务端 `Key.txt`，失败回退静态文案。本地 `npm run api` 监听 `127.0.0.1:8083`，Vite `/api` 代理；线上 nginx 将 `/api/` 转到同一端口。
+全部固定支线经 `POST /api/narrative/node` 接入 MiniMax。国内官方入口 `https://api.minimax.cn/v1`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 读取 `content` 与 `reasoning_details`。程序仍决定事实与奖励；失败回退静态文案。标题出现「此番见闻因人而异」表示已用生成稿。Agent / MCP / tools 设计见 `docs/gdd/13-agent-workflow.md`。
 
 ## 此前交付：P0-A/B/C 与城市后续（2026-09-07）
 

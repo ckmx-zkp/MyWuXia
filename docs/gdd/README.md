@@ -15,6 +15,8 @@
 | [09-auto-combat-and-saves.md](09-auto-combat-and-saves.md) | 自动交手、武学成长、体力内力与存档规范 |
 | [10-changing-fates.md](10-changing-fates.md) | 可改变命运的事件图与世界状态规范 |
 | [11-idle-rpg-roadmap.md](11-idle-rpg-roadmap.md) | 对标成熟放置武侠的目标框架与 P0/P1/P2 路线图 |
+| [12-city-continuity.md](12-city-continuity.md) | 城市首页、跨区回信与 P0-A/B/C 持续玩法 |
+| [13-agent-workflow.md](13-agent-workflow.md) | MiniMax Agent 工作流、输入输出、MCP 与 tools |
 | [quests/DL-01-wuliang-crisis.md](quests/DL-01-wuliang-crisis.md) | 任务树剧本：大理·DL-01《无量山风波》（含完整对话与事件文案） |
 | [quests/DL-02-nandi-track.md](quests/DL-02-nandi-track.md) | 任务树剧本：大理·DL-02《南帝旧踪与桃源避世》（含完整对话与事件文案） |
 | [quests/JX-01-zuixianlou.md](quests/JX-01-zuixianlou.md) | 任务树剧本：嘉兴·JX-01《醉仙楼十八年之约》（含完整对话与事件文案） |

@@ -9,7 +9,8 @@ const key = loadMinimaxKey();
 const opened = openDatabase();
 const store = bindDatabase(opened);
 const engine = opened?.engine === 'json' ? 'json' : 'sqlite';
-const completeChat = key && process.env.JIANGHU_LLM !== '0' ? createMinimaxChat({ key }) : null;
+const MODEL = process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5-highspeed';
+const completeChat = key && process.env.JIANGHU_LLM !== '0' ? createMinimaxChat({ key, model: MODEL }) : null;
 const narrative = createNarrativeService({ store, completeChat });
 const hits = new Map();
 
@@ -59,7 +60,7 @@ const server = createServer(async (req, res) => {
   const url = new URL(req.url || '/', 'http://127.0.0.1');
   try {
     if (req.method === 'GET' && url.pathname === '/api/health') {
-      return send(res, 200, { ok: true, llm: !!completeChat, store: engine, model: process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5' });
+      return send(res, 200, { ok: true, llm: !!completeChat, store: engine, model: MODEL, base: process.env.MINIMAX_API_BASE || 'https://api.minimax.cn' });
     }
     if (req.method === 'GET' && url.pathname.startsWith('/api/memory/')) {
       const saveId = url.pathname.slice('/api/memory/'.length);

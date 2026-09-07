@@ -11,16 +11,18 @@ import './progression.css';
 
 function usePersonalizedNode(state, eventId, nodeId, node, eventName) {
   const [overlay, setOverlay] = useState(null);
+  const [source, setSource] = useState('template');
   const hash = factHash({ name: state.name, loc: state.loc, facts: state.p0?.facts, journal: state.p0?.journal });
   useEffect(() => {
     let live = true;
-    setOverlay(null);
     requestNarrativeNode(state, eventId, nodeId, node, eventName).then(result => {
-      if (live) setOverlay(result.overlay);
+      if (!live) return;
+      setOverlay(result.overlay);
+      setSource(result.source || 'template');
     });
     return () => { live = false; };
   }, [state.saveId, eventId, nodeId, hash, node, eventName]);
-  return { view: applyOverlay(node, overlay), personalized: !!overlay };
+  return { view: applyOverlay(node, overlay), personalized: source === 'generated' || source === 'cache' };
 }
 
 function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, destination, room }) {
@@ -29,7 +31,7 @@ function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, des
   const here = { ...s, p0: { ...s.p0, room } };
   const lines = personalized ? view.dialogues : chooseDialogue(s, node);
   return <section className="p0-event">
-    <h3>{event.name} · {progress ? '继续此事' : '新线索'}</h3>
+    <h3>{event.name} · {progress ? '继续此事' : '新线索'}{personalized ? ' · 此番见闻因人而异' : ''}</h3>
     {!atEventNode(here, node) ? <><p>{view.hearsay}</p>{destination(zone, node.room)}</> : !progress ? <><p>{view.hearsay}</p><button disabled={busy} onClick={() => dispatch({ type: 'DISCOVER_EVENT', id })}>问清此事</button></> : <>
       <p>{view.scene}</p>{lines.map(([who, text], i) => <p key={i}><b>{who}：</b>{text}</p>)}
       <div className="p0-choices">{view.choices.filter(c => testCondition(s, c.visibleWhen)).map(c => {

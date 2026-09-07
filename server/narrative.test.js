@@ -44,9 +44,17 @@ test('generated copy is cached per save and fact hash, and model cannot add choi
   assert.equal(api.memory(other).document.name, '别号');
 });
 
-test('broken model output falls back to the static template', async () => {
+test('partial model copy keeps template choice ids', async () => {
   const store = bindDatabase(openDatabase(':memory:'));
   const api = createNarrativeService({ store, completeChat: async () => ({ parsed: { scene: '只改了场景' }, model: 'fake' }) });
+  const result = await api.personalize({ saveId: newSaveId(), eventId: 'wudang_exam', nodeId: 'test', character: { name: '沈孤鸿' }, template });
+  assert.equal(result.source, 'generated');
+  assert.equal(result.overlay.scene, '只改了场景');
+  assert.equal(result.overlay.choices.test.text, '请教习考校');
+});
+test('unusable model output falls back to the static template', async () => {
+  const store = bindDatabase(openDatabase(':memory:'));
+  const api = createNarrativeService({ store, completeChat: async () => ({ parsed: null, model: 'fake' }) });
   const result = await api.personalize({ saveId: newSaveId(), eventId: 'wudang_exam', nodeId: 'test', character: { name: '沈孤鸿' }, template });
   assert.equal(result.source, 'template');
   assert.equal(result.overlay, null);
@@ -67,5 +75,6 @@ test('model json parser accepts fenced objects', () => {
   assert.equal(parseModelJson('```json\n{"scene":"a"}\n```').scene, 'a');
   assert.equal(parseModelJson('<think>plan</think>{"scene":"a"}').scene, 'a');
   assert.equal(parseModelJson('```json\n{"scene":"a"}\n```\nchoices: {"accept":{}}').scene, 'a');
+  assert.equal(parseModelJson('prefix {"scene":"b","hearsay":"c"} trailing {').scene, 'b');
   assert.equal(parseModelJson('not json'), null);
 });

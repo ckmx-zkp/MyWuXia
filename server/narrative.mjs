@@ -22,7 +22,7 @@ export function narrativePrompt({ memory, eventName, template, character }) {
   ].join('\n');
 }
 
-export function createNarrativeService({ store, completeChat, model = 'MiniMax-M2.5' }) {
+export function createNarrativeService({ store, completeChat, model = 'MiniMax-M2.5-highspeed' }) {
   const inflight = new Map();
   return {
     remember(saveId, character = {}) {
@@ -55,7 +55,10 @@ export function createNarrativeService({ store, completeChat, model = 'MiniMax-M
           { role: 'user', content: narrativePrompt({ memory: document, eventName, template: canon, character }) },
         ]);
         const overlay = mergeOverlay(canon, result.parsed);
-        if (!overlay) return { source: 'template', overlay: null, hash };
+        if (!overlay) {
+          console.error('narrative merge_failed', event, node);
+          return { source: 'template', overlay: null, hash };
+        }
         store.saveGenerated(saveId, event, node, hash, overlay, result.model || model);
         return { source: 'generated', overlay, hash };
       })().finally(() => inflight.delete(key));

@@ -16,31 +16,28 @@ export function extractTemplate(node = {}) {
 
 export function mergeOverlay(template, overlay) {
   if (!template || !overlay || typeof overlay !== 'object' || Array.isArray(overlay)) return null;
-  const scene = clip(overlay.scene, 800);
-  const hearsay = clip(overlay.hearsay, 400);
+  const scene = clip(overlay.scene, 800) || template.scene;
+  const hearsay = clip(overlay.hearsay, 400) || template.hearsay;
   if (!scene || !hearsay) return null;
-  if (!Array.isArray(overlay.dialogues) || overlay.dialogues.length !== template.dialogues.length) return null;
-  const dialogues = overlay.dialogues.map((row, i) => {
-    if (!Array.isArray(row) || row.length < 2) return null;
-    const who = clip(row[0], 24) || template.dialogues[i]?.[0] || '路人';
+  const incoming = Array.isArray(overlay.dialogues) ? overlay.dialogues : [];
+  const dialogues = template.dialogues.map((fallback, i) => {
+    const row = incoming[i];
+    if (!Array.isArray(row) || row.length < 2) return fallback;
+    const who = clip(row[0], 24) || fallback[0] || '路人';
     const text = clip(row[1], 400);
-    return text ? [who, text] : null;
+    return text ? [who, text] : fallback;
   });
-  if (dialogues.some(row => !row)) return null;
   const source = Array.isArray(overlay.choices)
     ? Object.fromEntries(overlay.choices.filter(c => c && c.id).map(c => [c.id, c]))
-    : overlay.choices && typeof overlay.choices === 'object' ? overlay.choices : null;
-  if (!source) return null;
+    : overlay.choices && typeof overlay.choices === 'object' ? overlay.choices : {};
   const choices = {};
   for (const choice of template.choices) {
     const rewritten = source[choice.id];
-    if (!rewritten || typeof rewritten !== 'object') return null;
-    const text = clip(rewritten.text, 80);
-    if (!text) return null;
+    const text = rewritten && typeof rewritten === 'object' ? clip(rewritten.text, 80) : '';
     choices[choice.id] = {
-      text,
-      outcome: clip(rewritten.outcome, 400) || choice.outcome,
-      failText: clip(rewritten.failText, 400) || choice.failText,
+      text: text || choice.text,
+      outcome: (rewritten && clip(rewritten.outcome, 400)) || choice.outcome,
+      failText: (rewritten && clip(rewritten.failText, 400)) || choice.failText,
     };
   }
   return { scene, dialogues, hearsay, choices };

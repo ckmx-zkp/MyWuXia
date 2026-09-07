@@ -20,6 +20,7 @@
 | 可改变的命运与跨书江湖 | `docs/gdd/10-changing-fates.md` |
 | 城市持续玩法与 P0-A/B/C | `docs/gdd/12-city-continuity.md` |
 | 放置武侠成长框架与 P0/P1/P2 | `docs/gdd/11-idle-rpg-roadmap.md` |
+| MiniMax Agent 工作流 / MCP / tools | `docs/gdd/13-agent-workflow.md` |
 | 各任务树完整剧本 | `docs/gdd/quests/<ID>-<slug>.md` |
 | UI 素材规范 | `docs/ui/UI-ASSET-GUIDE.md` |
 | 架构优化方案 | `docs/architecture-optimization.md` |

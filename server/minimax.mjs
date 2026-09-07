@@ -1,5 +1,5 @@
-const DEFAULT_BASE = (process.env.MINIMAX_API_BASE || 'https://api.minimaxi.com').replace(/\/$/, '');
-const DEFAULT_MODEL = process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5';
+const DEFAULT_BASE = (process.env.MINIMAX_API_BASE || 'https://api.minimax.cn').replace(/\/$/, '');
+const DEFAULT_MODEL = process.env.MINIMAX_CHAT_MODEL || 'MiniMax-M2.5-highspeed';
 
 function asText(value) {
   if (!value) return '';
@@ -7,6 +7,15 @@ function asText(value) {
   if (Array.isArray(value)) return value.map(asText).join('\n');
   if (typeof value === 'object') return asText(value.text || value.content || '');
   return String(value);
+}
+
+function messageTexts(message) {
+  const texts = [asText(message.content)];
+  if (Array.isArray(message.reasoning_details)) {
+    for (const detail of message.reasoning_details) texts.push(asText(detail?.text || detail));
+  }
+  texts.push(asText(message.reasoning_content));
+  return [...new Set(texts.filter(Boolean))];
 }
 
 export function parseModelJson(text) {
@@ -44,15 +53,25 @@ export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MO
       const response = await fetchImpl(`${base}/v1/chat/completions`, {
         method: 'POST',
         headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-        body: JSON.stringify({ model, messages, temperature: 0.65, max_tokens: 2200, reasoning_split: true, response_format: { type: 'json_object' } }),
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.8,
+          max_completion_tokens: 2200,
+          reasoning_split: true,
+        }),
         signal: controller.signal,
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error?.message || payload.base_resp?.status_msg || `minimax_${response.status}`);
       const message = payload.choices?.[0]?.message || {};
-      const parsed = parseModelJson(asText(message.content)) || parseModelJson(asText(message.reasoning_content));
-      if (!parsed) throw new Error('invalid_model_json');
-      return { parsed, model: payload.model || model, raw: asText(message.content) };
+      const candidates = messageTexts(message);
+      const parsed = candidates.map(parseModelJson).find(Boolean);
+      if (!parsed) {
+        const preview = candidates[0]?.replace(/\s+/g, ' ').slice(0, 180) || 'empty';
+        throw new Error(`invalid_model_json:${preview}`);
+      }
+      return { parsed, model: payload.model || model, raw: candidates[0] || '' };
     } finally {
       clearTimeout(timer);
     }
