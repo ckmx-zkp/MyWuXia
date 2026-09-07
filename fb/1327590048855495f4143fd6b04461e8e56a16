@@ -1,0 +1,21 @@
+scripts/deploy.sh
+  s_106aca82155d0d::t_285383f956254a 2
+.gitattributes
+  s_106aca82155d0d::t_285383f956254a 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "fb1327590048855495f4143fd6b04461e8e56a16",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
