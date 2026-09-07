@@ -1,0 +1,24 @@
+scripts/deploy.sh
+  s_106aca82155d0d::t_abda7554bb1d30 11
+  s_106aca82155d0d::t_04334cc14aee92 5,10,12
+AGENTS.md
+  s_106aca82155d0d::t_04334cc14aee92 262
+scripts/deploy.mjs
+  s_106aca82155d0d::t_04334cc14aee92 6,13-14,44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ab744b02b56542b0e90a79dc4d88da644a1b85ec",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
