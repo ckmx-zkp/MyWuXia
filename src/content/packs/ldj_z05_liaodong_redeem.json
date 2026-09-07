@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "ldj_z05_liaodong_redeem",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/ldj_z05_liaodong_redeem.json",
+  "zone": 5,
+  "design": {
+    "title": "辽东赎丁",
+    "hook": "辽东大金旧部与满洲新兴势力都在抢壮丁，一户人家想赎回被扣的长子。",
+    "playerRole": "赎人，不站队灭国",
+    "sources": {
+      "novel": [
+        {
+          "beat": "辽东政治冲突是《鹿鼎记》时代背景的一部分。",
+          "use": "依本游戏设定保留金与满清分立。"
+        },
+        {
+          "beat": "韦小宝不在本线替玩家斡旋。",
+          "use": "玩家只是赎人中间人。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "军役与抓丁直接影响边户家庭。",
+          "use": "把政治冲突落到一户人。"
+        },
+        {
+          "fact": "赎丁需要中间人和现银。",
+          "use": "提供散财路线。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "金与满清不得合并成一个政权。",
+          "use": "遵守世界设定。"
+        },
+        {
+          "slot": "赎人不等于支持任何一方灭国。",
+          "use": "限制政治后果。"
+        }
+      ]
+    },
+    "echo": "改变辽东赎丁价格与边户对白。",
+    "facts": [
+      "ldj_z05_liaodong_redeem_heard",
+      "ldj_z05_liaodong_redeem_proof",
+      "ldj_z05_liaodong_redeem_safe",
+      "ldj_z05_liaodong_redeem_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "辽东赎丁",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "辽东大金旧部与满洲新兴势力都在抢壮丁，一户人家想赎回被扣的长子。 事情从客栈、茶摊、药铺或码头的一句抱怨里长出来。",
+        "dialogues": [
+          [
+            "当事人",
+            "我不求你替谁定天下，只求把这一程走过去。"
+          ],
+          [
+            "过路人",
+            "先把眼前事问清。"
+          ]
+        ],
+        "hearsay": "辽东最难算的账，是一个壮丁到底归哪面旗号。",
+        "choices": [
+          {
+            "id": "ldj_z05_liaodong_redeem_heard",
+            "text": "先把当事人的亲见问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "ldj_z05_liaodong_redeem_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你把传闻压回可核实事实。"
+          },
+          {
+            "id": "ldj_z05_liaodong_redeem_pay",
+            "text": "先出一笔小钱稳住局面。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人多得半日喘息。"
+          }
+        ],
+        "zone": 5
+      },
+      "n1": {
+        "scene": "当事人逐句回想时辰、人数和去向，许多大话都没有第二个证人。",
+        "dialogues": [
+          [
+            "当事人",
+            "我只担我亲眼看见的那一段。"
+          ],
+          [
+            "老人",
+            "这样的话才留得住。"
+          ]
+        ],
+        "hearsay": "可核实的小事实，比完整的大故事更能拿去交涉。",
+        "choices": [
+          {
+            "id": "ldj_z05_liaodong_redeem_proof",
+            "text": "把可核实的细节留成一条口供。",
+            "requires": {
+              "flag": "ldj_z05_liaodong_redeem_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "ldj_z05_liaodong_redeem_proof": true
+              }
+            },
+            "outcome": "后续交涉有了明确依据。"
+          }
+        ],
+        "zone": 5
+      },
+      "n2": {
+        "scene": "收了垫付银钱的人缓过气来，也指出哪条路最危险、哪处关口还能讲理。",
+        "dialogues": [
+          [
+            "当事人",
+            "钱买不到太平，只买到一点时间。"
+          ],
+          [
+            "行脚人",
+            "有时间，才有别的路。"
+          ]
+        ],
+        "hearsay": "散财只换喘息，不会自动抹掉盘查。",
+        "choices": [
+          {
+            "id": "ldj_z05_liaodong_redeem_detour",
+            "text": "趁这点时间改走稳妥路线。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你避开了最容易翻脸的正路。"
+          }
+        ],
+        "zone": 5
+      },
+      "n3": {
+        "scene": "前路果然有人拦查。对方先问身份，再问货物或去向，同行者都闭了嘴。",
+        "dialogues": [
+          [
+            "拦路者",
+            "说清楚就放，含糊就留。"
+          ],
+          [
+            "当事人",
+            "我们只求过路。"
+          ]
+        ],
+        "hearsay": "证据够时可以交涉；局面若坏，也应以脱身为先。",
+        "choices": [
+          {
+            "id": "ldj_z05_liaodong_redeem_safe",
+            "text": "把前面核实的事实拿出来交涉。",
+            "requires": {
+              "flag": "ldj_z05_liaodong_redeem_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "ldj_z05_liaodong_redeem_safe": true
+              }
+            },
+            "outcome": "对方失去继续扣人的借口。"
+          },
+          {
+            "id": "ldj_z05_liaodong_redeem_clash",
+            "text": "护住同行者，逼出一条退路。",
+            "combat": {
+              "opponent": "soldiers",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -7
+            },
+            "outcome": "你只求脱身，没有追杀。",
+            "failText": "你未能硬顶过去，只得退到人多或有官面见证处，再凭口供收束。"
+          }
+        ],
+        "zone": 5
+      },
+      "n4": {
+        "scene": "事情终于落回一张路单、一笔银钱或一句口供的尺度，没有被抬成宫廷、会党或国战大事。",
+        "dialogues": [
+          [
+            "当事人",
+            "能平安走过去就够。"
+          ],
+          [
+            "老人",
+            "小账写清，大话少说。"
+          ]
+        ],
+        "hearsay": "若此前留下事实，后来人会照此查问；若只花钱过去，代价会更高。",
+        "choices": [
+          {
+            "id": "ldj_z05_liaodong_redeem_record",
+            "text": "付纸墨或路费，把结果留下记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "ldj_z05_liaodong_redeem_record": true
+              }
+            },
+            "outcome": "这件事有了可查询的世界回响。"
+          }
+        ],
+        "zone": 5
+      },
+      "n5": {
+        "scene": "天色渐暗，当事人各自上路。你没有因此变成韦小宝、御前、总舵主或哪位王府贵人。",
+        "dialogues": [
+          [
+            "当事人",
+            "你没替天下作主，只替我们把这一程走完。"
+          ]
+        ],
+        "hearsay": "后来本区再提此事，会引用事实 ldj_z05_liaodong_redeem_record 留下的那条记录。",
+        "choices": [],
+        "zone": 5,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "辽东最难算的账，是一个壮丁到底归哪面旗号。"
+}

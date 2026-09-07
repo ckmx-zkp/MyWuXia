@@ -1,0 +1,279 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "ldj_z00_yangzhou_afterparty",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/ldj_z00_yangzhou_afterparty.json",
+  "zone": 0,
+  "design": {
+    "title": "扬州散场以后",
+    "hook": "扬州赌场散场后，盐枭账、天地会暗记和一个被丢下的伤者撞在一起。",
+    "playerRole": "赌场跑腿、护伤与送暗记，不重写韦小宝扬州主线。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "韦小宝扬州出身与丽春院、赌场传闻紧密相连。",
+          "use": "只取散场后的民间余波。"
+        },
+        {
+          "beat": "天地会青木堂是原著重要会党线。",
+          "use": "玩家只替跑腿送一句暗记，不接总舵主身份。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "扬州盐业与码头经济发达。",
+          "use": "让盐枭账成为地方现实冲突。"
+        },
+        {
+          "fact": "赌场与茶肆常放大人物传奇。",
+          "use": "把小宝骰子写成闲话而非能力奖励。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "YZ-01 已有主事件不得重写。",
+          "use": "本支线只处理茅十八走后的善后。"
+        },
+        {
+          "slot": "史松可战但必须允许撤退。",
+          "use": "避免把高风险遭遇写成唯一击杀通关。"
+        }
+      ]
+    },
+    "echo": "改变扬州赌场盐账、码头脚夫对白与天地会接头安全度。",
+    "facts": [
+      "ldj_z00_wounded_heard",
+      "ldj_z00_salt_account",
+      "ldj_z00_contact_safe",
+      "ldj_z00_recorded"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "扬州散场以后",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "扬州客栈散场后，两个赌客还在争论“小宝骰子是不是从来不输”，门外却有人抬来一个被丢下的伤者，说茅十八早已走远。",
+        "dialogues": [
+          [
+            "赌客",
+            "小宝那手气，八成有鬼。"
+          ],
+          [
+            "店伙",
+            "手气先别吹，这人再不送药铺就真没气了。"
+          ]
+        ],
+        "hearsay": "丽春院散场后的热闹过去了，真正留下的是一个没人认领的伤者。",
+        "choices": [
+          {
+            "id": "ldj_z00_wounded_heard",
+            "text": "先问清伤者从哪条巷子被抬来。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "ldj_z00_wounded_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你分清赌桌传闻与伤者来路。"
+          },
+          {
+            "id": "ldj_z00_pay_medicine",
+            "text": "先垫药钱送去药铺。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "伤者先保住一口气。"
+          }
+        ],
+        "room": "inn"
+      },
+      "n1": {
+        "scene": "背街暗巷里还有一滩盐水和碎麻绳，显然有人拖过盐包。墙角的小赌场账房却说，今晚有人借天地会暗记催一笔盐枭旧账。",
+        "dialogues": [
+          [
+            "账房",
+            "暗记是真是假我不敢说，账是真的。"
+          ],
+          [
+            "脚夫",
+            "盐包也是今晚从码头拖来的。"
+          ]
+        ],
+        "hearsay": "赌局、盐账与天地会暗记混在一起，最容易把不相干的人一起拖下水。",
+        "choices": [
+          {
+            "id": "ldj_z00_salt_account",
+            "text": "核对盐包数与赌场欠账。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "ldj_z00_salt_account": true
+              },
+              "potential": 1
+            },
+            "outcome": "你找出一笔被人故意多算的盐账。"
+          }
+        ],
+        "room": "alley"
+      },
+      "n2": {
+        "scene": "回春堂里药气苦涩。伤者醒来后只说自己替人递过一个青木堂式暗记，却不知道接头人姓名。",
+        "dialogues": [
+          [
+            "伤者",
+            "我不是堂里的人，只拿钱跑一趟。"
+          ],
+          [
+            "药铺伙计",
+            "他肩上是棍伤，不像中毒。"
+          ]
+        ],
+        "hearsay": "伤者只知道暗记样式，不知道天地会真正接头人。",
+        "choices": [
+          {
+            "id": "ldj_z00_contact_safe",
+            "text": "答应只转一句平安，不追问堂口名单。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1,
+              "flag": {
+                "ldj_z00_contact_safe": true
+              }
+            },
+            "outcome": "你守住跑腿边界，不把伤者变成线人。"
+          }
+        ],
+        "room": "pharmacy"
+      },
+      "n3": {
+        "scene": "钱塘样的码头夜风里，一个史松模样的江湖人堵住盐船脚夫，问谁替青木堂递过暗记。",
+        "dialogues": [
+          [
+            "史松",
+            "我只问一句，谁拿过那张纸？"
+          ],
+          [
+            "脚夫",
+            "我们只抬盐，不认堂口。"
+          ]
+        ],
+        "hearsay": "这场遭遇可以打，也可以退；真正要保的是伤者和脚夫不被拖走。",
+        "choices": [
+          {
+            "id": "ldj_z00_soft_clear",
+            "text": "拿盐账说明今晚争的是欠账，不是堂口名单。",
+            "requires": {
+              "flag": "ldj_z00_salt_account"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2
+            },
+            "outcome": "对方失了借口，只能先退开。"
+          },
+          {
+            "id": "ldj_z00_shisong_escape",
+            "text": "护脚夫退到人多处。",
+            "combat": {
+              "opponent": "shisong",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -7
+            },
+            "outcome": "你只求脱身，没有与史松死缠。",
+            "failText": "几招下来你知道不宜久斗，只得退向码头差役旁，伤者与脚夫仍未被带走。"
+          }
+        ],
+        "room": "dock"
+      },
+      "n4": {
+        "scene": "府衙门前书吏把盐账、伤者口供和码头船号分开记下，只认一桩赌场旧账与一名无主伤者。",
+        "dialogues": [
+          [
+            "书吏",
+            "天地会真假我不管，盐账错一笔就改一笔。"
+          ],
+          [
+            "店伙",
+            "人活下来，比赌桌上谁赢重要。"
+          ]
+        ],
+        "hearsay": "若此前保住暗记边界，后来接头人会只听平安；若核过盐账，赌场会改掉那笔虚数。",
+        "choices": [
+          {
+            "id": "ldj_z00_recorded",
+            "text": "付纸墨钱留下查验记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "ldj_z00_recorded": true
+              }
+            },
+            "outcome": "伤者去向与盐账都有了可查询记录。"
+          }
+        ],
+        "room": "court"
+      },
+      "n5": {
+        "scene": "天将亮时，赌客还在吹小宝骰子，盐船却已经离岸，伤者也有人照看。茅十八走后的残局没有再吞掉一个无名人。",
+        "dialogues": [
+          [
+            "店伙",
+            "传闻归传闻，救人归救人。"
+          ]
+        ],
+        "hearsay": "扬州后来再说“小宝骰子”，总有人补一句：那夜真正难办的是一个被落下的伤者。",
+        "choices": [],
+        "room": "inn",
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "扬州赌客都在说小宝手气，没人先问那个被丢下的伤者是谁。"
+}

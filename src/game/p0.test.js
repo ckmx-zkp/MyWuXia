@@ -171,3 +171,14 @@ test('xiaoao pack events appear by zone, write numbered facts, and restore', () 
   assert.equal(s.p0.facts.xajh_z02_post_compared, true);
   assert.equal(restore(s).p0.facts.xajh_z02_post_compared, true);
 });
+test('luding pack events are indexed, need no herbal knowledge to open, and restore', () => {
+  assert.ok(SIDE_EVENTS.ldj_z00_yangzhou_afterparty);
+  const open = SIDE_EVENTS.ldj_z00_yangzhou_afterparty.nodes.n0.choices.find(c => c.id === 'ldj_z00_wounded_heard');
+  assert.ok(open && !open.requires?.knowledge);
+  let s = at(fresh(), 'inn');
+  s = cmd(s, 'DISCOVER_EVENT', { id: 'ldj_z00_yangzhou_afterparty' });
+  s = { ...s, p0: { ...s.p0, potential: 5 } };
+  s = cmd(s, 'CHOOSE_EVENT', { id: 'ldj_z00_yangzhou_afterparty', choice: 'ldj_z00_wounded_heard' });
+  assert.equal(s.p0.facts.ldj_z00_wounded_heard, true);
+  assert.equal(restore(s).p0.facts.ldj_z00_wounded_heard, true);
+});

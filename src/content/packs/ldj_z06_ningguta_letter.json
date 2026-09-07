@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "ldj_z06_ningguta_letter",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/ldj_z06_ningguta_letter.json",
+  "zone": 6,
+  "design": {
+    "title": "宁古塔托信",
+    "hook": "盛京路引查得紧，宁古塔流人托来一封家书，满清官厅又在抓天地会线索。",
+    "playerRole": "跑腿送信，不是韦公爷",
+    "sources": {
+      "novel": [
+        {
+          "beat": "宫廷、辫子与宁古塔流放属于本游戏第6区。",
+          "use": "把满清官厅线集中在白山黑水。"
+        },
+        {
+          "beat": "天地会与清廷长期对立。",
+          "use": "玩家只送私人信，不接总舵主职责。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "宁古塔与流放历史密切相关。",
+          "use": "家书成为自然任务。"
+        },
+        {
+          "fact": "盛京路引制度适合制造身份盘查。",
+          "use": "让传信有风险。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "玩家不能冒充韦小宝或御前身份。",
+          "use": "必须靠普通路引过关。"
+        },
+        {
+          "slot": "家书不得包含天地会名册。",
+          "use": "防止把玩家变成线人。"
+        }
+      ]
+    },
+    "echo": "改变盛京路引查验、宁古塔流人对白与天地会搜查强度。",
+    "facts": [
+      "ldj_z06_ningguta_letter_heard",
+      "ldj_z06_ningguta_letter_proof",
+      "ldj_z06_ningguta_letter_safe",
+      "ldj_z06_ningguta_letter_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "宁古塔托信",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "盛京路引查得紧，宁古塔流人托来一封家书，满清官厅又在抓天地会线索。 事情从客栈、茶摊、药铺或码头的一句抱怨里长出来。",
+        "dialogues": [
+          [
+            "当事人",
+            "我不求你替谁定天下，只求把这一程走过去。"
+          ],
+          [
+            "过路人",
+            "先把眼前事问清。"
+          ]
+        ],
+        "hearsay": "流人只托一句家里平安，官厅却把每封南来信都当成会党线索。",
+        "choices": [
+          {
+            "id": "ldj_z06_ningguta_letter_heard",
+            "text": "先把当事人的亲见问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "ldj_z06_ningguta_letter_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你把传闻压回可核实事实。"
+          },
+          {
+            "id": "ldj_z06_ningguta_letter_pay",
+            "text": "先出一笔小钱稳住局面。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人多得半日喘息。"
+          }
+        ],
+        "zone": 6
+      },
+      "n1": {
+        "scene": "当事人逐句回想时辰、人数和去向，许多大话都没有第二个证人。",
+        "dialogues": [
+          [
+            "当事人",
+            "我只担我亲眼看见的那一段。"
+          ],
+          [
+            "老人",
+            "这样的话才留得住。"
+          ]
+        ],
+        "hearsay": "可核实的小事实，比完整的大故事更能拿去交涉。",
+        "choices": [
+          {
+            "id": "ldj_z06_ningguta_letter_proof",
+            "text": "把可核实的细节留成一条口供。",
+            "requires": {
+              "flag": "ldj_z06_ningguta_letter_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "ldj_z06_ningguta_letter_proof": true
+              }
+            },
+            "outcome": "后续交涉有了明确依据。"
+          }
+        ],
+        "zone": 6
+      },
+      "n2": {
+        "scene": "收了垫付银钱的人缓过气来，也指出哪条路最危险、哪处关口还能讲理。",
+        "dialogues": [
+          [
+            "当事人",
+            "钱买不到太平，只买到一点时间。"
+          ],
+          [
+            "行脚人",
+            "有时间，才有别的路。"
+          ]
+        ],
+        "hearsay": "散财只换喘息，不会自动抹掉盘查。",
+        "choices": [
+          {
+            "id": "ldj_z06_ningguta_letter_detour",
+            "text": "趁这点时间改走稳妥路线。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你避开了最容易翻脸的正路。"
+          }
+        ],
+        "zone": 6
+      },
+      "n3": {
+        "scene": "前路果然有人拦查。对方先问身份，再问货物或去向，同行者都闭了嘴。",
+        "dialogues": [
+          [
+            "拦路者",
+            "说清楚就放，含糊就留。"
+          ],
+          [
+            "当事人",
+            "我们只求过路。"
+          ]
+        ],
+        "hearsay": "证据够时可以交涉；局面若坏，也应以脱身为先。",
+        "choices": [
+          {
+            "id": "ldj_z06_ningguta_letter_safe",
+            "text": "把前面核实的事实拿出来交涉。",
+            "requires": {
+              "flag": "ldj_z06_ningguta_letter_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "ldj_z06_ningguta_letter_safe": true
+              }
+            },
+            "outcome": "对方失去继续扣人的借口。"
+          },
+          {
+            "id": "ldj_z06_ningguta_letter_clash",
+            "text": "护住同行者，逼出一条退路。",
+            "combat": {
+              "opponent": "guards",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -7
+            },
+            "outcome": "你只求脱身，没有追杀。",
+            "failText": "你未能硬顶过去，只得退到人多或有官面见证处，再凭口供收束。"
+          }
+        ],
+        "zone": 6
+      },
+      "n4": {
+        "scene": "事情终于落回一张路单、一笔银钱或一句口供的尺度，没有被抬成宫廷、会党或国战大事。",
+        "dialogues": [
+          [
+            "当事人",
+            "能平安走过去就够。"
+          ],
+          [
+            "老人",
+            "小账写清，大话少说。"
+          ]
+        ],
+        "hearsay": "若此前留下事实，后来人会照此查问；若只花钱过去，代价会更高。",
+        "choices": [
+          {
+            "id": "ldj_z06_ningguta_letter_record",
+            "text": "付纸墨或路费，把结果留下记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "ldj_z06_ningguta_letter_record": true
+              }
+            },
+            "outcome": "这件事有了可查询的世界回响。"
+          }
+        ],
+        "zone": 6
+      },
+      "n5": {
+        "scene": "天色渐暗，当事人各自上路。你没有因此变成韦小宝、御前、总舵主或哪位王府贵人。",
+        "dialogues": [
+          [
+            "当事人",
+            "你没替天下作主，只替我们把这一程走完。"
+          ]
+        ],
+        "hearsay": "后来本区再提此事，会引用事实 ldj_z06_ningguta_letter_record 留下的那条记录。",
+        "choices": [],
+        "zone": 6,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "流人只托一句家里平安，官厅却把每封南来信都当成会党线索。"
+}

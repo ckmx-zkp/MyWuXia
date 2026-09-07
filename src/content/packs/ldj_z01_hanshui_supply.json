@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "ldj_z01_hanshui_supply",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/ldj_z01_hanshui_supply.json",
+  "zone": 1,
+  "design": {
+    "title": "汉水换防粮",
+    "hook": "汉水换防军粮到了岸边，吴三桂名号又被人拿来吓船户。",
+    "playerRole": "运粮或送药，不替任何军头站队",
+    "sources": {
+      "novel": [
+        {
+          "beat": "吴三桂名号在《鹿鼎记》中有巨大政治影响。",
+          "use": "这里只作为远方谣言压到汉水商旅。"
+        },
+        {
+          "beat": "武当不愿卷入清军伤者。",
+          "use": "只留民间送药缝隙。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "荆襄水运与换防军粮紧密相关。",
+          "use": "让船期成为实在矛盾。"
+        },
+        {
+          "fact": "战时谣言会迅速影响民船是否靠岸。",
+          "use": "把吴三桂名号变成价格和船期压力。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "武当不能被写成清兵医院。",
+          "use": "只让玩家在山外送药。"
+        },
+        {
+          "slot": "玩家不接总兵身份。",
+          "use": "粮运只是一趟差事。"
+        }
+      ]
+    },
+    "echo": "改变汉水船价、武当山外对白与军粮放行速度。",
+    "facts": [
+      "ldj_z01_hanshui_supply_heard",
+      "ldj_z01_hanshui_supply_proof",
+      "ldj_z01_hanshui_supply_safe",
+      "ldj_z01_hanshui_supply_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "汉水换防粮",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "汉水换防军粮到了岸边，吴三桂名号又被人拿来吓船户。 事情从客栈、茶摊、药铺或码头的一句抱怨里长出来。",
+        "dialogues": [
+          [
+            "当事人",
+            "我不求你替谁定天下，只求把这一程走过去。"
+          ],
+          [
+            "过路人",
+            "先把眼前事问清。"
+          ]
+        ],
+        "hearsay": "船户最怕的不是吴三桂本人，是有人拿他的名号把每船粮都说成军情。",
+        "choices": [
+          {
+            "id": "ldj_z01_hanshui_supply_heard",
+            "text": "先把当事人的亲见问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "ldj_z01_hanshui_supply_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你把传闻压回可核实事实。"
+          },
+          {
+            "id": "ldj_z01_hanshui_supply_pay",
+            "text": "先出一笔小钱稳住局面。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人多得半日喘息。"
+          }
+        ],
+        "room": "wudang-gate"
+      },
+      "n1": {
+        "scene": "当事人逐句回想时辰、人数和去向，许多大话都没有第二个证人。",
+        "dialogues": [
+          [
+            "当事人",
+            "我只担我亲眼看见的那一段。"
+          ],
+          [
+            "老人",
+            "这样的话才留得住。"
+          ]
+        ],
+        "hearsay": "可核实的小事实，比完整的大故事更能拿去交涉。",
+        "choices": [
+          {
+            "id": "ldj_z01_hanshui_supply_proof",
+            "text": "把可核实的细节留成一条口供。",
+            "requires": {
+              "flag": "ldj_z01_hanshui_supply_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "ldj_z01_hanshui_supply_proof": true
+              }
+            },
+            "outcome": "后续交涉有了明确依据。"
+          }
+        ],
+        "room": "wudang-yard"
+      },
+      "n2": {
+        "scene": "收了垫付银钱的人缓过气来，也指出哪条路最危险、哪处关口还能讲理。",
+        "dialogues": [
+          [
+            "当事人",
+            "钱买不到太平，只买到一点时间。"
+          ],
+          [
+            "行脚人",
+            "有时间，才有别的路。"
+          ]
+        ],
+        "hearsay": "散财只换喘息，不会自动抹掉盘查。",
+        "choices": [
+          {
+            "id": "ldj_z01_hanshui_supply_detour",
+            "text": "趁这点时间改走稳妥路线。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你避开了最容易翻脸的正路。"
+          }
+        ],
+        "room": "wudang-hall"
+      },
+      "n3": {
+        "scene": "前路果然有人拦查。对方先问身份，再问货物或去向，同行者都闭了嘴。",
+        "dialogues": [
+          [
+            "拦路者",
+            "说清楚就放，含糊就留。"
+          ],
+          [
+            "当事人",
+            "我们只求过路。"
+          ]
+        ],
+        "hearsay": "证据够时可以交涉；局面若坏，也应以脱身为先。",
+        "choices": [
+          {
+            "id": "ldj_z01_hanshui_supply_safe",
+            "text": "把前面核实的事实拿出来交涉。",
+            "requires": {
+              "flag": "ldj_z01_hanshui_supply_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "ldj_z01_hanshui_supply_safe": true
+              }
+            },
+            "outcome": "对方失去继续扣人的借口。"
+          },
+          {
+            "id": "ldj_z01_hanshui_supply_clash",
+            "text": "护住同行者，逼出一条退路。",
+            "combat": {
+              "opponent": "soldiers",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -7
+            },
+            "outcome": "你只求脱身，没有追杀。",
+            "failText": "你未能硬顶过去，只得退到人多或有官面见证处，再凭口供收束。"
+          }
+        ],
+        "room": "wudang-gate"
+      },
+      "n4": {
+        "scene": "事情终于落回一张路单、一笔银钱或一句口供的尺度，没有被抬成宫廷、会党或国战大事。",
+        "dialogues": [
+          [
+            "当事人",
+            "能平安走过去就够。"
+          ],
+          [
+            "老人",
+            "小账写清，大话少说。"
+          ]
+        ],
+        "hearsay": "若此前留下事实，后来人会照此查问；若只花钱过去，代价会更高。",
+        "choices": [
+          {
+            "id": "ldj_z01_hanshui_supply_record",
+            "text": "付纸墨或路费，把结果留下记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "ldj_z01_hanshui_supply_record": true
+              }
+            },
+            "outcome": "这件事有了可查询的世界回响。"
+          }
+        ],
+        "room": "wudang-yard"
+      },
+      "n5": {
+        "scene": "天色渐暗，当事人各自上路。你没有因此变成韦小宝、御前、总舵主或哪位王府贵人。",
+        "dialogues": [
+          [
+            "当事人",
+            "你没替天下作主，只替我们把这一程走完。"
+          ]
+        ],
+        "hearsay": "后来本区再提此事，会引用事实 ldj_z01_hanshui_supply_record 留下的那条记录。",
+        "choices": [],
+        "zone": 1,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "船户最怕的不是吴三桂本人，是有人拿他的名号把每船粮都说成军情。"
+}
