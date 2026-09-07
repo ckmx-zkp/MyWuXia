@@ -1,0 +1,69 @@
+src/game/encounter-settlement.js
+  s_106aca82155d0d::t_861c7ca8f24357 3,15-17
+  s_106aca82155d0d::t_3fa4af3c506144 18-19
+docs/architecture-optimization.md
+  s_106aca82155d0d::t_425dce4b051d1a 57
+scripts/validate-content.mjs
+  s_106aca82155d0d::t_3abe1b48c78811 7,32-34,39-40
+  s_106aca82155d0d::t_6a0a88843f052a 35-38
+docs/PROGRESS.md
+  s_106aca82155d0d::t_425dce4b051d1a 32-33,60
+AGENTS.md
+  s_106aca82155d0d::t_4ca2888bf0e8b5 166,181,185
+  s_106aca82155d0d::t_425dce4b051d1a 278
+src/game/world-engine.js
+  s_106aca82155d0d::t_3abe1b48c78811 77-78
+  s_106aca82155d0d::t_861c7ca8f24357 7-8,66-76,79-85,96-97,99-100,103-105,112
+src/main.jsx
+  s_106aca82155d0d::t_0d2c037269b90d 455-461,482,548
+  s_106aca82155d0d::t_2b378d9a32194f 17,21,378,388-389
+  s_106aca82155d0d::t_e48aa70c74c93a 757,781,832-833
+  s_106aca82155d0d::t_a1debaae13eaf9 794,797
+  s_106aca82155d0d::t_f61b3564b3a1cf 714-726
+  s_106aca82155d0d::t_a03235c172df88 930-943
+  s_106aca82155d0d::t_7dda574674eeb2 18
+src/game/ability.js
+  s_106aca82155d0d::t_7dda574674eeb2 1-13
+src/game/world-engine.test.js
+  s_106aca82155d0d::t_3abe1b48c78811 60-81
+  s_106aca82155d0d::t_89a0dc2ef60be3 82
+src/game/save-schema.js
+  s_106aca82155d0d::t_861c7ca8f24357 3,5-8
+src/game/saves.test.js
+  s_106aca82155d0d::t_3abe1b48c78811 21-22
+src/game/saves.js
+  s_106aca82155d0d::t_861c7ca8f24357 8,34,60,84,87
+src/game/training.js
+  s_106aca82155d0d::t_463e1d51023287 26-36
+src/style.css
+  s_106aca82155d0d::t_a1debaae13eaf9 70-74
+src/game/encounters.test.js
+  s_106aca82155d0d::t_3abe1b48c78811 64-65
+docs/gdd/09-auto-combat-and-saves.md
+  s_106aca82155d0d::t_425dce4b051d1a 10-20
+docs/gdd/08-jiangnan-daily-quests.md
+  s_106aca82155d0d::t_425dce4b051d1a 7-12
+src/content/routines.js
+  s_106aca82155d0d::t_463e1d51023287 1-32
+src/game/state.js
+  s_106aca82155d0d::t_463e1d51023287 13
+src/game/progression.test.js
+  s_106aca82155d0d::t_3abe1b48c78811 5,16
+  s_106aca82155d0d::t_7dda574674eeb2 8,17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "961c9d75424c7d198e6a1c85cbe7500abacbc623",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
