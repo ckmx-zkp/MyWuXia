@@ -93,14 +93,14 @@
           {
             "id": "mediate",
             "text": "先劝开那两个旧人",
-            "requires": {
-              "knowledge": 2
-            },
             "next": "n3",
             "effects": {
               "exp": 3
             },
-            "outcome": "两人各自别过头，总算不拍了。"
+            "outcome": "两人各自别过头，总算不拍了。",
+            "cost": {
+              "potential": 1
+            }
           }
         ]
       },

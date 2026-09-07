@@ -83,7 +83,7 @@
             },
             "effects": {
               "rep": 2,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "把总掂着银两，斜眼打量你，冷笑称若是同党，一并论处。",
             "next": "officer_bargain"
@@ -98,7 +98,7 @@
               "potential": 3
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你摸清了腰牌被暂扣在关城签押房皮匣内，守备仅两名亲兵。",
             "next": "stealth_plan"
@@ -137,15 +137,12 @@
           {
             "id": "c_reason_sect",
             "text": "搬出恒山定闲师太与燕京提刑司旧交施压",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 4
             },
             "effects": {
-              "knowledge": 2,
-              "rep": 1
+              "rep": 1,
+              "potential": 2
             },
             "outcome": "军官心生顾忌，怕惹上北地大派，改口只要五两茶水钱便准保领。",
             "next": "gate_compromise"
@@ -272,7 +269,9 @@
           {
             "id": "c_bid_farewell",
             "text": "合十送别，拨转马头自去游历燕云",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 10,

@@ -80,8 +80,7 @@
               "silver": 2
             },
             "effects": {
-              "potential": 5,
-              "knowledge": 1
+              "potential": 6
             },
             "outcome": "破毡帽汉子抿了口热茶，自陈是福威镖局逃出的趟子手郑七，正被青城门人追索。",
             "next": "dock_confession"
@@ -89,7 +88,9 @@
           {
             "id": "c_leave",
             "text": "多一事不如少一事，转入背街暗巷",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "potential": 1
             },
@@ -151,9 +152,11 @@
           {
             "id": "c_report_court",
             "text": "此案凶险，直奔府衙前街报官",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你不欲卷入私仇，抽身赶赴临安府衙门前。",
             "next": "court_report"
@@ -201,15 +204,11 @@
           {
             "id": "c_hide_boat",
             "text": "借民居巷道杂乱，引趟子手自水道潜行",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 5
             },
             "effects": {
-              "knowledge": 2,
-              "potential": 8
+              "potential": 10
             },
             "outcome": "你熟知水乡深巷，带着汉子避过两处岗哨，悄无声息摸到水闸。",
             "next": "dock_resolve"
@@ -242,10 +241,10 @@
             },
             "effects": {
               "rep": 3,
-              "knowledge": 2,
               "flag": {
                 "c_bribe_guard": true
-              }
+              },
+              "potential": 2
             },
             "outcome": "班头得了茶钱，当即点齐差勇直奔钱塘码头查验路引，驱散恶徒。",
             "next": "dock_resolve"
@@ -253,7 +252,9 @@
           {
             "id": "c_back_track",
             "text": "差人推诿拖延，你决定回头自行搭救",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "potential": 3
             },
@@ -294,14 +295,11 @@
           {
             "id": "c_calm_talk",
             "text": "亮出临安过路引券，沉着分辨只是问路挑夫",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 3
             },
             "effects": {
-              "knowledge": 3
+              "potential": 3
             },
             "outcome": "你言语镇定文券齐整，对方摸不清底细，啐了一口抽身散去。",
             "next": "dock_escape"
@@ -322,7 +320,9 @@
           {
             "id": "c_farewell",
             "text": "赠他半包干粮，目送其远去",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 1,
               "potential": 5
@@ -346,7 +346,9 @@
           {
             "id": "c_end_good",
             "text": "收起行囊，静听江潮起落",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 10,

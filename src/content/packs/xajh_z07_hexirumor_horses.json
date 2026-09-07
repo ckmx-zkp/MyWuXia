@@ -76,18 +76,15 @@
           {
             "id": "xajh_z07_rumor_tested",
             "text": "逐句追问谣言出处。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z07_rumor_tested": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "三轮追问后，所谓亲见者一个也说不出原处。"
           },
@@ -212,9 +209,6 @@
           {
             "id": "xajh_z07_leave_falsebait",
             "text": "高声说清全队没有谱本，舍一段近路转走。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 2
             },

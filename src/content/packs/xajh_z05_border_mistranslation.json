@@ -76,18 +76,15 @@
           {
             "id": "xajh_z05_terms_sorted",
             "text": "逐句解释帖子里的江湖称谓。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z05_terms_sorted": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "通事开始明白掌门不是将军，剑派也不是军镇。"
           },
@@ -192,9 +189,6 @@
           {
             "id": "xajh_z05_false_intel_cleared",
             "text": "当众按词义解释，要求暂缓封市。",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 1
             },

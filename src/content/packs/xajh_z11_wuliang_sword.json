@@ -79,7 +79,7 @@
               "potential": 2
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你只看那行气口诀，颠三倒四，分明是市井打擂的粗浅套路改了名目。",
             "next": "rubbing_debate"
@@ -87,13 +87,12 @@
           {
             "id": "c_warn_wuliang",
             "text": "拉开年轻无量门人，劝其勿贪功冒进",
-            "requires": {
-              "knowledge": 2
+            "cost": {
+              "potential": 1
             },
-            "cost": {},
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "青年门人犹疑不定，卖家见生意要黄，顿现凶横之色。",
             "next": "wuliang_clash"
@@ -114,18 +113,15 @@
           {
             "id": "c_disclose_truth",
             "text": "当场取枯枝划地演练，拆穿拓片破绽百出的逻辑",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 4
             },
             "effects": {
-              "knowledge": 3,
               "rep": 2,
               "flag": {
                 "c_disclose_truth": true
-              }
+              },
+              "potential": 3
             },
             "outcome": "枯枝纵横，正法显现，围观者无不喝彩，卖家满头冷汗倒退数步。",
             "next": "wuliang_end"
@@ -197,7 +193,9 @@
           {
             "id": "c_admonish_leave",
             "text": "勉励数语，收起行囊悠然出城",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 10,

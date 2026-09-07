@@ -76,18 +76,15 @@
           {
             "id": "xajh_z02_post_compared",
             "text": "借两份抄本逐字比对。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z02_post_compared": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你看出“少林同议”四字是后来添的。"
           },
@@ -192,9 +189,6 @@
           {
             "id": "xajh_z02_brawl_stopped",
             "text": "当众说清帖子被添字。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
@@ -242,9 +236,6 @@
           {
             "id": "xajh_z02_finish",
             "text": "把原帖交回茶博士留存。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },

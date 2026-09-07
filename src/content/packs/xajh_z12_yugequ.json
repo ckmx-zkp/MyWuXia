@@ -89,14 +89,14 @@
           {
             "id": "inspect",
             "text": "先请渔翁容你验看",
-            "requires": {
-              "knowledge": 2
-            },
             "next": "n3",
             "effects": {
               "exp": 3
             },
-            "outcome": "墨迹沉着，是衡山一路的手笔。"
+            "outcome": "墨迹沉着，是衡山一路的手笔。",
+            "cost": {
+              "potential": 1
+            }
           }
         ]
       },
@@ -160,9 +160,6 @@
           {
             "id": "xajh_z12_returned",
             "text": "寻访那位高人的曲友，送还此物",
-            "requires": {
-              "knowledge": 2
-            },
             "next": "n4",
             "effects": {
               "rep": 5,
@@ -171,7 +168,10 @@
               },
               "exp": 5
             },
-            "outcome": "对方捧书良久，向你长揖到地。"
+            "outcome": "对方捧书良久，向你长揖到地。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "xajh_z12_sealed",

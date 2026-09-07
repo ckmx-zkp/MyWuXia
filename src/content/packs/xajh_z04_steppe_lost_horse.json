@@ -76,18 +76,15 @@
           {
             "id": "xajh_z04_tracks_read",
             "text": "去营外辨蹄印。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z04_tracks_read": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你看出一匹马受惊跑北，一匹被人牵回过。"
           },

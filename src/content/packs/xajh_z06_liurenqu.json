@@ -126,17 +126,17 @@
           {
             "id": "xajh_z06_melody_heard",
             "text": "先请他吹完半阕，辨一辨真伪",
-            "requires": {
-              "knowledge": 3
-            },
             "next": "n3",
             "effects": {
               "flag": {
                 "xajh_z06_melody_heard": true
               },
-              "knowledge": 1
+              "potential": 1
             },
-            "outcome": "曲中筋骨不假，是浸淫数十年的手笔。"
+            "outcome": "曲中筋骨不假，是浸淫数十年的手笔。",
+            "cost": {
+              "potential": 1
+            }
           }
         ]
       },

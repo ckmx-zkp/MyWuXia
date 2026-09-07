@@ -77,18 +77,18 @@
           {
             "id": "xajh_z11_debunked",
             "text": "细辨剑路，当场指出破绽",
-            "requires": {
-              "knowledge": 3
-            },
             "next": "n2",
             "effects": {
               "flag": {
                 "xajh_z11_debunked": true
               },
-              "knowledge": 1,
-              "exp": 5
+              "exp": 5,
+              "potential": 1
             },
-            "outcome": "三处剑路不合无量门径，过客张口结舌。"
+            "outcome": "三处剑路不合无量门径，过客张口结舌。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "buy_look",
@@ -118,15 +118,15 @@
           {
             "id": "explain",
             "text": "摆明道理，说明是辨伪非辱门",
-            "requires": {
-              "knowledge": 2
-            },
             "next": "n4",
             "effects": {
               "exp": 5,
               "rep": 2
             },
-            "outcome": "弟子听完，收了怒气，反向你道谢。"
+            "outcome": "弟子听完，收了怒气，反向你道谢。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "spar",
@@ -161,9 +161,6 @@
           {
             "id": "xajh_z11_refunded",
             "text": "拿着破绽退货讨银",
-            "requires": {
-              "knowledge": 1
-            },
             "next": "n4",
             "effects": {
               "silver": 6,
@@ -172,7 +169,10 @@
               },
               "exp": 5
             },
-            "outcome": "过客理亏，银子如数退还。"
+            "outcome": "过客理亏，银子如数退还。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "keep",
@@ -182,8 +182,8 @@
             },
             "next": "n4",
             "effects": {
-              "knowledge": 1,
-              "exp": 3
+              "exp": 3,
+              "potential": 1
             },
             "outcome": "赝品也有赝品的用处。"
           }

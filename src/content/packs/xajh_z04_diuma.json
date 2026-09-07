@@ -87,14 +87,14 @@
           {
             "id": "ask_caravan",
             "text": "先问清商队的去向",
-            "requires": {
-              "knowledge": 1
-            },
             "next": "n3",
             "effects": {
               "exp": 3
             },
-            "outcome": "商队三日后出塞，往西去。"
+            "outcome": "商队三日后出塞，往西去。",
+            "cost": {
+              "potential": 1
+            }
           }
         ]
       },
@@ -154,9 +154,6 @@
           {
             "id": "xajh_z04_talked_leave",
             "text": "劝他们留下投牧户自新",
-            "requires": {
-              "knowledge": 2
-            },
             "next": "n5",
             "effects": {
               "flag": {
@@ -165,7 +162,10 @@
               "rep": 3,
               "exp": 5
             },
-            "outcome": "两人对视良久，终于点头。"
+            "outcome": "两人对视良久，终于点头。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "fund",

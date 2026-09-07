@@ -76,18 +76,15 @@
           {
             "id": "xajh_z11_terms_checked",
             "text": "按门派称谓逐项辨伪。",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z11_terms_checked": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你发现抄单把不同来历的名字胡乱拼在一起。"
           },
@@ -168,7 +165,7 @@
             },
             "next": "n3",
             "effects": {
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "摊主承认只是从过客包袱纸上抄来的。"
           }
@@ -192,9 +189,6 @@
           {
             "id": "xajh_z11_school_cleared",
             "text": "把混抄处逐项讲给东宗弟子听。",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 1
             },

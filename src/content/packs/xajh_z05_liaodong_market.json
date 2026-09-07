@@ -79,7 +79,7 @@
               "potential": 2
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你搭眼一瞧，正是嵩山十三太保签押的五岳会盟帖，附有点穴与长拳要旨。",
             "next": "explain_doc"
@@ -95,7 +95,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "通事手掌拢过银两，神色立时缓和三分，屏退左右闲杂。",
             "next": "deal_interp"
@@ -116,18 +116,15 @@
           {
             "id": "c_dissect_wushu",
             "text": "指出帖中'落叶归根'皆是剑法招式名，绝非军阵阵图",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 4
             },
             "effects": {
-              "knowledge": 3,
               "rep": 2,
               "flag": {
                 "c_dissect_wushu": true
-              }
+              },
+              "potential": 3
             },
             "outcome": "你信手拆解寻常剑架，将字里行间招式说得清清楚楚，通事听得一愣一愣。",
             "next": "resolve_peace"
@@ -143,7 +140,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "两相对照，文书印记确系民间商行，并无兵部花押，证据凿凿。",
             "next": "deal_interp"
@@ -190,8 +187,8 @@
               "potential": 6
             },
             "effects": {
-              "knowledge": 2,
-              "rep": 1
+              "rep": 1,
+              "potential": 2
             },
             "outcome": "通事想到中原剑客杀人无形的传闻，额头渗出冷汗，讪讪将册子推回案中。",
             "next": "resolve_peace"
@@ -212,7 +209,9 @@
           {
             "id": "c_take_ginseng",
             "text": "收下客商馈赠的草药与盘费",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "herbs": 5,
               "silver": 12,

@@ -78,18 +78,15 @@
           {
             "id": "xajh_z00_waybill_checked",
             "text": "先核船号与路引编号。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z00_waybill_checked": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你把旧印与真号分开，脚夫肯把昨夜见闻细说。"
           },
@@ -205,11 +202,11 @@
             },
             "next": "n4",
             "effects": {
-              "knowledge": 1,
               "rep": 1,
               "flag": {
                 "xajh_z00_alley_settled": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "口供说清，青城弟子也不再拿盐船作文章。"
           },
@@ -236,9 +233,6 @@
           {
             "id": "xajh_z00_alley_withdraw",
             "text": "不碰旧怨，转去府衙只说船号与误工。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },

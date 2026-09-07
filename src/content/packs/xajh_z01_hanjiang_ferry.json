@@ -80,7 +80,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "你朗声开解，双方目光投向你，剑拔弩张之势稍缓。",
             "next": "wudang_discuss"
@@ -166,15 +166,12 @@
           {
             "id": "c_argue_rule",
             "text": "搬出汉江官渡分班公约，据理力争各渡一半",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 4
             },
             "effects": {
-              "knowledge": 2,
-              "rep": 2
+              "rep": 2,
+              "potential": 2
             },
             "outcome": "你熟稔水程律例，一番条分缕析，驳得对方哑口无言。",
             "next": "ferry_settle"
@@ -278,7 +275,9 @@
           {
             "id": "c_take_blessing",
             "text": "受道长一礼，登舟横渡汉水",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 12,

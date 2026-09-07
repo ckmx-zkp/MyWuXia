@@ -80,7 +80,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "海匪斥候按刀狞笑，哨音一吹，岸边礁石后又钻出两个持叉凶徒。",
             "next": "pirate_skirmish"
@@ -145,8 +145,8 @@
               "potential": 4
             },
             "effects": {
-              "knowledge": 2,
-              "rep": 2
+              "rep": 2,
+              "potential": 2
             },
             "outcome": "锣声大作，巡检哨船自海湾飞驰杀出，海盗唯恐遭包抄，掉头跳水逃命。",
             "next": "box_inspect"
@@ -167,10 +167,11 @@
           {
             "id": "c_take_box_cave",
             "text": "在洞中接过匣子，擦去泥水盐霜",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
-              "potential": 5,
-              "knowledge": 2
+              "potential": 7
             },
             "outcome": "木匣虽残，内中素绢字迹宛然，叹尽江湖波涛险恶。",
             "next": "box_inspect"
@@ -218,7 +219,7 @@
             },
             "effects": {
               "rep": 2,
-              "knowledge": 3
+              "potential": 3
             },
             "outcome": "官府盖印立档，刘公遗文得以见容于公牍，免遭践踏。",
             "next": "sea_terminal"

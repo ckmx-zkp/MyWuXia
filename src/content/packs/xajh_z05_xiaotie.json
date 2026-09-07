@@ -76,14 +76,14 @@
           {
             "id": "argue",
             "text": "上前向通事拆解帖子的来历",
-            "requires": {
-              "knowledge": 2
-            },
             "next": "n2",
             "effects": {
               "exp": 5
             },
-            "outcome": "通事将信将疑，容你细说。"
+            "outcome": "通事将信将疑，容你细说。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "raise_silver",
@@ -128,15 +128,15 @@
           {
             "id": "vouch_soldier",
             "text": "请熟识的老卒作保",
-            "requires": {
-              "knowledge": 3
-            },
             "next": "n5",
             "effects": {
               "exp": 8,
               "rep": 2
             },
-            "outcome": "老卒一句话，通事顺势销了案。"
+            "outcome": "老卒一句话，通事顺势销了案。",
+            "cost": {
+              "potential": 1
+            }
           }
         ]
       },

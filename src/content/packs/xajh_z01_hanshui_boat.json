@@ -94,9 +94,6 @@
           {
             "id": "xajh_z01_boat_oath",
             "text": "先下山约定各方不得强占民船。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },
@@ -136,7 +133,7 @@
             },
             "next": "n3",
             "effects": {
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "你把事情压回一封口信的分量。"
           }
@@ -244,9 +241,6 @@
           {
             "id": "xajh_z01_end_boat",
             "text": "扶伤者下山登船。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },

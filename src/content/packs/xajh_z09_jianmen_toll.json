@@ -77,18 +77,15 @@
           {
             "id": "xajh_z09_toll_witness",
             "text": "请脚夫把收钱经过说全。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z09_toll_witness": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你记下人数、时辰与山道位置。"
           },
@@ -193,9 +190,6 @@
           {
             "id": "xajh_z09_toll_bargained",
             "text": "拿证词逼对方只收自愿茶水，不得堵路。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },

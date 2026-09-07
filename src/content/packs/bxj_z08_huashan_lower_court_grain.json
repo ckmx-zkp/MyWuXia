@@ -77,18 +77,15 @@
           {
             "id": "bxj_z08_heard",
             "text": "先把当事人的说法听全。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "bxj_z08_heard": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你分清传闻与眼前事实。"
           },
@@ -161,9 +158,6 @@
           {
             "id": "bxj_z08_route",
             "text": "趁这点时间换一条稳妥路线。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },

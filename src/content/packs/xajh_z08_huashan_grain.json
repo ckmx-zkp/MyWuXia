@@ -77,18 +77,15 @@
           {
             "id": "xajh_z08_grain_counted",
             "text": "先核山脚缺粮数。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z08_grain_counted": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你把争论从门户旧账拉回到几日口粮。"
           },
@@ -197,9 +194,6 @@
           {
             "id": "xajh_z08_road_opened",
             "text": "把缺粮数和急粮现状摆明，请双方各退一步。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },

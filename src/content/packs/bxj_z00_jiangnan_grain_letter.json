@@ -78,9 +78,6 @@
           {
             "id": "bxj_z00_take_grain_note",
             "text": "接下粮单去码头。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },
@@ -129,18 +126,15 @@
           {
             "id": "bxj_z00_check_manifest",
             "text": "核对粮单与船号。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n3",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "bxj_z00_manifest_checked": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "粮货来路有了说法。"
           }

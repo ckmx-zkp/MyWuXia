@@ -80,7 +80,7 @@
               "potential": 2
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你辨出蹄印深浅不一，往西北干海子芦苇荡遁去，不过半日脚程。",
             "next": "track_swamp"
@@ -96,7 +96,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "老牧人饮了烈酒火气平复大半，许诺只要追回两匹母马，绝不扣压车货。",
             "next": "nomad_bargain"
@@ -164,13 +164,12 @@
           {
             "id": "c_persuade_horse",
             "text": "言明只为寻回牧民失马，不涉教派私怨",
-            "requires": {
-              "knowledge": 2
+            "cost": {
+              "potential": 1
             },
-            "cost": {},
             "effects": {
-              "knowledge": 2,
-              "rep": 1
+              "rep": 1,
+              "potential": 2
             },
             "outcome": "汉子听你不是总坛追兵长舒一口气，颓然垂下手中锈刀。",
             "next": "refugee_deal"
@@ -256,7 +255,9 @@
           {
             "id": "c_toast_nomad",
             "text": "接过银碗饮尽烈酒，受赠草原皮袄与盘缠",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 10,
@@ -285,8 +286,7 @@
               "silver": 1
             },
             "effects": {
-              "potential": 5,
-              "knowledge": 1
+              "potential": 6
             },
             "outcome": "塞北风烟吹散了刀头血腥，天地广阔，任由往来。",
             "next": "grass_terminal"

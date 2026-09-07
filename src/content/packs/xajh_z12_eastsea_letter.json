@@ -77,18 +77,15 @@
           {
             "id": "xajh_z12_papers_checked",
             "text": "只看露在外面的残谱字样，不拆信。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z12_papers_checked": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你确认烂纸更像曲谱残页，不像武学秘本。"
           },
@@ -169,7 +166,7 @@
             },
             "next": "n3",
             "effects": {
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "你没有私拆信，只把可选去处分清。"
           }
@@ -264,9 +261,6 @@
           {
             "id": "xajh_z12_keep_sealed",
             "text": "全部留官府封存，日后由收信人凭证来取。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },

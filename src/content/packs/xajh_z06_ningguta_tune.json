@@ -76,18 +76,15 @@
           {
             "id": "xajh_z06_tune_confirmed",
             "text": "先问清残谱的曲调来历。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z06_tune_confirmed": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你确认传闻说的是《笑傲江湖》残段，不是什么武学口诀。"
           },
@@ -192,18 +189,15 @@
           {
             "id": "xajh_z06_message_taken",
             "text": "记下原话，不添曲谱细节。",
-            "requires": {
-              "knowledge": 1
-            },
             "cost": {
               "potential": 1
             },
             "next": "n4",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z06_message_taken": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "老人放下心，你也没有留下可供争夺的东西。"
           },

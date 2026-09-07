@@ -76,18 +76,18 @@
           {
             "id": "xajh_z07_rumor_busted",
             "text": "当场拆解谣言的破绽",
-            "requires": {
-              "knowledge": 3
-            },
             "next": "n3",
             "effects": {
               "flag": {
                 "xajh_z07_rumor_busted": true
               },
-              "knowledge": 1,
-              "exp": 5
+              "exp": 5,
+              "potential": 1
             },
-            "outcome": "你三言两语，市人听得频频点头。"
+            "outcome": "你三言两语，市人听得频频点头。",
+            "cost": {
+              "potential": 1
+            }
           },
           {
             "id": "take_escort",

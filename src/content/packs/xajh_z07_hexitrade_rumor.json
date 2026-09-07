@@ -79,7 +79,7 @@
               "potential": 2
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "胡商有些慌乱，掩掩遮遮只翻开首页，上书粗浅套路，字迹墨色甚新。",
             "next": "debate_fraud"
@@ -87,13 +87,12 @@
           {
             "id": "c_warn_caravan",
             "text": "暗中拉扯老镖头衣袖，示意其休中圈套",
-            "requires": {
-              "knowledge": 2
+            "cost": {
+              "potential": 1
             },
-            "cost": {},
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "老镖头警觉停手，胡商见好事被扰，目露凶光。",
             "next": "thugs_confront"
@@ -114,18 +113,15 @@
           {
             "id": "c_mock_fake",
             "text": "当众背诵正统口诀，指出此册纯系市井长拳杂凑",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 4
             },
             "effects": {
-              "knowledge": 3,
               "rep": 2,
               "flag": {
                 "c_mock_fake": true
-              }
+              },
+              "potential": 3
             },
             "outcome": "胡商涨红了脸，支支吾吾答不上来，周围客商发出一阵哄笑。",
             "next": "fraud_busted"
@@ -133,15 +129,12 @@
           {
             "id": "c_check_paper",
             "text": "抓起纸页嗅闻，指出乃是作旧桑皮纸伪造",
-            "requires": {
-              "knowledge": 4
-            },
             "cost": {
               "silver": 2
             },
             "effects": {
-              "knowledge": 2,
-              "rep": 2
+              "rep": 2,
+              "potential": 2
             },
             "outcome": "你当场抖落造假作旧的赭石粉末，真相大白。",
             "next": "fraud_busted"
@@ -194,7 +187,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "官军巡哨闻声列阵而出，马贼见势头不妙，呼啸散入风沙。",
             "next": "oasis_safe"
@@ -215,7 +208,9 @@
           {
             "id": "c_burn_fake",
             "text": "将伪造册子投入茶炉烈火焚尽，免遗祸人间",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 8
@@ -239,7 +234,9 @@
           {
             "id": "c_drink_tea",
             "text": "吃罢热汤，收拾马匹准备入阳关",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 2,
               "potential": 6,

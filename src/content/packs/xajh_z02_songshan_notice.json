@@ -79,7 +79,7 @@
               "potential": 2
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你辨出印泥透着市井伪造的硫磺气，显是有人故意在中原大道挑拨是非。",
             "next": "songshan_thugs"
@@ -177,7 +177,7 @@
               "potential": 5
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你潜入黑松林，林间雾气弥漫，忽有一股狂烈罡风排山倒海般压来！",
             "next": "danger_ren"
@@ -185,7 +185,9 @@
           {
             "id": "c_stay_gate",
             "text": "留在山道前协助知客僧收捡伪帖",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 2,
               "potential": 6
@@ -245,7 +247,9 @@
           {
             "id": "c_farewell_monk",
             "text": "向寺僧合十作别，踏着暮色赶回洛阳",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 10,
@@ -270,7 +274,9 @@
           {
             "id": "c_drink_soup",
             "text": "服下药汤，默运内功调理激荡的气血",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "hp": 20,
               "knowledge": 3,

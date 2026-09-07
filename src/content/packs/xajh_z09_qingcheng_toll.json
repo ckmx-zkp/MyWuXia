@@ -80,7 +80,7 @@
             },
             "effects": {
               "rep": 1,
-              "knowledge": 1
+              "potential": 1
             },
             "outcome": "两名青城门人转过身来，手中松风剑出鞘半寸，冷笑相讥。",
             "next": "qc_challenge"
@@ -138,15 +138,12 @@
           {
             "id": "c_bluff_constable",
             "text": "高呼剑门巡检司大队官兵已至栈道",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 3
             },
             "effects": {
-              "knowledge": 2,
-              "rep": 1
+              "rep": 1,
+              "potential": 2
             },
             "outcome": "青城弟子作贼心虚，张望关门方向，剑势顿时迟疑散乱。",
             "next": "pass_safely"
@@ -196,7 +193,7 @@
               "potential": 5
             },
             "effects": {
-              "knowledge": 2
+              "potential": 2
             },
             "outcome": "你抓着绝壁藤蔓滑下十余丈摆脱追击，险之又险。",
             "next": "cliff_escape"
@@ -243,7 +240,9 @@
           {
             "id": "c_part_peace",
             "text": "收下赠礼，拱手作别入蜀",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
               "rep": 3,
               "potential": 10,

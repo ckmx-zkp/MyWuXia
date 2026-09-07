@@ -1,0 +1,55 @@
+《江湖长夜》内容总表。生成任意金庸书的 13 区 JSON 前，必须整段放在本书提示之前。只使用表内 ID。不要 Markdown 解释。
+
+输出必须是一个 JSON 对象：
+{"schema":"jianghu-content-pack-v1","novel":"<书名>","packs":[ /* 正好 13 个，每区 1 个 */ ]}
+
+每个 pack：
+{"id":"<前缀>_z<两位区号>_<slug>","kind":"side_event","saveAs":"src/content/packs/<id>.json","zone":<0-12>,"design":{"title":"","hook":"","playerRole":"","sources":{"novel":[{"beat":"","use":""},{"beat":"","use":""}],"history":[{"fact":"","use":""},{"fact":"","use":""}],"forum":[{"slot":"","use":""},{"slot":"","use":""}]},"echo":"","facts":[],"blocked":[],"routes":["成功","失败补救","交涉或撤退"]},"event":{"name":"","start":"","requires":{},"nodes":{}},"opponents":{},"rooms":{},"activities":{},"hearsay":[]}
+
+玩家是独立江湖行动者，不是原著主角替身，不继承其身份、神功与结局。原著只提供缝隙。文风金古白描。禁用叮、宿主、系统、暴击、网文腔。任务从客栈、告示、茶摊、药铺、码头抱怨长出。每个选项有代价或检定，且有 outcome。有战斗必须有 failNext、failText，尽量有 retreatNext。高危对手禁止唯一通关击杀。分支可汇合，必须留下 flag 事实。神兵禁止铁匠铺出现。禁止发明表外字段、物品、武学、对手、房间。
+
+event.nodes：6 至 8 个节点，正好 1 个 terminal。非终局要有 scene、dialogues、hearsay、choices。dialogues 为 [说话人,台词]。choice 仅：id,text,visibleWhen,requires,cost,combat,next,failNext,retreatNext,effects,failEffects,outcome,failText。
+0/1 区非终局必须写 room（用下面房间 ID）。2–12 区只用 "zone":区号，禁止写 room，禁止新房间。
+cost 仅 silver,potential,contribution,herbs（整数≥0）
+effects/failEffects 仅 silver,exp,potential,contribution,herbs,knowledge,rep,hp,mp,flag（布尔）,npc（字符串）
+requires 仅 {flag:"id"} 或 {sect:true} 或 {silver|potential|contribution|herbs|knowledge:数字}
+knowledge 是书肆「草木学识」，只用于辨药、药性、假药、草药；打听、护粮、送信、劝架、盘查禁止要求草木学识，也禁止把听闲话奖励成草木学识。普通开口用银两或潜能。
+combat 仅 {"opponent":"<对手id>","danger":正整数}
+
+区号：
+0 江南东南 临安扬州苏州嘉兴福州
+1 荆襄前线 襄阳江陵武昌武当
+2 中原腹地 洛阳开封嵩山少林
+3 河朔燕云 燕京大同幽州雁门关
+4 塞北草原 张家口王庭诸营
+5 辽东大金 上京辽阳沈州长白南麓
+6 白山黑水 盛京赫图阿拉宁古塔
+7 西北西夏 兴庆府河西贺兰
+8 关中秦地 长安华山终南潼关
+9 巴蜀西南 成都峨眉青城剑门
+10 云贵大明 昆明贵阳云南府
+11 大理诸国 大理无量万劫点苍
+12 东海海外 桃花侠客神龙灵蛇
+
+房间（仅这些）：
+gate 临安城门 | street 御街 | inn 水乡客栈 | market 市集 | pharmacy 回春堂 | smith 铁匠铺 | gym 城南武馆 | dock 钱塘码头 | alley 背街暗巷 | court 府衙门前 | home 城南民居 | outskirts 临安城郊 | bookshop 旧书肆 | wudang-gate 武当山门 | wudang-yard 武当练功院 | wudang-hall 武当静室
+
+对手（combat.opponent 只能用这些）：
+student 陪练弟子 低 | swordsman 快剑师兄 中 | instructor 坐馆教头 高 | wuliang 东宗弟子 中 | thug 赌场打手 中 | shisong 史松 中 | soldiers 追兵 中 | qingcheng 青城弟子 中 | hongrenxiong 洪人雄 高 | qiuchuji 丘处机 高 撑3回合 | guards 禁军亲卫 中 | fengboe 风波恶 高 | huangzhonggong 黄钟公 高 撑3回合 | renwoxing 任我行 高 撑4回合 | beggars 激愤帮众 中 | shennong 神农帮刀客 中 | disciples 渔樵耕读 高 撑4回合 | bandit 拦路山贼 中 | waterbandit 太湖水匪 中 | spy 渡口探子 中 | horsebandit 河西马贼 中 | pirate 海盗头目 中
+高危：instructor,hongrenxiong,qiuchuji,fengboe,huangzhonggong,renwoxing,disciples。丘处机、黄钟公、任我行、渔樵耕读优先撑回合，不要击毙。
+
+已有事实（可读取，勿写成相反含义。本书新事实用该书前缀）：
+medicine_prepared, medicine_safe, medicine_mercy, medicine_complete, medicine_northbound, medicine_wudang, medicine_returned, letter_contact, letter_read, grain_inquiry, backed_north, grain_evidence, witness_alive, three_bangs, grain_route_open, civilian_relief
+NPC 键：shen。命运键：qiaofeng, hongqigong, shihuolong, grain_witness
+
+不要重复：medicine, medicine_return, wudang_exam, jiangnan_letter, 三帮失粮案，以及已实装树 YZ-01 FZ-01 JX-01 SZ-01 HZ-01 WX-01 DL-01 DL-02。只写原著缝隙、善后、误认、护送、目击者，不重演主线高潮。
+
+可提及武学（对白可用，禁止当新奖励教会）：基本拳脚,太祖长拳,罗汉拳,落叶剑法,六合刀,松风剑法,武当绵掌,华山剑法,打狗棒法残招,少林擒拿手,六脉残谱,独孤九剑破式,太玄经影,无量剑法,全真掌法,七弦无形剑,吸星大法,点穴试招,军阵枪法
+内功 ID：basic,luohan,quanzhen,chunyang,yijin
+教学课 ID：taizu,liuhe,luohan,mianzhang,quanzhen,huashan（华山剑法需 fact:medicine_complete）
+
+禁止当作奖励或新 ID：倚天剑,屠龙刀,玄铁重剑,金蛇剑,紫薇软剑,圣火令,降龙十八掌全文,打狗棒法全文,六脉神剑全文,九阴真经,九阳真经,乾坤大挪移,北冥神功,吸星大法教会玩家,辟邪剑法,葵花宝典,太玄经全文,金蛇秘籍
+
+已有物品（不要新造，本批不要发 lore 信物）：jinchuang,jiedu,tianxiang,jiuzhuan,canye,fantian,qingshen,wubaoniu,yudiao,qingmu,wanjie,shenhe,guangling,xianglong
+
+每区至少 1 条不战斗完成路径、至少 1 个新事实。游戏可见文本禁止出处、论坛名、史书名。design.sources 三源每源至少 2 条。

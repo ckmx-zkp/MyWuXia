@@ -76,18 +76,15 @@
           {
             "id": "xajh_z10_route_known",
             "text": "先问清驿路水源与避瘴处。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },
             "next": "n1",
             "effects": {
-              "knowledge": 1,
               "flag": {
                 "xajh_z10_route_known": true
-              }
+              },
+              "potential": 1
             },
             "outcome": "你把能走的路和不能久留的谷地记下。"
           },
@@ -214,9 +211,6 @@
           {
             "id": "xajh_z10_keep_moving",
             "text": "不追远处人影，只带车队继续走。",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 1
             },

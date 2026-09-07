@@ -91,14 +91,11 @@
           {
             "id": "c_listen_tune",
             "text": "驻足凝神倾听残破曲调中的宫商变征",
-            "requires": {
-              "knowledge": 2
-            },
             "cost": {
               "potential": 2
             },
             "effects": {
-              "knowledge": 3
+              "potential": 3
             },
             "outcome": "你听出曲调跌宕激越，大有傲然避世之意，绝非北地凡俗小调。",
             "next": "talk_exile"
@@ -171,15 +168,11 @@
           {
             "id": "c_memorize_score",
             "text": "凝神静气，将曲意节拍参悟融汇于自身武学心性",
-            "requires": {
-              "knowledge": 3
-            },
             "cost": {
               "potential": 5
             },
             "effects": {
-              "knowledge": 4,
-              "potential": 15,
+              "potential": 19,
               "flag": {
                 "c_memorize_score": true
               }
@@ -190,10 +183,11 @@
           {
             "id": "c_copy_score",
             "text": "替老者将羊皮曲谱仔细包好贴身珍藏",
-            "cost": {},
+            "cost": {
+              "potential": 1
+            },
             "effects": {
-              "knowledge": 2,
-              "potential": 8
+              "potential": 10
             },
             "outcome": "墨迹干透，老流人眼中流下泪水，叹道绝响终未绝于冰雪。",
             "next": "camp_terminal"
