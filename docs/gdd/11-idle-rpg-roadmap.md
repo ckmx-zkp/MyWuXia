@@ -94,13 +94,22 @@
 
 ## 七、P1：剧情、记忆与 LLM
 
-1. 三帮命运和八棵原著剧情逐棵迁移事件图，统一事实、条件、效果和历史。
-2. 组合条件、条件显隐、固定对白已在 P0 补强；P1 继续多能力检定、复杂机会窗口与事件调度。
-3. 成长改变剧情解法；剧情改变教学、道路、差事、人物关系与求援。
-4. 记忆文档由结构化事实与经历生成，按角色和存档分支隔离，记录来源、版本和过时事实。
-5. 后端代理接入 MiniMax-M2.5，密钥只在服务端 `Key.txt`；输入人物设定和允许表达的事实，输出对白、回响和传闻。
-6. 固定文案作为回退，断网、超时和错误不阻断游戏。模型不直接发奖励、改伤害或人物生死。
-7. 全部 `SIDE_EVENTS`（样板支线 + 区域内容包）已接入个人文案覆盖：按 `saveId` 隔离记忆与生成缓存，节点覆盖失败即回退静态 JSON。第二步 Agent 工作流、MCP 与 tools 见 `docs/gdd/13-agent-workflow.md`。
+### 已落地（2026-09-08）
+
+- 全部 `SIDE_EVENTS`（临安样板 + 区域 packs）经 `POST /api/narrative/node` 做个人文案覆盖。
+- 国内官方 Chat Completions：`https://api.minimax.cn/v1`，默认 `MiniMax-M2.5-highspeed`；`reasoning_split` 解析 `content` 与 `reasoning_details`。
+- 记忆摘要由事实与近事生成，与节点缓存按 `saveId` 隔离。本机 SQLite，线上 Node 20 用 JSON 文件。
+- `mergeOverlay` 只接受字面；选项图与奖励仍由规则执行。失败回退静态 JSON。界面以「此番见闻因人而异」标明生成稿。
+- 密钥仅服务端 `Key.txt`。热路径不经 MCP。
+
+### 仍属 P1 未完成
+
+1. 三帮命运和八棵原著剧情逐棵迁移事件图，并按同一 overlay 契约覆盖字面。
+2. 运行时 in-process tool 循环（`get_memory` / `get_event_template` / `validate_overlay`）。
+3. 冷路径 MCP：世界目录与校验，供作者 Agent，不挂打开节点。
+4. 客栈打听、战斗战报的个人表达。
+
+成长改变解法、剧情改变教学与道路的规则层仍按事件契约扩展。细节与输入输出表见 `docs/gdd/13-agent-workflow.md`。
 
 ## 八、P2：扩展顺序
 

@@ -1,7 +1,7 @@
 # 江湖长夜：P1 之后的 Agent 工作流、输入输出、MCP 与 Tools
 
-> 2026-09-08 Draft。对齐官方文档：国内 OpenAI 兼容入口 `https://api.minimax.cn/v1`，模型 MiniMax-M2.5 / M2.5-highspeed，`reasoning_split` 把思考放到 `reasoning_details`。  
-> 本文是第二步设计，不替代 `07` 文案铁律与 `11` 阶段边界。
+> 2026-09-08 现行约定（随 `a9cebf2` 后的官方入口修复落地）。国内 OpenAI 兼容入口 `https://api.minimax.cn/v1`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 把思考放到 `reasoning_details`。  
+> 不替代 `07` 文案铁律与 `11` 阶段边界。AGENTS.md 5.7 为总览摘要。
 
 ## 一、为何要从「一次补全」升级为 Agent
 
@@ -15,13 +15,13 @@
 
 | 步骤 | 产出 | 状态 |
 |---|---|---|
-| 1. 字段契约 | 允许改写 / 禁止改写表，`extractTemplate` / `mergeOverlay` | 已有，第二步放宽合并、禁止仍由程序执行 |
-| 2. 单次补全打通 | MiniMax 国内入口、思考分离、失败回退 | 第一步已接；第二步改为官方 `api.minimax.cn` + `reasoning_details` |
-| 3. In-process tools | 模型可查询记忆与模板，不可发奖 | 设计完成，实现放在运行时 PR |
-| 4. 确定 workflow | 装载 → 改写 → 合并 → 缓存，最多 N 轮 tool | 本文第三节 |
-| 5. MCP（非热路径） | 世界目录与记忆只读，给作者/编辑器/多端 | 设计完成，不挂在每次打开节点的热路径 |
-| 6. 观测 | health、parse 预览、merge 失败计数、source=generated/cache/template | 与实现同步 |
-| 7. 扩展面 | 先 SIDE_EVENTS，再客栈传闻，最后原著树节点 | 禁止一次全开 |
+| 1. 字段契约 | 允许改写 / 禁止改写表，`extractTemplate` / `mergeOverlay` | **已落地**；缺字段用模板补 |
+| 2. 单次补全打通 | 官方 `api.minimax.cn`、`reasoning_details`、失败回退 | **已落地**（SIDE_EVENTS） |
+| 3. In-process tools | 模型可查询记忆与模板，不可发奖 | 设计完成，未实现循环 |
+| 4. 确定 workflow | 装载 → 改写 → 合并 → 缓存 | **已落地**（单次补全，尚未多轮 tool） |
+| 5. MCP（非热路径） | 世界目录与记忆只读 | 设计完成，未建 server |
+| 6. 观测 | health 含 `llm` / `model` / `base` / `store`；失败带内容预览 | **已落地** |
+| 7. 扩展面 | 先 SIDE_EVENTS，再客栈传闻，最后原著树 | SIDE_EVENTS 已开；其余禁止一次全开 |
 
 ## 三、两条工作流，不要合成一个 Agent
 

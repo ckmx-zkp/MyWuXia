@@ -20,6 +20,13 @@
 - 赶路即时处理，消耗 10 个世界秒，45% 概率触发旅途随机事件（山贼/夜谈/镖师/暴雨/商队），结果按能力判定
 - 游历页天下舆图卡片（势力/城市/任务进度/剧情树数量标注）
 
+### 后端与个人文案
+- `server/`：`127.0.0.1:8083`；nginx `/api/` 反代。`GET /api/health` 返回 `llm` / `model` / `base` / `store`
+- MiniMax：`https://api.minimax.cn/v1/chat/completions`，`MiniMax-M2.5-highspeed`，`reasoning_split`
+- 全部 `SIDE_EVENTS` 个人覆盖；标题「此番见闻因人而异」；失败回退静态 JSON
+- 记忆与缓存按 `saveId` 隔离（线上 JSON 文件）；密钥 `Key.txt` 不进仓库
+- Agent / MCP / tools 约定：`docs/gdd/13-agent-workflow.md`；原著树弹窗未覆盖
+
 ### 任务与剧情
 - 每区 1 小主线 + 3 支线，按链解锁；即时处理事件或进入交手；支线能力判定可受挫，小主线 NPC 协助不卡关
 - 普通任务剧情卡：场景 + 各区 NPC 台词（`CHATTER` 52 条）+ 酬劳预览 + 动身/离开

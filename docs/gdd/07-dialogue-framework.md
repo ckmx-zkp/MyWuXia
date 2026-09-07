@@ -115,7 +115,19 @@ NPC 交代困境或冲突，绝不直接发任务指令，而是陈述客观危�
 
 ---
 
-## 四、文档目录组织规划
+## 四、运行时个人文案覆盖（P1）
+
+固定 JSON 仍是权威骨架。打开已接入的 `SIDE_EVENTS` 节点时，服务端可用 MiniMax 改写**字面**，合并规则在 `src/game/narrative-overlay.js`，工作流见 `13-agent-workflow.md`。
+
+| 可改写 | 不可改写 |
+|---|---|
+| `scene`、`dialogues` 台词、`hearsay` | `next` / `failNext` / `retreatNext` |
+| `choices[].text` / `outcome` / `failText` | `combat`、`cost`、`effects`、`requires` |
+| 说话人称谓微调 | 新增或删除选项 id；奖励、死生、神兵、秘籍 |
+
+缺字段用模板补齐。解析失败、超时或停 API 时显示原 JSON。原著任务树弹窗尚未覆盖。玩家名号不得写成原著主角。
+
+## 五、文档目录组织规划
 
 为保持工程整洁与开发无缝对接，剧本将按如下目录分册归档：
 
@@ -123,6 +135,7 @@ NPC 交代困境或冲突，绝不直接发任务指令，而是陈述客观危�
 docs/
 ├── gdd/
 │   ├── 07-dialogue-framework.md        <-- [本规约] 文案与对话框架标准
+│   ├── 13-agent-workflow.md            <-- 运行时个人文案、MCP 与 tools
 │   ├── quests/                         <-- 具体剧情任务剧本文档
 │   │   ├── DL-01-wuliang-crisis.md     <-- 大理：无量山风波（完整对话与事件台词）
 │   │   ├── JX-01-zuixianlou.md         <-- 嘉兴：醉仙楼十八年之约（完整文案）

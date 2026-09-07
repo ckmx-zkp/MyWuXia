@@ -136,6 +136,7 @@
 - 整树完成发放打包奖励并解锁传闻、信件（`letters`）与秘藏物品。
 - 已实装剧本（8 棵）：江南 YZ-01《市井小宝》、FZ-01《福威血夜》、JX-01《醉仙楼》、SZ-01《燕子坞》、HZ-01《梅庄四友》、WX-01《杏子林变局》；大理 DL-01《无量山风波》、DL-02《南帝旧踪》（详见 `docs/gdd/03` 与 `docs/gdd/quests/`）。
 - 实现优先级（`docs/gdd/03` 末尾）：余下 DL-03 跨区线。
+- 八棵原著树弹窗仍用固定文案。个人文案目前只覆盖 `SIDE_EVENTS`（见 5.7）。
 
 ### 5.3 城市设施
 
@@ -193,6 +194,17 @@
 | `flag` | 世界标记（任务树推进、阵营切换、NPC 阶段变更） |
 | `saveId` | 角色存档标识（UUID），隔离服务端记忆与个人文案；创角或重开时生成，旧档首次加载补发 |
 
+### 5.7 个人文案后端（P1，2026-09-08）
+
+程序决定事实、奖励、后继与战斗；MiniMax 只改写允许的字面。契约见 `docs/gdd/13-agent-workflow.md`。
+
+- 前端：`CityHub` 打开支线节点时 `POST /api/narrative/node`；标题「此番见闻因人而异」表示 `generated` 或 `cache`。失败回退 packs / `p0.js` 静态 JSON。
+- 服务：`server/` 监听 `127.0.0.1:8083`。国内官方 `https://api.minimax.cn/v1/chat/completions`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 读 `content` 与 `reasoning_details`。密钥仅 `Key.txt`（`MINIMAX_API_KEY=`），不进 Git、不进浏览器。
+- 存储：按 `saveId` 隔离记忆与节点缓存。本机 Node 22+ 用 SQLite；线上 Node 20 用 `/srv/jianghu-api/data/jianghu.json`。
+- 合并：`src/game/narrative-overlay.js`。可改 `scene` / `dialogues` / `hearsay` / `choices[id].text|outcome|failText`。缺字段用模板补。`next` / `combat` / `effects` / 新选项 id 一律丢弃。
+- 本地：`npm run api` + `npm run dev`（Vite 代理 `/api`）。线上 nginx `location /api/` → 8083，读超时 45 秒。`JIANGHU_LLM=0` 或停 API 即全站静态文案。
+- 未接入：原著树弹窗、客栈打听、战斗战报。热路径不挂 MCP。
+
 ---
 
 ## 6. 剧本与对话铁律
@@ -224,6 +236,8 @@
 | UI 素材规范 | `docs/ui/` |
 | AI 生成提示词（图像 / 音频） | `prompts/` |
 | 应用代码 | `src/`（React + Vite） |
+| 叙事 API | `server/`（MiniMax 代理、记忆、节点缓存） |
+| 服务端个人数据 | `data/`（git 忽略；线上 `/srv/jianghu-api/data`） |
 | 静态资源（站点用） | `public/`（`art/**/*.webp`、`audio/`） |
 | UI / 场景图 PNG 源 | `art-src/`（不部署；`scripts/optimize-art.py` 写出 WebP） |
 | 区主题曲 BGM | `public/audio/bgm/zone/T01…T13-<slug>.mp3` |
@@ -243,6 +257,7 @@
 - 神兵红线：倚天剑、屠龙刀、玄铁重剑、金蛇剑等天下至宝**严禁由铁匠铺打造**，必须通过专属原著史诗任务、秘境探索或机缘获取（`docs/gdd/06` 三）。
 - 城市设施外观与文本必须按区域文化"异域皮肤"包装（`docs/gdd/06` 四），不可一个模板走天下。
 - 任务文案五模块结构**不可省略任一**；纯 NPC 对话节点也需要 `dialogues` 与 `hearsay`。
+- 模型不得发奖、改伤害、改死生、写神兵秘籍或新增选项；个人文案必须经 `mergeOverlay` 后才能上屏。
 - 所有音频资源须遵守 `docs/gdd/05` 音量基线与循环规范；不接受硬切循环。
 - 任何把数值、按钮标签、剧情文案烘焙进图片的做法一律打回重做（见 `docs/ui/UI-ASSET-GUIDE.md` 第 5 条）。
 - 打开卡顿优先查首屏图体积与字体，不要先怪服务器内存：本站是 nginx 静态资源，2G RAM 足够；瓶颈是 PNG 体积、Google 字体和每秒整页刷新。新图必须按显示尺寸出 WebP，源 PNG 只进 `art-src/`。
@@ -266,8 +281,8 @@
 ## 10. 部署
 
 - 目标：阿里云 47.108.114.17，nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。SSH 主机按本机 `~/.ssh/config` 自动选择：公司别名 `aliyun_ecs`，家里别名 `aliyun-prayer`；也可用 `JIANGHU_DEPLOY_HOST` 覆盖。
-- 流程：开发完成 → `npm run deploy`（`scripts/deploy.mjs`：本地 test/build → scp 原子替换 → 直接生效，无需 reload nginx）。
-- 每次上线以 deploy 脚本内的 build 为验证；构建失败不得上线。
+- 流程：开发完成 → `npm run deploy`（`scripts/deploy.mjs`：本地 test/build → scp 静态发布 → 同步 `server/` 与 `Key.txt` 到 `/srv/jianghu-api` 并拉起 8083）。首次接入 `/api/` 时会改 nginx 并 reload。
+- 每次上线以 deploy 脚本内的 build 为验证；构建失败或 API health 失败不得当作成功。
 
 ### 10.1 自动交付约定
 
@@ -283,13 +298,13 @@
 - 存档格式升级为 `{ version: 5, savedAt, state }`，兼容 v1/v2/v3/v4 与旧键 `jianghu-save-v1`；支持备用恢复、三个手动槽位、导入导出、循环支线、行动、战斗、气血/内力及命运事件续存。重开仅清除自动存档及其备用，保留手动槽位。
 - 新状态：`loadout`、`battle`、`rngState`、`questChoices`、`npcStates`、`flag`。交手按息推进，不计算离线战斗；战中每回合保存，读档不得重掷随机数或重复结算。
 - 已实装首个动态命运事件图“三帮失粮案”：**北丐帮帮主乔峰、东丐帮帮主洪七公、西丐帮帮主史火龙**可因玩家查证、调停、偏袒或超时形成同盟、停争或失和；结果写入 NPC 状态、世界标记和势力关系。
-- 详见 `docs/gdd/09-auto-combat-and-saves.md` 与 `docs/gdd/10-changing-fates.md`。
+- 存档另有 `saveId`；支线个人文案与记忆按该标识隔离。详见 `docs/gdd/09-auto-combat-and-saves.md`、`docs/gdd/10-changing-fates.md`、`docs/gdd/13-agent-workflow.md`。
 
 ## 12. P0 成长与固定支线（2026-09-07）
 
 - 当前新增成长领域使用 v6 存档，兼容 v1-v5；`commands.js` 为 UI 玩法状态入口，`p0-engine.js` 与 `side-events.js` 处理成长和固定支线。
 - 临安 13 房间、武当 3 房间、6 项教学、8 类活动以及《一车救命药》事件图已接入。详情与阶段边界以 `docs/gdd/11-idle-rpg-roadmap.md` 为准。
-- P0 支线使用固定五模块文案；经历和事实存档。P1 才增加记忆文档与 LLM，模型不得决定奖励、伤害或人物生死。
+- P0 支线骨架仍是固定五模块 JSON；经历和事实存档。P1 已对 `SIDE_EVENTS` 做个人文案覆盖，模型不得决定奖励、伤害或人物生死。
 - 老角色保留旧日领悟，新角色武学必须通过家传、师承或机缘取得。页面隐藏后只补算活动，不离线推进战斗、旅行和命运期限。
 
 ## 13. 框架重构计划（开发看板）
