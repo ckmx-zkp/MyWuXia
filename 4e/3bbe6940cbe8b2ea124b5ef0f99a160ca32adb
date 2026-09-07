@@ -1,0 +1,46 @@
+src/game/combat.js
+  s_106aca82155d0d::t_71928c2d38a416 28
+src/game/idle-runtime.js
+  s_106aca82155d0d::t_71928c2d38a416 1,21-22
+AGENTS.md
+  s_106aca82155d0d::t_28a4b39c2714fb 123
+  s_106aca82155d0d::t_bb2d2676641f77 119,182
+src/game/world-engine.js
+  s_106aca82155d0d::t_71928c2d38a416 22-23,25,36,48,74-75,77,79
+src/game/progression.test.js
+  s_106aca82155d0d::t_bb2d2676641f77 25,32-34
+src/game/saves.js
+  s_106aca82155d0d::t_71928c2d38a416 42
+src/game/idle-runtime.test.js
+  s_106aca82155d0d::t_bb2d2676641f77 28,33
+docs/gdd/09-auto-combat-and-saves.md
+  s_106aca82155d0d::t_bb2d2676641f77 20,33
+src/game/combat.test.js
+  s_106aca82155d0d::t_bb2d2676641f77 21-22,25,29,33-34,80,82
+src/features/combat/CombatPanel.jsx
+  s_106aca82155d0d::t_71928c2d38a416 50
+docs/PROGRESS.md
+  s_106aca82155d0d::t_bb2d2676641f77 28
+src/main.jsx
+  s_106aca82155d0d::t_71928c2d38a416 581,939
+src/game/effects.js
+  s_106aca82155d0d::t_71928c2d38a416 4-5
+src/game/world-engine.test.js
+  s_106aca82155d0d::t_bb2d2676641f77 60-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4e3bbe6940cbe8b2ea124b5ef0f99a160ca32adb",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
