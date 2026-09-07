@@ -1,0 +1,310 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z04_grassland_horse",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z04_grassland_horse.json",
+  "zone": 4,
+  "design": {
+    "title": "塞北失骑",
+    "hook": "张家口外的草原敖包下，几名牧民围着汉家商队吵嚷，称有魔教逃亡教众偷了族中良驹，要扣下商队所有皮货抵债。",
+    "playerRole": "随商队出塞的护运刀客，代为寻回走马或平息纠纷",
+    "sources": {
+      "novel": [
+        {
+          "beat": "日月神教内部倾轧教众携软带逃奔塞外",
+          "use": "教众走投无路偷盗牲口逃命的寒酸与绝望"
+        },
+        {
+          "beat": "塞外绿林好汉豪爽任性不拘礼法",
+          "use": "牧民好饮酒重义气但认死理的性格"
+        }
+      ],
+      "history": [
+        {
+          "fact": "明代张家口马市茶马互市边政律令",
+          "use": "私越边界交易与偷盗军马定罪极重的背景律法"
+        },
+        {
+          "fact": "察哈尔与喀尔喀蒙古各部敖包盟誓与赔马规矩",
+          "use": "按三倍赔马平息两族仇怨的塞外草规"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不搞阵营剿灭",
+          "use": "对偷马教众以劝离赎买为主，不赶尽杀绝"
+        },
+        {
+          "slot": "草原辽阔重追踪",
+          "use": "利用见识或盘缠解决，留有余地"
+        }
+      ]
+    },
+    "echo": "改变张家口马市对偷马风波与商队信誉的议论",
+    "facts": [
+      "c_split_cost",
+      "c_subdue_rebel",
+      "c_leave_pony"
+    ],
+    "blocked": [],
+    "routes": [
+      "寻回走马物归原主",
+      "以银两草料代偿和解",
+      "降伏护马恶徒平息事端"
+    ]
+  },
+  "event": {
+    "name": "塞北失骑",
+    "start": "aobao_trouble",
+    "requires": {},
+    "nodes": {
+      "aobao_trouble": {
+        "zone": 4,
+        "scene": "张家口外风吹草低，敖包上五彩哈达被狂风撕扯。十几个手持套马杆的蒙汉牧民围住了三辆汉人货车。",
+        "dialogues": [
+          [
+            "老牧人",
+            "昨夜两个穿黑布袍的汉人偷了我部三匹追风骒马！他们身上有黑木崖黑绦，商队脱不了干系！"
+          ],
+          [
+            "商队通事",
+            "长生天下见证，我们正经做茶砖布匹买卖，哪认得甚么黑木崖魔头？"
+          ]
+        ],
+        "hearsay": "近来塞北常有口里逃出的破落教众用神教切口向商户索要马匹盘缠。",
+        "choices": [
+          {
+            "id": "c_check_tracks",
+            "text": "俯身察看草地上凌乱的马蹄碎痕",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你辨出蹄印深浅不一，往西北干海子芦苇荡遁去，不过半日脚程。",
+            "next": "track_swamp"
+          },
+          {
+            "id": "c_drink_talk",
+            "text": "取出随身烈酒递给老牧人，按草原规矩缓颊",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "老牧人饮了烈酒火气平复大半，许诺只要追回两匹母马，绝不扣压车货。",
+            "next": "nomad_bargain"
+          }
+        ]
+      },
+      "nomad_bargain": {
+        "zone": 4,
+        "scene": "商队营帐旁，羊油灯滋滋作响。通事愁眉苦脸筹措赔款。",
+        "dialogues": [
+          [
+            "通事",
+            "好汉爷，这三匹马若是赔银子，少说要三十两，咱们这一趟本钱全搭进去了！"
+          ]
+        ],
+        "hearsay": "张家口马市上一匹健壮蒙古马市价约莫八至十两白银。",
+        "choices": [
+          {
+            "id": "c_volunteer_hunt",
+            "text": "自告奋勇单骑入芦苇荡追索失马",
+            "requires": {
+              "potential": 4
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "potential": 6
+            },
+            "outcome": "你翻身上了一匹快马，顶着扑面风沙，循蹄痕直扑西北海子。",
+            "next": "track_swamp"
+          },
+          {
+            "id": "c_split_cost",
+            "text": "与商队各出一半银钱，先行赔偿牧人以安人心",
+            "requires": {
+              "silver": 15
+            },
+            "cost": {
+              "silver": 15
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 4,
+              "flag": {
+                "c_split_cost": true
+              }
+            },
+            "outcome": "老牧人收了银两，叹道汉人商客讲信义，散开人马放货车入圈。",
+            "next": "settle_peace"
+          }
+        ]
+      },
+      "track_swamp": {
+        "zone": 4,
+        "scene": "干海子水洼边芦苇齐人高，两匹骏马正低头啃食碱草，一个浑身污泥的中年汉子正在水洼边啃硬饼。",
+        "dialogues": [
+          [
+            "落魄教众",
+            "谁？莫非东方教主的鹰犬追来了？老子已逃出长城，休想拿老子回去点天灯！"
+          ]
+        ],
+        "hearsay": "日月神教内部严刑峻法，叛逃教众抓回多遭酷刑。",
+        "choices": [
+          {
+            "id": "c_persuade_horse",
+            "text": "言明只为寻回牧民失马，不涉教派私怨",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {},
+            "effects": {
+              "knowledge": 2,
+              "rep": 1
+            },
+            "outcome": "汉子听你不是总坛追兵长舒一口气，颓然垂下手中锈刀。",
+            "next": "refugee_deal"
+          },
+          {
+            "id": "c_subdue_rebel",
+            "text": "拔兵刃击落其锈刀，夺回马缰",
+            "combat": {
+              "opponent": "bandit",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 12,
+              "exp": 15,
+              "flag": {
+                "c_subdue_rebel": true
+              }
+            },
+            "failEffects": {},
+            "failText": "汉子困兽犹斗，刀势凶野，逼得你回刀自保。",
+            "retreatNext": "refugee_deal",
+            "outcome": "你手腕一抖挑落其单刀，横刃颈侧，汉子只得弃械求饶。",
+            "next": "refugee_deal",
+            "failNext": "refugee_deal"
+          }
+        ]
+      },
+      "refugee_deal": {
+        "zone": 4,
+        "scene": "残阳如血，照在干涸的海子荒滩上。落魄汉子涕泪横流。",
+        "dialogues": [
+          [
+            "落魄教众",
+            "小人受不得刑罚逃难出来。这马我只留一匹羸弱脚力逃往漠北，余下两匹您牵走罢！"
+          ]
+        ],
+        "hearsay": "塞外沙暴将起，无马者不出三日便化为枯骨。",
+        "choices": [
+          {
+            "id": "c_leave_pony",
+            "text": "准其留下一匹羸马，牵回两匹大马交差",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "c_leave_pony": true
+              }
+            },
+            "outcome": "汉子伏地拜谢，各退一步，天地苍茫间互不相害。",
+            "next": "return_camp"
+          },
+          {
+            "id": "c_take_all_give_bread",
+            "text": "牵回全部马匹，赠其干粮与十个铜子",
+            "requires": {
+              "silver": 1
+            },
+            "cost": {
+              "silver": 1
+            },
+            "effects": {
+              "rep": 1,
+              "potential": 6
+            },
+            "outcome": "汉子收下干粮裹紧破袍，徒步往漠北风沙深处蹒跚走去。",
+            "next": "return_camp"
+          }
+        ]
+      },
+      "return_camp": {
+        "zone": 4,
+        "scene": "敖包前篝火熊熊，牧人们见马匹牵回，齐声欢呼起调，端出滚烫马奶酒。",
+        "dialogues": [
+          [
+            "老牧人",
+            "好汉子！是雄鹰般的汉家勇士，马找回来了，商队的朋友尽情吃肉！"
+          ]
+        ],
+        "hearsay": "敖包会盟处汉商与蒙牧起舞欢庆。",
+        "choices": [
+          {
+            "id": "c_toast_nomad",
+            "text": "接过银碗饮尽烈酒，受赠草原皮袄与盘缠",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "silver": 10
+            },
+            "outcome": "老牧人赞赏你的仁勇，商队通事更是长揖致谢，奉上酬金。",
+            "next": "settle_peace"
+          }
+        ]
+      },
+      "settle_peace": {
+        "zone": 4,
+        "scene": "张家口外大道平坦，货车车铃叮咚作响。草原辽阔，恩怨如过眼云烟。",
+        "dialogues": [
+          [
+            "通事",
+            "马已归槽。你不把人往死里逼，这条商路今晚就能走。"
+          ]
+        ],
+        "hearsay": "张家口外大道平坦，货车车铃叮咚作响。",
+        "choices": [
+          {
+            "id": "c_exit_grass",
+            "text": "付一两茶钱，随商队驼铃去塞外商埠",
+            "cost": {
+              "silver": 1
+            },
+            "effects": {
+              "potential": 5,
+              "knowledge": 1
+            },
+            "outcome": "塞北风烟吹散了刀头血腥，天地广阔，任由往来。",
+            "next": "grass_terminal"
+          }
+        ]
+      },
+      "grass_terminal": {
+        "zone": 4,
+        "scene": "远方阴山横亘如黛，长城烽燧残破。塞外胡笳声声，催促着羁旅之人远行。",
+        "dialogues": [],
+        "hearsay": "远方阴山横亘如黛，长城烽燧残破。塞外胡笳声声，催促着羁旅之人远行。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "张家口茶棚掌柜常道，草原上盗马常有，难得有人能不动刀枪化干戈为玉帛。"
+}

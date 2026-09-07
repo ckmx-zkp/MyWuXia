@@ -1,0 +1,270 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z10_yanzhanglu",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z10_yanzhanglu.json",
+  "zone": 10,
+  "design": {
+    "title": "烟瘴向导",
+    "hook": "云南府驿丞缺向导，南逃的教众病在药摊前，烟瘴道两头都缺一个肯走的人。",
+    "playerRole": "过路向导与施药人，带路救急，不追不杀。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "日月神教内乱后教众南逃",
+          "use": "药摊前教众的来历"
+        },
+        {
+          "beat": "五仙教烟瘴之地的南疆风物",
+          "use": "烟瘴道的凶险氛围"
+        }
+      ],
+      "history": [
+        {
+          "fact": "滇黔驿路烟瘴致病是行旅大患",
+          "use": "向导与草药的需求"
+        },
+        {
+          "fact": "驿丞向导由官府募给",
+          "use": "驿丞委托的依据"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "生活技能反馈",
+          "use": "草药消耗是主要解法"
+        },
+        {
+          "slot": "失败补救讨论",
+          "use": "迷路雇本地人领路"
+        }
+      ]
+    },
+    "echo": "xajh_z10_guided 后驿丞对白改为夸“头一个平安走完全程”；xajh_z10_medicine_given 后药摊传闻提及施药人。",
+    "facts": [
+      "xajh_z10_medicine_given",
+      "xajh_z10_guided",
+      "xajh_z10_late"
+    ],
+    "blocked": [],
+    "routes": [
+      "带路或施药成功",
+      "迷路受伤雇本地人补救",
+      "绕远路避瘴眼"
+    ]
+  },
+  "event": {
+    "name": "烟瘴向导",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 10,
+        "scene": "云南府驿前，驿丞对着烟瘴地图发愁；药摊前几个南逃的教众咳作一团。",
+        "dialogues": [
+          [
+            "驿丞",
+            "往南的烟瘴道，向导病死两个，再没人肯走。"
+          ],
+          [
+            "教众",
+            "咳咳……给我们口药吧，银子日后必还。"
+          ]
+        ],
+        "hearsay": "烟瘴道有去无回的说法，驿路上人人谈之色变。",
+        "choices": [
+          {
+            "id": "guide",
+            "text": "应下带路，花二两备绳索干粮",
+            "cost": {
+              "silver": 2
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "驿丞喜出望外，连声道谢。"
+          },
+          {
+            "id": "buy_herb",
+            "text": "先抓两包草药，防备瘴气",
+            "cost": {
+              "herbs": 2
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "药香扑鼻，心里踏实了几分。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 10,
+        "scene": "烟瘴道中雾气湿重，一伙山贼借着瘴气摸上来。",
+        "dialogues": [
+          [
+            "山贼",
+            "留下行囊，饶你们不死！"
+          ],
+          [
+            "驿卒",
+            "恩公，全看你了！"
+          ]
+        ],
+        "hearsay": "瘴气一起，山贼比虎豹还快。",
+        "choices": [
+          {
+            "id": "fight",
+            "text": "护住驿卒，击退山贼",
+            "combat": {
+              "opponent": "bandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "雾里难辨方向，你背后挨了一刀，队伍散了。",
+            "outcome": "山贼丢下刀钻回雾里。"
+          },
+          {
+            "id": "detour",
+            "text": "花四两绕远路，避开瘴眼",
+            "cost": {
+              "silver": 4
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 5
+            },
+            "outcome": "路远些，人平安。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 10,
+        "scene": "你把草药分作几份，配成防瘴的粗药。",
+        "dialogues": [
+          [
+            "教众",
+            "恩公大义……来日若有机会，必当报答。"
+          ]
+        ],
+        "hearsay": "南逃的教众里，也有知恩图报的。",
+        "choices": [
+          {
+            "id": "xajh_z10_medicine_given",
+            "text": "草药尽数布施",
+            "cost": {
+              "herbs": 2
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 5,
+              "exp": 5,
+              "flag": {
+                "xajh_z10_medicine_given": true
+              }
+            },
+            "outcome": "咳声渐止，几个汉子红了眼眶。"
+          },
+          {
+            "id": "half_price",
+            "text": "半价售与驿丞公用",
+            "cost": {
+              "herbs": 1
+            },
+            "next": "n4",
+            "effects": {
+              "silver": 4,
+              "exp": 3
+            },
+            "outcome": "驿丞按价付钱，还多给了些。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 10,
+        "scene": "出了烟瘴，驿站在望，驿卒们欢呼出声。",
+        "dialogues": [
+          [
+            "驿丞",
+            "路通了！恩公是头一个平安走完全程的向导！"
+          ]
+        ],
+        "hearsay": "烟瘴道通了，驿路恢复往来。",
+        "choices": [
+          {
+            "id": "xajh_z10_guided",
+            "text": "收下向导谢仪，歇脚再上路",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "silver": 8,
+              "exp": 18,
+              "flag": {
+                "xajh_z10_guided": true
+              }
+            },
+            "outcome": "谢仪丰厚，驿丞坚持加了倍。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 10,
+        "scene": "雾里迷了路，你带着伤折回驿前，驿丞跺脚叹气。",
+        "dialogues": [
+          [
+            "驿丞",
+            "雇个本地的老把式吧，多花些银子，认路。"
+          ]
+        ],
+        "hearsay": "烟瘴道，还得靠本地人领路。",
+        "choices": [
+          {
+            "id": "xajh_z10_late",
+            "text": "花六两雇老把式领路",
+            "cost": {
+              "silver": 6
+            },
+            "next": "end",
+            "effects": {
+              "exp": 8,
+              "flag": {
+                "xajh_z10_late": true
+              }
+            },
+            "outcome": "老把式拄杖在前，一路无话，一路平安。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 10,
+        "scene": "驿路重通，药摊前的咳声也稀了。",
+        "dialogues": [
+          [
+            "驿丞",
+            "那位过客带的队，一个都没少。"
+          ],
+          [
+            "教众",
+            "药救命，恩记下了。"
+          ]
+        ],
+        "hearsay": "烟瘴道有了新向导的路数；布施草药的事在驿路流传。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "烟瘴道通了，过客向导一个都没少。药摊前的咳声稀了，施药人的名字在驿路上传。"
+}

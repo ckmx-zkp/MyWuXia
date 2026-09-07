@@ -1,0 +1,385 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z00_fuzhou_remnant",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z00_fuzhou_remnant.json",
+  "zone": 0,
+  "design": {
+    "title": "钱塘残客",
+    "hook": "钱塘码头几个搬运脚夫压低嗓门，议论着闽中福威镖局一夜拆招牌的惨事，一个带伤的旧趟子手缩在跳板阴影里讨碗残汤。",
+    "playerRole": "途经临安的行脚客，替旧趟子手找药脱身或报官了事",
+    "sources": {
+      "novel": [
+        {
+          "beat": "福威镖局灭门惨祸后四方逃散的镖头伙计",
+          "use": "作为钱塘码头流落避祸的残客切口"
+        },
+        {
+          "beat": "青城派弟子踩盘围堵林家余党",
+          "use": "暗巷中青城盯梢客的压迫感与冲突"
+        }
+      ],
+      "history": [
+        {
+          "fact": "南宋两浙路临安府钱塘江盐漕水陆要冲",
+          "use": "码头官差与私盐漕工混杂盘查的市井背景"
+        },
+        {
+          "fact": "宋代坊市厢兵巡城与牙行脚夫行规",
+          "use": "背街暗巷中求告牙人和差役的规矩"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "底层江湖人生存质感",
+          "use": "趟子手落魄后只求半吊钱与两贴草药保命"
+        },
+        {
+          "slot": "多重结局不强行替主角报仇",
+          "use": "提供散碎银两、医治脱身与交由官府三条分流"
+        }
+      ]
+    },
+    "echo": "改变临安码头茶摊对闽中惨剧的议论风向",
+    "facts": [
+      "c_give_herb",
+      "c_fight_qc",
+      "c_bribe_guard"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功救人出港",
+      "官府拿办伏路汉",
+      "打退盯梢自全"
+    ]
+  },
+  "event": {
+    "name": "钱塘残客",
+    "start": "dock_whisper",
+    "requires": {},
+    "nodes": {
+      "dock_whisper": {
+        "room": "dock",
+        "scene": "钱塘码头细雨蒙蒙，几只盐船正下碇。一个破毡帽汉子倚在木垛旁，右臂渗血，不住张望市集方向。",
+        "dialogues": [
+          [
+            "码头挑夫",
+            "听说了么？闽中林总镖头偌大门面，一夜教人拔了。"
+          ],
+          [
+            "破毡帽客",
+            "这位朋友……借一步说话，匀口热水……"
+          ]
+        ],
+        "hearsay": "钱塘江边近日常见川蜀口音的汉子在货栈外打转。",
+        "choices": [
+          {
+            "id": "c_listen",
+            "text": "递上一碗热茶，听他吐露虚实",
+            "cost": {
+              "silver": 2
+            },
+            "effects": {
+              "potential": 5,
+              "knowledge": 1
+            },
+            "outcome": "破毡帽汉子抿了口热茶，自陈是福威镖局逃出的趟子手郑七，正被青城门人追索。",
+            "next": "dock_confession"
+          },
+          {
+            "id": "c_leave",
+            "text": "多一事不如少一事，转入背街暗巷",
+            "cost": {},
+            "effects": {
+              "potential": 1
+            },
+            "outcome": "你低头避开耳目，刚转入背街，便见两个青袍佩剑客在檐下交头接耳。",
+            "next": "alley_shadow"
+          }
+        ]
+      },
+      "dock_confession": {
+        "room": "inn",
+        "scene": "水乡客栈后巷檐角滴水。趟子手按着胳膊上的剑创，面如金纸。",
+        "dialogues": [
+          [
+            "趟子手",
+            "青城派的人咬在后头，连分号账房都被拿了。我身上没甚秘籍，只求指条活路。"
+          ],
+          [
+            "趟子手",
+            "若能匀两剂草药敷创，我趁夜摇乌篷船遁入太湖。"
+          ]
+        ],
+        "hearsay": "市集回春堂的金创药近来走得极快，多是行脚刀客暗中买去。",
+        "choices": [
+          {
+            "id": "c_give_herb",
+            "text": "取出草药替他敷裹，助其止血稳住伤情",
+            "requires": {
+              "herbs": 3
+            },
+            "cost": {
+              "herbs": 3
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 10,
+              "flag": {
+                "c_give_herb": true
+              }
+            },
+            "outcome": "你以草药替他扎紧创口，汉子感激涕零，道出青城弟子正在府衙前街埋伏。",
+            "next": "dock_plan"
+          },
+          {
+            "id": "c_buy_salve",
+            "text": "赠他几钱银子自去回春堂求治谋生",
+            "requires": {
+              "silver": 10
+            },
+            "cost": {
+              "silver": 10
+            },
+            "effects": {
+              "rep": 1,
+              "potential": 8
+            },
+            "outcome": "汉子收下碎银连声致谢，提醒你背街暗巷有眼线盘查。",
+            "next": "dock_plan"
+          },
+          {
+            "id": "c_report_court",
+            "text": "此案凶险，直奔府衙前街报官",
+            "cost": {},
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你不欲卷入私仇，抽身赶赴临安府衙门前。",
+            "next": "court_report"
+          }
+        ]
+      },
+      "dock_plan": {
+        "room": "home",
+        "scene": "城南民居背阴处，江风夹着潮气。青袍弟子的脚步声已从巷口逼近。",
+        "dialogues": [
+          [
+            "青城弟子",
+            "姓郑的跑不远，松风剑下从无活口，搜！"
+          ],
+          [
+            "趟子手",
+            "他们来了……恩公快走，莫教我连累！"
+          ]
+        ],
+        "hearsay": "青城派近来在临安暗中寻人，行事狠辣。",
+        "choices": [
+          {
+            "id": "c_fight_qc",
+            "text": "拔刀拦在巷口，迎战青城弟子",
+            "combat": {
+              "opponent": "qingcheng",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20,
+              "flag": {
+                "c_fight_qc": true
+              }
+            },
+            "failEffects": {
+              "potential": 5
+            },
+            "failText": "青城剑招迅疾刁钻，你肩头受创，只得护着伤者退入柴扉。",
+            "retreatNext": "alley_shadow",
+            "outcome": "你截住青城门人剑路，几招破其锋芒，逼得来人踉跄退回巷外。",
+            "next": "dock_resolve",
+            "failNext": "dock_escape"
+          },
+          {
+            "id": "c_hide_boat",
+            "text": "借民居巷道杂乱，引趟子手自水道潜行",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 5
+            },
+            "effects": {
+              "knowledge": 2,
+              "potential": 8
+            },
+            "outcome": "你熟知水乡深巷，带着汉子避过两处岗哨，悄无声息摸到水闸。",
+            "next": "dock_resolve"
+          }
+        ]
+      },
+      "court_report": {
+        "room": "court",
+        "scene": "临安府衙门前石狮森立，差役按刀立在石阶两旁，目光警惕。",
+        "dialogues": [
+          [
+            "门斗",
+            "外乡人，无状鸣冤是要先吃杀威棒的，有何事报？"
+          ],
+          [
+            "过路人",
+            "码头有川籍佩剑歹徒持械追索行客，已伤人见血。"
+          ]
+        ],
+        "hearsay": "临安府近来严查外省携械武人，唯恐惊扰御街贵人。",
+        "choices": [
+          {
+            "id": "c_bribe_guard",
+            "text": "递上公文茶水钱，请三班差役巡查码头",
+            "requires": {
+              "silver": 15
+            },
+            "cost": {
+              "silver": 15
+            },
+            "effects": {
+              "rep": 3,
+              "knowledge": 2,
+              "flag": {
+                "c_bribe_guard": true
+              }
+            },
+            "outcome": "班头得了茶钱，当即点齐差勇直奔钱塘码头查验路引，驱散恶徒。",
+            "next": "dock_resolve"
+          },
+          {
+            "id": "c_back_track",
+            "text": "差人推诿拖延，你决定回头自行搭救",
+            "cost": {},
+            "effects": {
+              "potential": 3
+            },
+            "outcome": "官差敷衍塞责，你不敢耽搁，抽身返奔码头旧渡。",
+            "next": "dock_plan"
+          }
+        ]
+      },
+      "alley_shadow": {
+        "room": "alley",
+        "scene": "背街暗巷潮湿泥泞，两名佩剑青年一前一后截住去路，目光狠鸷。",
+        "dialogues": [
+          [
+            "青城门客",
+            "鬼鬼祟祟的行脚汉，方才在码头同那姓郑的说甚？纳命来！"
+          ]
+        ],
+        "hearsay": "坊间传言青城派掌门门下数人四处缉杀灭门逃客。",
+        "choices": [
+          {
+            "id": "c_alley_fight",
+            "text": "施展长拳刀法，力挫截道青城门人",
+            "combat": {
+              "opponent": "qingcheng",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 12,
+              "silver": 5
+            },
+            "failEffects": {},
+            "failText": "对方松风剑势如泼风，你险象环生，拼力震开剑锋跃墙退避。",
+            "retreatNext": "dock_escape",
+            "outcome": "你见招拆招破其剑隙，打落长剑，逼其遁走。",
+            "next": "dock_resolve",
+            "failNext": "dock_escape"
+          },
+          {
+            "id": "c_calm_talk",
+            "text": "亮出临安过路引券，沉着分辨只是问路挑夫",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "knowledge": 3
+            },
+            "outcome": "你言语镇定文券齐整，对方摸不清底细，啐了一口抽身散去。",
+            "next": "dock_escape"
+          }
+        ]
+      },
+      "dock_escape": {
+        "room": "outskirts",
+        "scene": "临安城郊旷野，天色渐晚，衰草连天。惊魂未定的汉子瘫坐在树桩旁喘息。",
+        "dialogues": [
+          [
+            "趟子手",
+            "多谢壮士搭救之恩，我这便隐姓埋名，往浙东乡下投亲去也。"
+          ]
+        ],
+        "hearsay": "青城门人在临安受挫，渐往江北搜寻。",
+        "choices": [
+          {
+            "id": "c_farewell",
+            "text": "赠他半包干粮，目送其远去",
+            "cost": {},
+            "effects": {
+              "rep": 1,
+              "potential": 5
+            },
+            "outcome": "汉子躬身拜别，消失在暮霭古道之中。",
+            "next": "dock_terminal"
+          }
+        ]
+      },
+      "dock_resolve": {
+        "room": "dock",
+        "scene": "钱塘码头风平浪静，巡检弓手在栈桥盘查，青袍剑客早已作鸟兽散。",
+        "dialogues": [
+          [
+            "老船家",
+            "客官好手段，那帮川里来的凶霸子总算教差爷赶跑了，水路平了！"
+          ]
+        ],
+        "hearsay": "钱塘码头茶摊掌柜称，这两日青城剑客已不敢在渡口明火执仗。",
+        "choices": [
+          {
+            "id": "c_end_good",
+            "text": "收起行囊，静听江潮起落",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "silver": 12
+            },
+            "outcome": "码头恢复嘈杂，你踏上客船，江流滚滚向东。",
+            "next": "dock_terminal"
+          }
+        ]
+      },
+      "dock_terminal": {
+        "room": "gate",
+        "scene": "临安城门外烟柳依依，江上客船解缆离岸。江湖风波万重，你不过是个拂衣而去的行客。",
+        "dialogues": [],
+        "hearsay": "临安城门外烟柳依依，江上客船解缆离岸。江湖风波万重，你不过是个拂衣而去的行客。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {
+    "gate": "临安城门",
+    "street": "御街",
+    "inn": "水乡客栈",
+    "market": "市集",
+    "pharmacy": "回春堂",
+    "dock": "钱塘码头",
+    "alley": "背街暗巷",
+    "court": "府衙门前",
+    "home": "城南民居",
+    "outskirts": "临安城郊"
+  },
+  "activities": {},
+  "hearsay": "临安码头茶摊的闲汉不再提起闽中惨剧，改议论江南织造的缎子价钱。"
+}

@@ -1,0 +1,217 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z06_ningguta_score",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z06_ningguta_score.json",
+  "zone": 6,
+  "design": {
+    "title": "雪塞残谱",
+    "hook": "宁古塔流人苦役营外，一名冻伤的衰老配军在窝棚边吹奏一段怪异残调，引来狱卒呵斥殴打，那曲调隐然有金石杀伐之意。",
+    "playerRole": "出塞采参的关内游侠，解救流人并辨识曲谱渊源",
+    "sources": {
+      "novel": [
+        {
+          "beat": "刘正风与曲洋合撰《笑傲江湖》曲谱流传四海",
+          "use": "流人曾为衡山旧琴童因罪流放塞北的悲凉身世"
+        },
+        {
+          "beat": "曲洋所涉广陵散金石肃杀之遗韵",
+          "use": "残音中透露的琴箫奥旨吸引知音"
+        }
+      ],
+      "history": [
+        {
+          "fact": "清初顺治康熙年间宁古塔流放披甲人为奴旧例",
+          "use": "苦役营中流人冻饿濒死与狱卒严酷看管的实景"
+        },
+        {
+          "fact": "白山黑水渔猎采参客与流放文人私下交易风习",
+          "use": "民间用野山参皮货私赎流人劳役的规矩"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "文人墨客在武侠世界的边缘命运",
+          "use": "不劫狱杀官，以合法赎买或赠药存续残喘"
+        },
+        {
+          "slot": "琴谱当为心性见证而非神功秘籍",
+          "use": "获得琴道心得与潜能，不发神兵秘笈"
+        }
+      ]
+    },
+    "echo": "改变宁古塔苦役营对冻馁流人与吹箫声的传言",
+    "facts": [
+      "c_ransom_labor",
+      "c_memorize_score"
+    ],
+    "blocked": [],
+    "routes": [
+      "出资赎买免其苦役",
+      "以医道灵药保全性命",
+      "参悟残谱心性升华"
+    ]
+  },
+  "event": {
+    "name": "雪塞残谱",
+    "start": "exile_camp",
+    "requires": {},
+    "nodes": {
+      "exile_camp": {
+        "zone": 6,
+        "scene": "宁古塔风雪弥漫，木栅栏内流人手足冻裂，搬运巨木。窝棚角落一个断指老者捧着半截乌木短箫，幽咽不成调。",
+        "dialogues": [
+          [
+            "狱卒",
+            "老等死的贼囚，又在此吹这丧家调子号丧！讨打！"
+          ],
+          [
+            "老流人",
+            "这……这不是丧调，是南边衡山刘三爷合奏过的绝响……"
+          ]
+        ],
+        "hearsay": "宁古塔关押了不少从中原各省发配而来的罪官与倡优家眷。",
+        "choices": [
+          {
+            "id": "c_stop_whip",
+            "text": "架住狱卒皮鞭，摸出铜钱相赠息事",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "effects": {
+              "rep": 1,
+              "potential": 4
+            },
+            "outcome": "狱卒掂了铜钱啐了一口唾沫，骂骂咧咧走开烤火。",
+            "next": "talk_exile"
+          },
+          {
+            "id": "c_listen_tune",
+            "text": "驻足凝神倾听残破曲调中的宫商变征",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 3
+            },
+            "outcome": "你听出曲调跌宕激越，大有傲然避世之意，绝非北地凡俗小调。",
+            "next": "talk_exile"
+          }
+        ]
+      },
+      "talk_exile": {
+        "zone": 6,
+        "scene": "低矮潮湿的雪窝棚内，老流人缩在破羊皮下不住咳嗽，嘴唇发青。",
+        "dialogues": [
+          [
+            "老流人",
+            "老朽当年在衡山城刘府打杂，那年金盆洗手大乱，受牵连流配至此，已整整十二载了。"
+          ],
+          [
+            "老流人",
+            "残谱烂熟在胸，只是身子熬不过这个冬日，唯恐这半阕绝调随老朽烂入冻土。"
+          ]
+        ],
+        "hearsay": "塞北苦寒，流人入冬往往冻毙十之三四。",
+        "choices": [
+          {
+            "id": "c_give_herb_warm",
+            "text": "取出身带草药与干粮喂其服下",
+            "requires": {
+              "herbs": 3
+            },
+            "cost": {
+              "herbs": 3
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 6
+            },
+            "outcome": "草药入腹，老者泛起血色，呼吸渐渐绵长平稳。",
+            "next": "score_record"
+          },
+          {
+            "id": "c_ransom_labor",
+            "text": "去营官处出资替老者免除终日苦役",
+            "requires": {
+              "silver": 15
+            },
+            "cost": {
+              "silver": 15
+            },
+            "effects": {
+              "rep": 3,
+              "potential": 8,
+              "flag": {
+                "c_ransom_labor": true
+              }
+            },
+            "outcome": "营官收受银两，将老者改派去看守库房暖棚，得保残生。",
+            "next": "score_record"
+          }
+        ]
+      },
+      "score_record": {
+        "zone": 6,
+        "scene": "雪夜油灯昏暗，老流人用焦炭在破羊皮背面依稀勾画琴箫谱字。",
+        "dialogues": [
+          [
+            "老流人",
+            "这便是那首曲子的残篇引子，曲先生与刘三爷共谱的真意，便在'笑傲'二字。"
+          ]
+        ],
+        "hearsay": "江湖传闻《笑傲江湖》之曲蕴含旷达超脱之心法。",
+        "choices": [
+          {
+            "id": "c_memorize_score",
+            "text": "凝神静气，将曲意节拍参悟融汇于自身武学心性",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 5
+            },
+            "effects": {
+              "knowledge": 4,
+              "potential": 15,
+              "flag": {
+                "c_memorize_score": true
+              }
+            },
+            "outcome": "你胸中浊气一扫而空，只觉剑理拳意与金石丝竹互通，豁然开朗。",
+            "next": "camp_terminal"
+          },
+          {
+            "id": "c_copy_score",
+            "text": "替老者将羊皮曲谱仔细包好贴身珍藏",
+            "cost": {},
+            "effects": {
+              "knowledge": 2,
+              "potential": 8
+            },
+            "outcome": "墨迹干透，老流人眼中流下泪水，叹道绝响终未绝于冰雪。",
+            "next": "camp_terminal"
+          }
+        ]
+      },
+      "camp_terminal": {
+        "zone": 6,
+        "scene": "雪止天晴，宁古塔荒原银装素裹。远山如同一抹淡墨，天地宁谧无声。",
+        "dialogues": [],
+        "hearsay": "雪止天晴，宁古塔荒原银装素裹。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "宁古塔营房夜半隐隐有悠扬箫声穿云裂石，戍卒皆叹未曾闻此雅韵。"
+}

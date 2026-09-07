@@ -1,0 +1,284 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z09_jianmenqian",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z09_jianmenqian.json",
+  "zone": 9,
+  "design": {
+    "title": "剑门买路钱",
+    "hook": "成都茶馆还在讲林家灭门的旧案，剑门关上却有青城旧人设卡讨过路钱，行商敢怒不敢言。",
+    "playerRole": "过路行客，散银或报官，不屠观不灭口。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "青城派因辟邪剑谱灭福威镖局满门",
+          "use": "茶馆旧案的话题"
+        },
+        {
+          "beat": "青城败落后弟子四散",
+          "use": "剑门旧人的来历"
+        }
+      ],
+      "history": [
+        {
+          "fact": "蜀道关隘向有私卡陋习",
+          "use": "买路钱的现实依据"
+        },
+        {
+          "fact": "官府设卡稽查可革私卡",
+          "use": "报官解法"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "高危平衡反馈",
+          "use": "洪人雄必须可撤退"
+        },
+        {
+          "slot": "多解法讨论",
+          "use": "付钱、报官、交手三线并行"
+        }
+      ]
+    },
+    "echo": "xajh_z09_road_open 后说事人段子换成过客平卡；xajh_z09_reported 后行商对白改为夸官面办事。",
+    "facts": [
+      "xajh_z09_paid_passage",
+      "xajh_z09_reported",
+      "xajh_z09_road_open",
+      "xajh_z09_detour"
+    ],
+    "blocked": [],
+    "routes": [
+      "散银买通或报官设卡",
+      "交手落败凑钱走官面补救",
+      "会过洪人雄点到为止"
+    ]
+  },
+  "event": {
+    "name": "剑门买路钱",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 9,
+        "scene": "成都茶馆里，说事人拍着醒木讲林家灭门的旧案；角落的行商压低声音，说剑门有青城旧人设卡讨钱。",
+        "dialogues": [
+          [
+            "说事人",
+            "福威镖局几十口，一夜之间……"
+          ],
+          [
+            "行商",
+            "剑门那伙人，自称是青城旧部，过路一两。"
+          ]
+        ],
+        "hearsay": "青城派败落后，旧人四散，有的落了草。",
+        "choices": [
+          {
+            "id": "prepare_silver",
+            "text": "备三两散银，权当买路",
+            "cost": {
+              "silver": 3
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "银子分作几份，贴身收好。"
+          },
+          {
+            "id": "report_first",
+            "text": "先花二两打点，去官府报备",
+            "cost": {
+              "silver": 2
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "班头收了钱，答应派人上山看看。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 9,
+        "scene": "剑门关隘，几名佩剑汉子拦住行旅，为首的腰间还挂着青城旧穗。",
+        "dialogues": [
+          [
+            "青城旧人",
+            "过路一两，童叟无欺。"
+          ],
+          [
+            "行旅",
+            "给吧，给吧，别惹事。"
+          ]
+        ],
+        "hearsay": "剑门的买路钱，行商都捏着鼻子认。",
+        "choices": [
+          {
+            "id": "xajh_z09_paid_passage",
+            "text": "照付六两，连同行旅的份一并给了",
+            "cost": {
+              "silver": 6
+            },
+            "next": "n4",
+            "effects": {
+              "flag": {
+                "xajh_z09_paid_passage": true
+              },
+              "rep": 2,
+              "exp": 5
+            },
+            "outcome": "旧人们让开道路，朝你拱了拱手。"
+          },
+          {
+            "id": "argue",
+            "text": "理论几句，话不投机",
+            "combat": {
+              "opponent": "qingcheng",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "松风剑法名不虚传，你臂上中了一剑，退了下来。",
+            "outcome": "为首的收了剑：“好身手，请过。”"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 9,
+        "scene": "官府班头收了钱却面有难色，说剑门那伙人的头目洪人雄不好惹。话音未落，人已经到了门口。",
+        "dialogues": [
+          [
+            "洪人雄",
+            "谁在背后张罗？站出来。"
+          ],
+          [
+            "班头",
+            "大、大侠明鉴……"
+          ]
+        ],
+        "hearsay": "洪人雄当年也是响当当的角色，如今落魄守关。",
+        "choices": [
+          {
+            "id": "xajh_z09_reported",
+            "text": "捐十两公使钱，请差役正经上山设卡稽查",
+            "cost": {
+              "silver": 10
+            },
+            "next": "n4",
+            "effects": {
+              "flag": {
+                "xajh_z09_reported": true
+              },
+              "rep": 3,
+              "exp": 5
+            },
+            "outcome": "官卡一立，私卡再没人敢收钱。"
+          },
+          {
+            "id": "face_hong",
+            "text": "会一会洪人雄，点到为止",
+            "combat": {
+              "opponent": "hongrenxiong",
+              "danger": 6
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 15
+            },
+            "failEffects": {},
+            "failText": "对方掌力沉雄，你胸口发闷，连退数步。",
+            "outcome": "几十招后洪人雄收手：“是敬你的胆，不是敬你的钱。”"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 9,
+        "scene": "剑门的私卡撤了，行旅络绎，有人认出你，远远拱手。",
+        "dialogues": [
+          [
+            "行商",
+            "恩公，这条路，往后好走喽！"
+          ]
+        ],
+        "hearsay": "剑门关的买路钱没了，行商念着过客的好。",
+        "choices": [
+          {
+            "id": "xajh_z09_road_open",
+            "text": "付一两茶钱，喝碗茶再赶路",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 18,
+              "rep": 3,
+              "flag": {
+                "xajh_z09_road_open": true
+              }
+            },
+            "outcome": "一碗热茶下肚，山风都是顺的。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 9,
+        "scene": "你退回成都，臂上隐隐作痛，茶馆里说事人还在讲旧案。",
+        "dialogues": [
+          [
+            "行商",
+            "恩公，硬来不成，咱们凑钱走官面。"
+          ]
+        ],
+        "hearsay": "剑门那伙人，软硬都不吃的主儿也有。",
+        "choices": [
+          {
+            "id": "xajh_z09_detour",
+            "text": "出八两捐官面，加一包草药养伤",
+            "cost": {
+              "silver": 8,
+              "herbs": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 8,
+              "flag": {
+                "xajh_z09_detour": true
+              }
+            },
+            "outcome": "官卡设立，私卡销声匿迹，你的伤也养好了。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 9,
+        "scene": "月余后再过成都，茶馆里换了新段子。",
+        "dialogues": [
+          [
+            "说事人",
+            "剑门关的私卡，叫一位过路侠客给平了！"
+          ],
+          [
+            "听客",
+            "是打平的，还是花钱平的？"
+          ]
+        ],
+        "hearsay": "剑门关路通了；青城旧人四散谋生。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "剑门关的私卡没了，行商都说路好走了。青城旧人四散谋生，有人还记得那碗茶钱。"
+}

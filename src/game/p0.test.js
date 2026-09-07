@@ -8,6 +8,7 @@ import { availableStyles } from '../content/combat.js';
 import { encodeSave, migrateSave } from './saves.js';
 import { saveOptions } from './save-schema.js';
 import { SIDE_EVENTS } from '../content/p0.js';
+import { PACK_EVENTS } from '../content/side-packs.js';
 import { validateP0 } from '../content/validate-p0.js';
 import { createGameReducer } from './commands.js';
 
@@ -158,6 +159,8 @@ test('complete legal command route earns, learns, trains, wins the actual escort
 });
 test('xiaoao pack events appear by zone, write numbered facts, and restore', () => {
   assert.ok(SIDE_EVENTS.xajh_z00_fuwei_waybill && SIDE_EVENTS.xajh_z02_songshan_post);
+  assert.equal(Object.keys(PACK_EVENTS).every(id => SIDE_EVENTS[id]), true);
+  assert.ok(Object.keys(PACK_EVENTS).length >= 13);
   let s = at(fresh(), 'dock');
   s = cmd(s, 'DISCOVER_EVENT', { id: 'xajh_z00_fuwei_waybill' });
   assert.equal(s.p0.quests.xajh_z00_fuwei_waybill.node, 'n0');

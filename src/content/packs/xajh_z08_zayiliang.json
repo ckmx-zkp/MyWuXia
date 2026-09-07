@@ -1,0 +1,298 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z08_zayiliang",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z08_zayiliang.json",
+  "zone": 8,
+  "design": {
+    "title": "山下粮",
+    "hook": "华山脚下杂役缺粮，客栈里气宗剑宗两派旧人又在翻旧账，山下一日不得安生。",
+    "playerRole": "过路帮工，运粮劝架，不入派不夺掌门。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "华山气宗剑宗之争绵延数十年",
+          "use": "客栈旧人争吵的根源"
+        },
+        {
+          "beat": "华山派生计清苦、人丁凋零",
+          "use": "杂役缺粮的底色"
+        }
+      ],
+      "history": [
+        {
+          "fact": "山岳寺观粮道依赖山下转运",
+          "use": "运粮委托的现实依据"
+        },
+        {
+          "fact": "镖行雇挑夫走熟路避匪",
+          "use": "雇挑夫解法"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "师承衔接反馈",
+          "use": "medicine_complete 玩家有华山剑法门径彩蛋"
+        },
+        {
+          "slot": "高危平衡讨论",
+          "use": "教头评理非必打，可撤退"
+        }
+      ]
+    },
+    "echo": "xajh_z08_grain_hauled 后杂役头领对白改为夸过客；xajh_z08_huashan_intro 后传闻提及华山剑法引荐的门径。",
+    "facts": [
+      "xajh_z08_peace_wine",
+      "xajh_z08_grain_hauled",
+      "xajh_z08_huashan_intro",
+      "xajh_z08_grain_late"
+    ],
+    "blocked": [],
+    "routes": [
+      "运粮或劝架成功",
+      "粮散人受伤重新置粮补救",
+      "提及旧谊问剑法门径"
+    ]
+  },
+  "event": {
+    "name": "山下粮",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 8,
+        "scene": "华山脚下的客栈，杂役头领对着空米缸叹气；邻桌两个旧人拍着桌子，一个喊气宗，一个喊剑宗。",
+        "dialogues": [
+          [
+            "杂役头领",
+            "山上几十口人，粮道又断，这日子怎么过。"
+          ],
+          [
+            "气宗旧人",
+            "当年若不是你们……"
+          ],
+          [
+            "剑宗旧人",
+            "哼，几十年了还翻旧账！"
+          ]
+        ],
+        "hearsay": "华山两宗的旧怨，山下客栈里天天重演。",
+        "choices": [
+          {
+            "id": "haul",
+            "text": "揽下运粮的活计，先垫三两",
+            "cost": {
+              "silver": 3
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "杂役头领把粮单郑重交给你。"
+          },
+          {
+            "id": "mediate",
+            "text": "先劝开那两个旧人",
+            "requires": {
+              "knowledge": 2
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "两人各自别过头，总算不拍了。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 8,
+        "scene": "粮道崎岖，一个使剑的旧人拦住去路，说要称一称你的斤两。",
+        "dialogues": [
+          [
+            "剑宗旧人",
+            "上山容易，过山难。亮兵刃吧，朋友。"
+          ]
+        ],
+        "hearsay": "上华山的路，从来不好走。",
+        "choices": [
+          {
+            "id": "spar_sword",
+            "text": "接他三招两式",
+            "combat": {
+              "opponent": "swordsman",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "剑光如雪，你肩头一凉，粮袋散了。",
+            "outcome": "剑招收了，旧人抱拳：“请上山。”"
+          },
+          {
+            "id": "hire_porter",
+            "text": "花八两雇挑夫走稳当路",
+            "cost": {
+              "silver": 8
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "挑夫熟门熟路，避开是非。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 8,
+        "scene": "两个旧人梗着脖子，谁也不服谁。",
+        "dialogues": [
+          [
+            "气宗旧人",
+            "要评理，得有分量的人开口。"
+          ]
+        ],
+        "hearsay": "两宗之争，外人一句话比十句管用。",
+        "choices": [
+          {
+            "id": "xajh_z08_peace_wine",
+            "text": "花四两各买一碗水酒，把话岔开",
+            "cost": {
+              "silver": 4
+            },
+            "next": "n4",
+            "effects": {
+              "flag": {
+                "xajh_z08_peace_wine": true
+              },
+              "rep": 3,
+              "exp": 5
+            },
+            "outcome": "酒碗一碰，旧事暂且搁下。"
+          },
+          {
+            "id": "ask_master",
+            "text": "请坐馆教头出面评理",
+            "combat": {
+              "opponent": "instructor",
+              "danger": 5
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n3",
+            "effects": {
+              "exp": 12
+            },
+            "failEffects": {},
+            "failText": "教头随手一试，你便退了七八步，两旁哄笑。",
+            "outcome": "教头试了你的身手，点头说了句公道话。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 8,
+        "scene": "粮到了山上，杂役们欢天喜地；客栈里的争吵也歇了。",
+        "dialogues": [
+          [
+            "杂役头领",
+            "恩公，山上的几十张嘴，今日都记你的好。"
+          ]
+        ],
+        "hearsay": "华山脚下，过客运粮的事传为美谈。",
+        "choices": [
+          {
+            "id": "xajh_z08_grain_hauled",
+            "text": "收下谢仪告辞",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "silver": 8,
+              "exp": 20,
+              "rep": 4,
+              "flag": {
+                "xajh_z08_grain_hauled": true
+              }
+            },
+            "outcome": "谢仪丰厚，杂役们送出老远。"
+          },
+          {
+            "id": "xajh_z08_huashan_intro",
+            "text": "提及药商旧谊，求问华山剑法的门径",
+            "visibleWhen": {
+              "flag": "medicine_complete"
+            },
+            "requires": {
+              "flag": "medicine_complete"
+            },
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "knowledge": 1,
+              "exp": 10,
+              "flag": {
+                "xajh_z08_huashan_intro": true
+              }
+            },
+            "outcome": "杂役头领压低声音，说了引荐的路子。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 8,
+        "scene": "粮袋散了，你肩头带伤，杂役头领赶来扶你。",
+        "dialogues": [
+          [
+            "杂役头领",
+            "恩公带伤，粮还短着，这可怎么好。"
+          ]
+        ],
+        "hearsay": "上山的粮道，又断了一回。",
+        "choices": [
+          {
+            "id": "xajh_z08_grain_late",
+            "text": "出六两重新置粮，雇人送上",
+            "cost": {
+              "silver": 6
+            },
+            "next": "end",
+            "effects": {
+              "exp": 10,
+              "flag": {
+                "xajh_z08_grain_late": true
+              }
+            },
+            "outcome": "新粮上山，虽迟总算到了。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 8,
+        "scene": "几日后客栈里，两宗旧人竟同桌喝酒，杂役头领逢人便夸。",
+        "dialogues": [
+          [
+            "杂役头领",
+            "那位过客，是真办事的人。"
+          ],
+          [
+            "气宗旧人",
+            "哼，酒不错。"
+          ]
+        ],
+        "hearsay": "华山脚下多了段过客运粮的佳话。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "过客运粮上华山，山下传为佳话。气宗剑宗的旧人，难得同桌喝了一回酒。"
+}

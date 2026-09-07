@@ -1,0 +1,300 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z03_yanmen_badge",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z03_yanmen_badge.json",
+  "zone": 3,
+  "design": {
+    "title": "关城验牌",
+    "hook": "雁门关城门守军严查过客，一名掩藏容貌的恒山女尼被搜出带有一面黑木崖残破朱漆腰牌，眼看要被押入死牢。",
+    "playerRole": "出入关隘的北地游侠，设法辨伪救人或暗通关防",
+    "sources": {
+      "novel": [
+        {
+          "beat": "恒山派白云庵女尼慈悲持戒屡遭诬陷",
+          "use": "女尼携魔教信物实为搭救被俘同门的隐情"
+        },
+        {
+          "beat": "日月神教细作北上关塞渗透各派",
+          "use": "关隘军卒盘查魔教腰牌引发的骚动"
+        }
+      ],
+      "history": [
+        {
+          "fact": "雁门关宋金宋蒙对峙时期的严苛过关凭勘",
+          "use": "军门三勘六问的路引验查规矩"
+        },
+        {
+          "fact": "明代宣大总督治下边兵对江湖私通鞑靼的警惕",
+          "use": "军官对带铁器与奇门兵刃者的盘剥"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "救人需留退路",
+          "use": "不可盲目冲卡杀官兵，走文券与银钱疏通"
+        },
+        {
+          "slot": "还原恒山派谨厚形象",
+          "use": "任务回报为佛门定志与江湖声望"
+        }
+      ]
+    },
+    "echo": "改变雁门关茶铺对恒山派女尼被扣事件的传闻",
+    "facts": [
+      "c_pay_full",
+      "c_steal_badge"
+    ],
+    "blocked": [],
+    "routes": [
+      "交银与文书保释女尼",
+      "偷换腰牌消弭罪证",
+      "强冲截道掩护脱身"
+    ]
+  },
+  "event": {
+    "name": "关城验牌",
+    "start": "gate_check",
+    "requires": {},
+    "nodes": {
+      "gate_check": {
+        "zone": 3,
+        "scene": "雁门关下朔风呼啸，塞草焦黄。重甲守军手按雁翎刀，正将一名缁衣小尼姑围在石栅栏前。",
+        "dialogues": [
+          [
+            "把总",
+            "从你包袱里搜出朱漆铜牌，还敢狡辩是游方化缘？拿下！"
+          ],
+          [
+            "恒山小尼",
+            "阿弥陀佛，贫尼是恒山门下，此牌是自伤重教众身上取下，欲送还本山的……"
+          ]
+        ],
+        "hearsay": "雁门关近来每逢日落便闭门拿人，搜捕关外细作甚急。",
+        "choices": [
+          {
+            "id": "c_vouch_nun",
+            "text": "出示公文与盘缠，上前替恒山小尼作保",
+            "requires": {
+              "silver": 10
+            },
+            "cost": {
+              "silver": 10
+            },
+            "effects": {
+              "rep": 2,
+              "knowledge": 1
+            },
+            "outcome": "把总掂着银两，斜眼打量你，冷笑称若是同党，一并论处。",
+            "next": "officer_bargain"
+          },
+          {
+            "id": "c_slip_crowd",
+            "text": "混在关厢人堆里，暗中观察守备布防",
+            "requires": {
+              "potential": 3
+            },
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你摸清了腰牌被暂扣在关城签押房皮匣内，守备仅两名亲兵。",
+            "next": "stealth_plan"
+          }
+        ]
+      },
+      "officer_bargain": {
+        "zone": 3,
+        "scene": "关城签押房内火盆炭火明灭，把总卸下铁盔，案上摆着那面森冷的铜令。",
+        "dialogues": [
+          [
+            "把总",
+            "你说她是正派，这牌子作何解释？没二十两银子销案，人充军！"
+          ]
+        ],
+        "hearsay": "塞北边防军饷克扣，军官极喜借江湖案子敲诈过客。",
+        "choices": [
+          {
+            "id": "c_pay_full",
+            "text": "掏出沉甸银两，买通军官销毁勘契",
+            "requires": {
+              "silver": 20
+            },
+            "cost": {
+              "silver": 20
+            },
+            "effects": {
+              "rep": 3,
+              "flag": {
+                "c_pay_full": true
+              }
+            },
+            "outcome": "把总喜笑颜开，将案上文书投入炭盆化为灰烬，挥手放人。",
+            "next": "gate_clear"
+          },
+          {
+            "id": "c_reason_sect",
+            "text": "搬出恒山定闲师太与燕京提刑司旧交施压",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "knowledge": 2,
+              "rep": 1
+            },
+            "outcome": "军官心生顾忌，怕惹上北地大派，改口只要五两茶水钱便准保领。",
+            "next": "gate_compromise"
+          }
+        ]
+      },
+      "stealth_plan": {
+        "zone": 3,
+        "scene": "关城背阴马厩，天色黑透。签押房外北风呼号，更夫梆子声渐远。",
+        "dialogues": [
+          [
+            "巡关兵",
+            "天寒地冻，防着夜里生事，打起精神来！"
+          ]
+        ],
+        "hearsay": "关城内夜间有野犬出没，稍有动静便吠叫不止。",
+        "choices": [
+          {
+            "id": "c_steal_badge",
+            "text": "施展轻身功夫潜入签押房掉包铜牌",
+            "requires": {
+              "potential": 8
+            },
+            "cost": {
+              "potential": 8
+            },
+            "effects": {
+              "potential": 10,
+              "flag": {
+                "c_steal_badge": true
+              }
+            },
+            "outcome": "你动作敏捷，翻窗而入用寻常铜牌换走原物，神不知鬼不觉。",
+            "next": "gate_clear"
+          },
+          {
+            "id": "c_fight_guards",
+            "text": "被巡夜亲兵撞破，拔兵刃夺路而出",
+            "combat": {
+              "opponent": "guards",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20
+            },
+            "failEffects": {
+              "potential": 5
+            },
+            "failText": "亲兵长枪攒刺阵法严密，你臂膀受挫被逼向墙角。",
+            "retreatNext": "gate_clear",
+            "outcome": "你格开长枪阵势，虚晃一招翻越马道石墙扬长而去。",
+            "next": "gate_clear",
+            "failNext": "gate_escape"
+          }
+        ]
+      },
+      "gate_compromise": {
+        "zone": 3,
+        "scene": "关城小角门吱呀推开，冷风倒灌。小尼姑被推了出来，冻得瑟瑟发抖。",
+        "dialogues": [
+          [
+            "恒山小尼",
+            "善哉……多亏施主搭救，若非施主，贫尼清白难明。"
+          ]
+        ],
+        "hearsay": "恒山派派人至关城接应化缘弟子。",
+        "choices": [
+          {
+            "id": "c_return_escort",
+            "text": "护送小尼姑行出关外十里，交由接应弟子",
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "rep": 3,
+              "potential": 8
+            },
+            "outcome": "接应道姑合十道谢，赠你佛门疗伤药草。",
+            "next": "yanmen_terminal"
+          }
+        ]
+      },
+      "gate_escape": {
+        "zone": 3,
+        "scene": "雁门山道乱石嶙峋，风雪交加。你与小尼姑踏着残雪脱出重围。",
+        "dialogues": [
+          [
+            "恒山小尼",
+            "阿弥陀佛，动刀动枪非佛子所愿，施主受累了……"
+          ]
+        ],
+        "hearsay": "雁门关军营鸣角搜山，然风雪封路，追兵只得回撤。",
+        "choices": [
+          {
+            "id": "c_dress_wound",
+            "text": "在避风山洞歇息裹伤，天明各奔前程",
+            "requires": {
+              "herbs": 2
+            },
+            "cost": {
+              "herbs": 2
+            },
+            "effects": {
+              "hp": 15,
+              "potential": 5
+            },
+            "outcome": "山火微温，伤口渐愈。小尼姑诵经为你祈福，天明分道扬镳。",
+            "next": "yanmen_terminal"
+          }
+        ]
+      },
+      "gate_clear": {
+        "zone": 3,
+        "scene": "关外大道一马平川，北风浩荡。小尼姑将收回的铜牌深埋于乱石堆下。",
+        "dialogues": [
+          [
+            "恒山小尼",
+            "此等祸根孽物，合当尘归尘土归土。施主大义，恒山上下铭感于心。"
+          ]
+        ],
+        "hearsay": "雁门关守卒次日酒醒，只当是账目有误，不再提腰牌之事。",
+        "choices": [
+          {
+            "id": "c_bid_farewell",
+            "text": "合十送别，拨转马头自去游历燕云",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "silver": 5
+            },
+            "outcome": "白云深处梵音若有若无，你抖落一身风雪，踏上燕云古道。",
+            "next": "yanmen_terminal"
+          }
+        ]
+      },
+      "yanmen_terminal": {
+        "zone": 3,
+        "scene": "雁门关垛口没入北地苍茫暮色之中，边笳悲凉，关山万里，一人一骑自去天涯。",
+        "dialogues": [],
+        "hearsay": "雁门关垛口没入北地苍茫暮色之中，边笳悲凉，关山万里，一人一骑自去天涯。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "雁门关前茶棚伙计不再替恒山派担忧，倒夸过路的南来豪杰讲义气。"
+}

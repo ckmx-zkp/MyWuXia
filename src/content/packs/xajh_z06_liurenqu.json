@@ -1,0 +1,285 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z06_liurenqu",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z06_liurenqu.json",
+  "zone": 6,
+  "design": {
+    "title": "流人残曲",
+    "hook": "宁古塔集外的土墙下，一位流人老者会吹《笑傲江湖》残曲，只求把一封信传出关外。",
+    "playerRole": "过路听曲人，传信不劫狱，银钱开路。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "刘正风曲洋以乐明志、托物寄情",
+          "use": "残曲与遗信的情绪底色"
+        },
+        {
+          "beat": "魔教长老曲洋一脉的飘零",
+          "use": "老者来历的暗示"
+        }
+      ],
+      "history": [
+        {
+          "fact": "清代流人戍苦寒、音书难通",
+          "use": "传信委托的稀缺性"
+        },
+        {
+          "fact": "戍所狱卒索贿是旧常例",
+          "use": "买通解法的出处"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "氛围向内容反馈",
+          "use": "以文戏为主，战斗只做拦路"
+        },
+        {
+          "slot": "失败体验讨论",
+          "use": "信被搜走可赎回补救"
+        }
+      ]
+    },
+    "echo": "xajh_z06_letter_delivered 或 xajh_z06_letter_sent 后集上传闻改为“老者心事了了”；xajh_z06_melody_heard 后你听曲的传闻流入客栈。",
+    "facts": [
+      "xajh_z06_melody_heard",
+      "xajh_z06_letter_delivered",
+      "xajh_z06_letter_sent",
+      "xajh_z06_letter_late"
+    ],
+    "blocked": [],
+    "routes": [
+      "买通狱卒亲自送信",
+      "信被搜走后赎回补救",
+      "托商队转送"
+    ]
+  },
+  "event": {
+    "name": "流人残曲",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 6,
+        "scene": "宁古塔集外的土墙下，断断续续的笛声飘出来，调子苍劲，不似关外之音。",
+        "dialogues": [
+          [
+            "流人老者",
+            "这曲子，名《笑傲江湖》，是老朽半生所学，如今只剩半阕。"
+          ],
+          [
+            "狱卒",
+            "听曲可以，近前说话，得使钱。"
+          ]
+        ],
+        "hearsay": "流人营里卧虎藏龙，吹笛的老者来历无人说得清。",
+        "choices": [
+          {
+            "id": "approach",
+            "text": "花一两近前一叙",
+            "cost": {
+              "silver": 1
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "狱卒收了钱，背过身去。"
+          },
+          {
+            "id": "ask_jailer",
+            "text": "先花三两向狱卒打听老者来历",
+            "cost": {
+              "silver": 3
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "狱卒说此人进来多年，从不多话。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 6,
+        "scene": "老者放下笛子，从怀中取出一封油纸裹的信。",
+        "dialogues": [
+          [
+            "流人老者",
+            "老朽命不久长。这封信送到江南，便了却一桩心事，绝不连累足下。"
+          ]
+        ],
+        "hearsay": "老者有个心愿，营里人人都知道，没人帮得上。",
+        "choices": [
+          {
+            "id": "take_letter",
+            "text": "应下传信，花二两置办油纸行囊",
+            "cost": {
+              "silver": 2
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 5
+            },
+            "outcome": "信贴身收好，老者吹了一曲相送。"
+          },
+          {
+            "id": "xajh_z06_melody_heard",
+            "text": "先请他吹完半阕，辨一辨真伪",
+            "requires": {
+              "knowledge": 3
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "xajh_z06_melody_heard": true
+              },
+              "knowledge": 1
+            },
+            "outcome": "曲中筋骨不假，是浸淫数十年的手笔。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 6,
+        "scene": "营门口的恶霸拦住去路，斜眼打量你的行囊。",
+        "dialogues": [
+          [
+            "恶霸",
+            "进营出营，都得过我这关。孝敬呢？"
+          ],
+          [
+            "狱卒",
+            "……"
+          ]
+        ],
+        "hearsay": "营中恶霸专敲外来人的竹杠。",
+        "choices": [
+          {
+            "id": "bribe_jailer",
+            "text": "花八两买通狱卒放你出入",
+            "cost": {
+              "silver": 8
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 5
+            },
+            "outcome": "狱卒掂着银子，替你开了方便门。"
+          },
+          {
+            "id": "fight_thug",
+            "text": "不吃这套，动手",
+            "combat": {
+              "opponent": "thug",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n2",
+            "effects": {
+              "exp": 8
+            },
+            "failEffects": {},
+            "failText": "恶霸人多势众，你被推倒在地，信也被搜了去。",
+            "outcome": "三拳两脚，恶霸抱头讨饶。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 6,
+        "scene": "信已在怀，老者在土墙内向你遥遥一揖。",
+        "dialogues": [
+          [
+            "流人老者",
+            "苏州城外，枫桥边，周姓人家。拜托了。"
+          ]
+        ],
+        "hearsay": "老者的心愿，终于要有着落。",
+        "choices": [
+          {
+            "id": "xajh_z06_letter_delivered",
+            "text": "亲自送往江南，花四两腿脚钱",
+            "cost": {
+              "silver": 4
+            },
+            "next": "end",
+            "effects": {
+              "rep": 5,
+              "exp": 20,
+              "flag": {
+                "xajh_z06_letter_delivered": true
+              }
+            },
+            "outcome": "信到之日，周家老小对着北方磕头。"
+          },
+          {
+            "id": "xajh_z06_letter_sent",
+            "text": "花二两托可靠的商队转送",
+            "cost": {
+              "silver": 2
+            },
+            "next": "end",
+            "effects": {
+              "exp": 12,
+              "flag": {
+                "xajh_z06_letter_sent": true
+              }
+            },
+            "outcome": "商队收了信，立了字据。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 6,
+        "scene": "信被搜走，恶霸扬言要交给官府邀功。你揉着伤臂，得想法子。",
+        "dialogues": [
+          [
+            "恶霸",
+            "想要回去？拿钱来赎！"
+          ]
+        ],
+        "hearsay": "落到恶霸手里的东西，多半要花钱赎。",
+        "choices": [
+          {
+            "id": "xajh_z06_letter_late",
+            "text": "花银两加一包草药，赎信又请老者重书副本",
+            "cost": {
+              "silver": 2,
+              "herbs": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 8,
+              "flag": {
+                "xajh_z06_letter_late": true
+              }
+            },
+            "outcome": "信赎回来了，老者又写了一封，双保险。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 6,
+        "scene": "数月后集上传闻，吹笛的老者没了，走的那日笛声不断。",
+        "dialogues": [
+          [
+            "狱卒",
+            "老者走的时候很安详，说心事了了。"
+          ],
+          [
+            "流人",
+            "那半阕曲子，如今营里有人会吹了。"
+          ]
+        ],
+        "hearsay": "老者的信到了江南；那支残曲留在了关外。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "流人老者的信到了江南，他走时笛声不断。那半阕古曲，如今戍所里有人会吹了。"
+}

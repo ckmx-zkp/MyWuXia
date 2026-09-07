@@ -1,0 +1,262 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z04_diuma",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z04_diuma.json",
+  "zone": 4,
+  "design": {
+    "title": "丢马疑云",
+    "hook": "张家口外老牧人丢了三匹马，疑心是商队里南逃的教众所为，商队伙计连声喊冤。",
+    "playerRole": "过路帮闲，寻马劝人，不替谁剿谁。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "日月神教败落后教众星散",
+          "use": "南逃者的身份底色"
+        },
+        {
+          "beat": "塞北商队夹带人员的江湖常态",
+          "use": "商队藏匿的空间"
+        }
+      ],
+      "history": [
+        {
+          "fact": "塞北马匹是牧户命根",
+          "use": "寻马委托的分量"
+        },
+        {
+          "fact": "商队雇脚力以劳力抵盘缠",
+          "use": "教众随队的由头"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "非战路线反馈",
+          "use": "赎马与劝离都是不战斗解法"
+        },
+        {
+          "slot": "结局多样性建议",
+          "use": "留人自新与资助单走分事实"
+        }
+      ]
+    },
+    "echo": "xajh_z04_talked_leave 后商队伙计对白改为夸留下的新人肯干活；xajh_z04_found_horses 后牧人传闻夸过客。",
+    "facts": [
+      "xajh_z04_talked_leave",
+      "xajh_z04_found_horses"
+    ],
+    "blocked": [],
+    "routes": [
+      "夺马或赎马成功",
+      "落马受伤后请人帮手补救",
+      "劝教众留塞自新"
+    ]
+  },
+  "event": {
+    "name": "丢马疑云",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 4,
+        "scene": "张家口外的营帐前，老牧人蹲在空马桩旁，逢人便比划丢的三匹马。",
+        "dialogues": [
+          [
+            "老牧人",
+            "马贼？不像。倒像商队里那几个汉人，眼神躲闪。"
+          ],
+          [
+            "商队伙计",
+            "冤枉，我们只管赶路。"
+          ]
+        ],
+        "hearsay": "有商队里混着南边的教众余党。",
+        "choices": [
+          {
+            "id": "take_case",
+            "text": "应下寻马，先垫一两草料钱",
+            "cost": {
+              "silver": 1
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "老牧人把马桩上的缰绳塞给你。"
+          },
+          {
+            "id": "ask_caravan",
+            "text": "先问清商队的去向",
+            "requires": {
+              "knowledge": 1
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "商队三日后出塞，往西去。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 4,
+        "scene": "草场上，你寻到马的踪迹，却被两名河西口音的汉子拦下，马就在他们身后。",
+        "dialogues": [
+          [
+            "汉子",
+            "马是买的。你要？拿钱来。"
+          ]
+        ],
+        "hearsay": "河西马贼常把赃马混进商队卖。",
+        "choices": [
+          {
+            "id": "fight_horse",
+            "text": "动手夺马",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 3
+            },
+            "next": "n5",
+            "failNext": "n4",
+            "retreatNext": "n2",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "马蹄扬起尘土，你被甩下马背。",
+            "outcome": "两名汉子见势不妙，丢下马跑了。"
+          },
+          {
+            "id": "ransom",
+            "text": "花八两把马赎回来",
+            "cost": {
+              "silver": 8
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "马回来了，银子没了。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 4,
+        "scene": "商队帐里，两个南方面孔的汉子低声哀求带他们出塞，愿以劳力抵盘缠。",
+        "dialogues": [
+          [
+            "教众余党",
+            "教里散了，我们只想讨条活路，不再惹事。"
+          ]
+        ],
+        "hearsay": "教众星散，有的改了行，有的还在逃。",
+        "choices": [
+          {
+            "id": "xajh_z04_talked_leave",
+            "text": "劝他们留下投牧户自新",
+            "requires": {
+              "knowledge": 2
+            },
+            "next": "n5",
+            "effects": {
+              "flag": {
+                "xajh_z04_talked_leave": true
+              },
+              "rep": 3,
+              "exp": 5
+            },
+            "outcome": "两人对视良久，终于点头。"
+          },
+          {
+            "id": "fund",
+            "text": "出五两资助他们单走，别连累商队",
+            "cost": {
+              "silver": 5
+            },
+            "next": "n5",
+            "effects": {
+              "rep": 2
+            },
+            "outcome": "两人千恩万谢，连夜离队。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 4,
+        "scene": "你被马甩下来，老牧人把你扶回帐里敷上草药。",
+        "dialogues": [
+          [
+            "老牧人",
+            "年轻人，马要紧，人更要紧。"
+          ]
+        ],
+        "hearsay": "草场摔伤的人，牧户都乐意搭把手。",
+        "choices": [
+          {
+            "id": "retry_help",
+            "text": "花四两请两个牧人帮手再讨马",
+            "cost": {
+              "silver": 4
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 5
+            },
+            "outcome": "人多势众，这回马贩子没敢拦。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 4,
+        "scene": "三匹马打着响鼻归了桩，商队也整顿好了。",
+        "dialogues": [
+          [
+            "老牧人",
+            "马回来了！这几个铜板你拿着，别嫌少。"
+          ]
+        ],
+        "hearsay": "老牧人的马找回来了，逢人就夸。",
+        "choices": [
+          {
+            "id": "xajh_z04_found_horses",
+            "text": "收下谢礼，喝碗马奶酒再走",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "silver": 6,
+              "exp": 18,
+              "rep": 4,
+              "flag": {
+                "xajh_z04_found_horses": true
+              }
+            },
+            "outcome": "酒辣心肠热，牧人的谢仪沉甸甸。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 4,
+        "scene": "过了几日，营帐间传起新话。",
+        "dialogues": [
+          [
+            "商队伙计",
+            "那几个南边的，有的留下了，听说肯干活。"
+          ],
+          [
+            "老牧人",
+            "丢马的时节过去了，都是托过客的福。"
+          ]
+        ],
+        "hearsay": "教众余党有的从了牧，牧人念过客的好。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "老牧人的马找回来了，他逢人就夸那位过客。南逃的教众里，有人在塞北扎下根当了牧工。"
+}

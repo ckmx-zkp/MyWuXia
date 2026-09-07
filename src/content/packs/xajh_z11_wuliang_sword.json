@@ -1,0 +1,225 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z11_wuliang_sword",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z11_wuliang_sword.json",
+  "zone": 11,
+  "design": {
+    "title": "点苍辨谱",
+    "hook": "大理城外蝴蝶泉边草铺内，一群过路江湖汉子围着几张羊皮拓片争执，有人宣称这是五岳剑派华山思过崖的无上秘刻，欲高价转手给无量剑派余脉。",
+    "playerRole": "精通中原武故的过客，以学识辨伪解纷",
+    "sources": {
+      "novel": [
+        {
+          "beat": "大理无量剑东西两宗比剑争宫旧怨",
+          "use": "无量剑门人渴望精进剑术重振门楣的痴念"
+        },
+        {
+          "beat": "五岳各派剑法残招经好事者四处传布变形",
+          "use": "市井骗徒借名家之名欺凌偏远门派"
+        }
+      ],
+      "history": [
+        {
+          "fact": "大理国虽内附仍存段氏点苍各部自治遗风",
+          "use": "城外段氏遗民与行商各遵古礼之规制"
+        },
+        {
+          "fact": "滇中大理城茶花市与铁器集市之边贸风俗",
+          "use": "用盐巴布匹折换中原兵书旧籍的规矩"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不进剑湖宫取神功",
+          "use": "严守不过界红线，仅在山门外辨伪解厄"
+        },
+        {
+          "slot": "用正统剑理化解偏门妄念",
+          "use": "以学识驳斥伪刻，保全当事方资财"
+        }
+      ]
+    },
+    "echo": "改变大理城外茶铺对五岳秘刻流传的流言",
+    "facts": [
+      "c_disclose_truth",
+      "c_fight_peddler"
+    ],
+    "blocked": [],
+    "routes": [
+      "依理驳斥伪拓安抚门人",
+      "击退兜售假谱恶徒",
+      "花销盘费赎毁祸根"
+    ]
+  },
+  "event": {
+    "name": "点苍辨谱",
+    "start": "spring_booth",
+    "requires": {},
+    "nodes": {
+      "spring_booth": {
+        "zone": 11,
+        "scene": "蝴蝶泉边清泉冽冽，古榕垂须。七八名着皂袍的无量剑派年轻门人正捧着几幅拓片，面红耳赤。",
+        "dialogues": [
+          [
+            "无量弟子",
+            "卖家咬定这是华山绝顶石壁上拓下来的神妙剑法，若能买下，五年后斗剑必胜西宗！"
+          ],
+          [
+            "游方骗子",
+            "此乃五岳失传绝学，若非手头紧，百两金子也不卖给尔等边鄙门派！"
+          ]
+        ],
+        "hearsay": "近来常有自称从中原华山绝顶逃出的杂役四处叫卖残碎剑招拓本。",
+        "choices": [
+          {
+            "id": "c_glance_rubbing",
+            "text": "上前斜睨那拓片数眼，出声冷笑",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你只看那行气口诀，颠三倒四，分明是市井打擂的粗浅套路改了名目。",
+            "next": "rubbing_debate"
+          },
+          {
+            "id": "c_warn_wuliang",
+            "text": "拉开年轻无量门人，劝其勿贪功冒进",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {},
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "青年门人犹疑不定，卖家见生意要黄，顿现凶横之色。",
+            "next": "wuliang_clash"
+          }
+        ]
+      },
+      "rubbing_debate": {
+        "zone": 11,
+        "scene": "草亭内外围拢了不少赶集的大理白族百姓，指指点点。",
+        "dialogues": [
+          [
+            "过路人",
+            "阁下口口声声华山剑法，行气如何能逆走经脉？这分明是落叶剑法硬套了名头！"
+          ]
+        ],
+        "hearsay": "中原正统剑法讲究气脉连贯，假货往往前言不搭后语。",
+        "choices": [
+          {
+            "id": "c_disclose_truth",
+            "text": "当场取枯枝划地演练，拆穿拓片破绽百出的逻辑",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "knowledge": 3,
+              "rep": 2,
+              "flag": {
+                "c_disclose_truth": true
+              }
+            },
+            "outcome": "枯枝纵横，正法显现，围观者无不喝彩，卖家满头冷汗倒退数步。",
+            "next": "wuliang_end"
+          },
+          {
+            "id": "c_buy_and_burn",
+            "text": "出资数两买下伪拓当场点火焚毁，绝其害人之道",
+            "requires": {
+              "silver": 6
+            },
+            "cost": {
+              "silver": 6
+            },
+            "effects": {
+              "rep": 3,
+              "potential": 6
+            },
+            "outcome": "火光跳动，伪拓化灰，卖家夺了银钱狼狈抱头窜去。",
+            "next": "wuliang_end"
+          }
+        ]
+      },
+      "wuliang_clash": {
+        "zone": 11,
+        "scene": "榕树荫下杀机骤起，卖家撕去伪装，拔出一柄淬毒短刃，其同伙亦亮出铁尺。",
+        "dialogues": [
+          [
+            "骗徒",
+            "断人财路犹如杀人父母，今日留下命来！"
+          ]
+        ],
+        "hearsay": "江洋大盗常借贩卖假秘籍在偏远之地杀人越货。",
+        "choices": [
+          {
+            "id": "c_fight_peddler",
+            "text": "拔兵刃御敌，力战击溃图财害命之凶顽",
+            "combat": {
+              "opponent": "thug",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20,
+              "silver": 5,
+              "flag": {
+                "c_fight_peddler": true
+              }
+            },
+            "failEffects": {},
+            "failText": "短刃阴毒险急，你挥袖荡开，手臂擦出一道血痕。",
+            "retreatNext": "wuliang_end",
+            "outcome": "你三招内震飞短刃，将行骗凶徒按翻在青石板上。",
+            "next": "wuliang_end",
+            "failNext": "wuliang_end"
+          }
+        ]
+      },
+      "wuliang_end": {
+        "zone": 11,
+        "scene": "清泉石上流，波光潋滟。无量门人如梦初醒，惭愧不已。",
+        "dialogues": [
+          [
+            "无量弟子",
+            "多谢中原侠士指点！若非足下，我等险些耗费师门重金买这欺世盗名的假物。"
+          ]
+        ],
+        "hearsay": "大理城中广传，真功夫在于勤学苦练，绝非投机可得。",
+        "choices": [
+          {
+            "id": "c_admonish_leave",
+            "text": "勉励数语，收起行囊悠然出城",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "silver": 8
+            },
+            "outcome": "弟子们敬奉大理普洱好茶与盘费，躬身受教，目送你远行。",
+            "next": "dali_terminal"
+          }
+        ]
+      },
+      "dali_terminal": {
+        "zone": 11,
+        "scene": "苍山十九峰积雪耀眼，洱海三千顷碧波如镜。江湖无常，唯守心者得享安宁。",
+        "dialogues": [],
+        "hearsay": "苍山十九峰积雪耀眼，洱海三千顷碧波如镜。江湖无常，唯守心者得享安宁。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "大理城中茶客笑谈：几个江湖骗子在蝴蝶泉被中原行家识破，灰溜溜滚出滇境。"
+}

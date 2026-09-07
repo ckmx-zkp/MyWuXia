@@ -1,0 +1,267 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z07_hexitrade_rumor",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z07_hexitrade_rumor.json",
+  "zone": 7,
+  "design": {
+    "title": "河西辨伪",
+    "hook": "河西走廊凉州卫茶摊上，几个自称回疆客商的汉子正悄悄向过路镖局兜售一部据称抄自福州向阳巷老宅的《辟邪真经》。",
+    "playerRole": "随驼队西行的识货行者，拆穿骗局免商客破产",
+    "sources": {
+      "novel": [
+        {
+          "beat": "林远图辟邪剑法七十二路威震江湖引天下觊觎",
+          "use": "江湖宵小借辟邪之名四处招摇撞骗兜售伪经"
+        },
+        {
+          "beat": "塞外马贼与市井骗徒沆瀣一气设局坑杀客商",
+          "use": "凉州卫荒漠险恶的盗伙背景"
+        }
+      ],
+      "history": [
+        {
+          "fact": "明代河西走廊茶马古道与关西七卫驼商交易",
+          "use": "丝路驿站西行验引与换驼买马实情"
+        },
+        {
+          "fact": "明代甘肃镇边军对关防私贩典籍文书之查禁",
+          "use": "关防禁私通西域文卷的军律"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "辟邪剑法为禁区红线",
+          "use": "明确定性为假货骗局，绝不让玩家习得哪怕一招"
+        },
+        {
+          "slot": "以学识辨伪获得正道反馈",
+          "use": "用武馆正统见识驳斥漏洞"
+        }
+      ]
+    },
+    "echo": "改变凉州卫茶摊对辟邪伪经的流言蜚语",
+    "facts": [
+      "c_mock_fake",
+      "c_fight_horsebandit"
+    ],
+    "blocked": [],
+    "routes": [
+      "依理辨析当众拆穿",
+      "护卫商客击退假货马贼",
+      "揭穿作伪免受劫掠"
+    ]
+  },
+  "event": {
+    "name": "河西辨伪",
+    "start": "oasis_stall",
+    "requires": {},
+    "nodes": {
+      "oasis_stall": {
+        "zone": 7,
+        "scene": "凉州卫土城外红柳掩映，风沙扑面。一个黄铜肤色的胡商正将一本黄绫册子捧给老镖头看。",
+        "dialogues": [
+          [
+            "骗子",
+            "此乃福建林总镖头贴身密本，辟邪剑奥旨尽在其中！只要四十两银子，包你名震西陲！"
+          ],
+          [
+            "老镖头",
+            "这……当真有如此神异？若能学得一招半式，过沙海便不怕马贼了……"
+          ]
+        ],
+        "hearsay": "西域近日流传不少关于中原辟邪剑法的风言风语，引得西凉武人躁动。",
+        "choices": [
+          {
+            "id": "c_step_inspect",
+            "text": "上前请那胡商容你翻阅前三页",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "胡商有些慌乱，掩掩遮遮只翻开首页，上书粗浅套路，字迹墨色甚新。",
+            "next": "debate_fraud"
+          },
+          {
+            "id": "c_warn_caravan",
+            "text": "暗中拉扯老镖头衣袖，示意其休中圈套",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {},
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "老镖头警觉停手，胡商见好事被扰，目露凶光。",
+            "next": "thugs_confront"
+          }
+        ]
+      },
+      "debate_fraud": {
+        "zone": 7,
+        "scene": "茶棚土坯墙下，过往行脚商客纷纷驻足围观。",
+        "dialogues": [
+          [
+            "行脚者",
+            "阁下既说是林远图真传，第一式步走中宫还是斜出乾位？为何此册写的是太祖长拳架势？"
+          ]
+        ],
+        "hearsay": "正统武馆老教头常言，天下拳剑皆有根脚，假把式经不起行家一问。",
+        "choices": [
+          {
+            "id": "c_mock_fake",
+            "text": "当众背诵正统口诀，指出此册纯系市井长拳杂凑",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "knowledge": 3,
+              "rep": 2,
+              "flag": {
+                "c_mock_fake": true
+              }
+            },
+            "outcome": "胡商涨红了脸，支支吾吾答不上来，周围客商发出一阵哄笑。",
+            "next": "fraud_busted"
+          },
+          {
+            "id": "c_check_paper",
+            "text": "抓起纸页嗅闻，指出乃是作旧桑皮纸伪造",
+            "requires": {
+              "knowledge": 4
+            },
+            "cost": {
+              "silver": 2
+            },
+            "effects": {
+              "knowledge": 2,
+              "rep": 2
+            },
+            "outcome": "你当场抖落造假作旧的赭石粉末，真相大白。",
+            "next": "fraud_busted"
+          }
+        ]
+      },
+      "thugs_confront": {
+        "zone": 7,
+        "scene": "土城外乱石岗，胡商吹了一声唿哨，从红柳丛中窜出三个执刀的绿林马贼。",
+        "dialogues": [
+          [
+            "马贼头子",
+            "哪来的多事鬼，坏老子财路！今日不把买书的四十两银子留下，休想走出凉州！"
+          ]
+        ],
+        "hearsay": "河西马贼近来常扮作游商在关厢抢掠落单行人。",
+        "choices": [
+          {
+            "id": "c_fight_horsebandit",
+            "text": "拔兵刃挺身迎战，力挫河西马贼凶锋",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20,
+              "silver": 8,
+              "flag": {
+                "c_fight_horsebandit": true
+              }
+            },
+            "failEffects": {
+              "potential": 4
+            },
+            "failText": "马贼刀法凶悍蛮狠，借马势冲杀，你翻滚退入土墙后。",
+            "retreatNext": "oasis_safe",
+            "outcome": "你闪过奔马劈砍斩断其刀柄，马贼大骇拨马溃逃。",
+            "next": "oasis_safe",
+            "failNext": "oasis_safe"
+          },
+          {
+            "id": "c_retreat_wall",
+            "text": "退入关城烽火台，引官军巡卒出面",
+            "requires": {
+              "potential": 4
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 2
+            },
+            "outcome": "官军巡哨闻声列阵而出，马贼见势头不妙，呼啸散入风沙。",
+            "next": "oasis_safe"
+          }
+        ]
+      },
+      "fraud_busted": {
+        "zone": 7,
+        "scene": "茶摊前尘埃落定，骗徒见势已败，抛下假黄绫册仓皇逃窜。",
+        "dialogues": [
+          [
+            "老镖头",
+            "哎呀！小老儿险些耗尽积蓄买了废纸，恩公高义，请受小老儿一拜！"
+          ]
+        ],
+        "hearsay": "凉州卫茶摊客商皆赞关内过客眼力毒辣，识破假经。",
+        "choices": [
+          {
+            "id": "c_burn_fake",
+            "text": "将伪造册子投入茶炉烈火焚尽，免遗祸人间",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 8
+            },
+            "outcome": "青烟升起，虚妄野心随灰烬散入西陲长风之中。",
+            "next": "hexitrade_terminal"
+          }
+        ]
+      },
+      "oasis_safe": {
+        "zone": 7,
+        "scene": "凉州卫客栈内驼铃悠扬，老镖头设下羊肉热汤，盛情款待。",
+        "dialogues": [
+          [
+            "老镖头",
+            "江湖上谣传秘笈传得神乎其神，终不如脚踏实地练好把式。恩公此言大善！"
+          ]
+        ],
+        "hearsay": "河西驼队立下规矩，往后行商凡涉剑谱秘籍者一概不收不运。",
+        "choices": [
+          {
+            "id": "c_drink_tea",
+            "text": "吃罢热汤，收拾马匹准备入阳关",
+            "cost": {},
+            "effects": {
+              "rep": 2,
+              "potential": 6,
+              "silver": 6
+            },
+            "outcome": "商队奉上路费干粮，你跨上健驼，行向万里黄沙。",
+            "next": "hexitrade_terminal"
+          }
+        ]
+      },
+      "hexitrade_terminal": {
+        "zone": 7,
+        "scene": "祁连山积雪连天，大漠长风孤烟直。大道路在脚下，何须虚妄秘笈惑乱心智。",
+        "dialogues": [],
+        "hearsay": "祁连山积雪连天，大漠长风孤烟直。大道路在脚下，何须虚妄秘笈惑乱心智。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "凉州卫茶贩常对新过客打趣：莫要问辟邪，好生喝碗茯茶赶路才是真。"
+}

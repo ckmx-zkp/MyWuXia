@@ -1,0 +1,310 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z01_hanjiang_ferry",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z01_hanjiang_ferry.json",
+  "zone": 1,
+  "design": {
+    "title": "汉水渡争",
+    "hook": "汉江渡口几艘官民大船停摆，武当外门道士与五岳剑派过路豪客为了抢先渡江运送伤员争执不下。",
+    "playerRole": "途经襄樊的押信道友，从中调解船期或运药化解火气",
+    "sources": {
+      "novel": [
+        {
+          "beat": "武当派冲虚道长门下谨饬平和门规",
+          "use": "外门道士宁肯吃亏也不愿伤人的持重姿态"
+        },
+        {
+          "beat": "嵩山与泰山门人借五岳令旗跋扈抢渡",
+          "use": "渡口横蛮剑客借势压人的骄矜"
+        }
+      ],
+      "history": [
+        {
+          "fact": "宋元明汉水咽喉襄樊水战与漕运军渡要制",
+          "use": "渡口官牙与水营抽税封渡的制度细节"
+        },
+        {
+          "fact": "明代荆襄流民安置与道门设局济药旧制",
+          "use": "武当山下道医设棚施药调和地方民怨"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "道家风骨重在止戈",
+          "use": "无需代冲虚论剑，只需解救渡口伤客"
+        },
+        {
+          "slot": "跑腿交涉有实际收益",
+          "use": "可凭道门信物或襄阳药引平息争端"
+        }
+      ]
+    },
+    "echo": "改变汉水渡口茶棚伙计对武当道长与五岳剑派争端的声音",
+    "facts": [
+      "c_offer_salve",
+      "c_spar_guest"
+    ],
+    "blocked": [],
+    "routes": [
+      "医道安抚和解",
+      "凭律例劝退剑客",
+      "武力震慑争船豪奴"
+    ]
+  },
+  "event": {
+    "name": "汉水渡争",
+    "start": "ferry_quarrel",
+    "requires": {},
+    "nodes": {
+      "ferry_quarrel": {
+        "room": "wudang-gate",
+        "scene": "武当山门石坊前，汉江水势滔滔。三个披麻衣的武当巡山道士正被四名持剑外江客围在渡口栈道前。",
+        "dialogues": [
+          [
+            "持剑恶客",
+            "嵩山陆师伯严令今日调三艘快船过江，武当便能拦五岳盟主的公事么？"
+          ],
+          [
+            "守山道士",
+            "无量天尊。船上皆是逃难伤者，更有重伤道友，岂可强行驱赶？"
+          ]
+        ],
+        "hearsay": "五岳剑派近来常有令旗信使沿汉水往来少林与华山之间。",
+        "choices": [
+          {
+            "id": "c_step_in",
+            "text": "以路过同道身份劝解双方，询问原委",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "你朗声开解，双方目光投向你，剑拔弩张之势稍缓。",
+            "next": "wudang_discuss"
+          },
+          {
+            "id": "c_inspect_wound",
+            "text": "径直走向客舍查看受伤道童伤情",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {},
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你见那年轻道人腿骨受创，伤处红肿，急需正骨草药调敷。",
+            "next": "herb_request"
+          }
+        ]
+      },
+      "herb_request": {
+        "room": "wudang-yard",
+        "scene": "武当练功院外廊，山风猎猎。受伤道童冷汗淋漓，面色惨白。",
+        "dialogues": [
+          [
+            "老道人",
+            "贫道身上只有寻常符水，若有两剂草药，方能止其痛楚，定下船期。"
+          ]
+        ],
+        "hearsay": "汉江渡口药棚常因行商断货而缺药。",
+        "choices": [
+          {
+            "id": "c_offer_salve",
+            "text": "取出身带草药相赠，解燃眉之急",
+            "requires": {
+              "herbs": 4
+            },
+            "cost": {
+              "herbs": 4
+            },
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "flag": {
+                "c_offer_salve": true
+              }
+            },
+            "outcome": "你以草药捣烂敷上，小道童痛呼渐止，武当老道稽首称谢。",
+            "next": "ferry_negotiate"
+          },
+          {
+            "id": "c_offer_silver",
+            "text": "出资托渡口水手去江陵药肆速配散剂",
+            "requires": {
+              "silver": 12
+            },
+            "cost": {
+              "silver": 12
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 6
+            },
+            "outcome": "水手收下银两摇快桨而去，半个时辰便取回对症膏药。",
+            "next": "ferry_negotiate"
+          }
+        ]
+      },
+      "wudang_discuss": {
+        "room": "wudang-hall",
+        "scene": "武当静室内檀香袅袅，山风拂窗。持剑豪客气焰虽敛，口中仍不依不饶。",
+        "dialogues": [
+          [
+            "持剑豪客",
+            "我等奉左盟主号令公干，延误了时辰，你这过客吃得起罪名？"
+          ],
+          [
+            "守山道士",
+            "五岳同气连枝，冲虚掌教亦常训勉戒骄戒躁，尊驾何苦逼人太甚？"
+          ]
+        ],
+        "hearsay": "少林与武当近来对五岳剑派左盟主处处号令颇有微词。",
+        "choices": [
+          {
+            "id": "c_argue_rule",
+            "text": "搬出汉江官渡分班公约，据理力争各渡一半",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "knowledge": 2,
+              "rep": 2
+            },
+            "outcome": "你熟稔水程律例，一番条分缕析，驳得对方哑口无言。",
+            "next": "ferry_settle"
+          },
+          {
+            "id": "c_spar_guest",
+            "text": "与快剑客在静室廊前走上几招试手",
+            "combat": {
+              "opponent": "swordsman",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 25,
+              "flag": {
+                "c_spar_guest": true
+              }
+            },
+            "failEffects": {
+              "potential": 5
+            },
+            "failText": "快剑客剑如雨落，你勉力横架，退到石阶下。",
+            "retreatNext": "ferry_settle",
+            "outcome": "你步法沉稳挑开快剑破绽，长剑脱手入木三分，震慑全场。",
+            "next": "ferry_settle",
+            "failNext": "ferry_retreat"
+          }
+        ]
+      },
+      "ferry_negotiate": {
+        "room": "wudang-gate",
+        "scene": "武当山门石阶下，渡口桅杆林立。持剑客见伤者敷了药，面色稍缓。",
+        "dialogues": [
+          [
+            "持剑豪客",
+            "既然伤情已稳，分一条渡船给我们，此事便算揭过。"
+          ],
+          [
+            "守山道士",
+            "善哉，多亏这位侠士仗义出药相助。"
+          ]
+        ],
+        "hearsay": "武当门下行事素有古风，受人滴水之恩必有回报。",
+        "choices": [
+          {
+            "id": "c_arrange_boats",
+            "text": "协助调度缆绳，安排流民与剑客分次登舟",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 8
+            },
+            "outcome": "大缆解开，两艘客船顺流破浪，各自启碇，岸上再无喧哗。",
+            "next": "ferry_settle"
+          }
+        ]
+      },
+      "ferry_retreat": {
+        "room": "wudang-yard",
+        "scene": "武当练功院角亭，山雨忽至。双方各自罢手，气氛沉郁。",
+        "dialogues": [
+          [
+            "守山道士",
+            "比剑见血非掌门所愿，且让一步，贫道领伤者走陆路罢。"
+          ]
+        ],
+        "hearsay": "汉江渡口今日终归未生杀戮。",
+        "choices": [
+          {
+            "id": "c_help_cart",
+            "text": "协助道士推挽伤药辎重车驾入山",
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "potential": 6,
+              "rep": 1
+            },
+            "outcome": "你搭手推车，泥泞山道上留下深深辙印，虽多绕三十里，人皆保全。",
+            "next": "wudang_terminal"
+          }
+        ]
+      },
+      "ferry_settle": {
+        "room": "wudang-gate",
+        "scene": "汉水滔滔东去，两岸石壁回声。江面上帆影点点，秩序井然。",
+        "dialogues": [
+          [
+            "持剑豪客",
+            "好汉子，山水有相逢，后会有期！"
+          ],
+          [
+            "守山道士",
+            "多谢善信援手，今日足下全了武当颜面。"
+          ]
+        ],
+        "hearsay": "汉江水手盛传，武当道长与五岳剑派在渡口拱手言和，未动干戈。",
+        "choices": [
+          {
+            "id": "c_take_blessing",
+            "text": "受道长一礼，登舟横渡汉水",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 12,
+              "silver": 8
+            },
+            "outcome": "道士赠你一葫芦甘泉，渡船破浪而行，荆襄山川在望。",
+            "next": "wudang_terminal"
+          }
+        ]
+      },
+      "wudang_terminal": {
+        "room": "wudang-hall",
+        "scene": "汉江水阔天高，武当七十二峰隐没在云海深处。渡头铜钟悠悠敲响，风波渐息。",
+        "dialogues": [],
+        "hearsay": "汉江水阔天高，武当七十二峰隐没在云海深处。渡头铜钟悠悠敲响，风波渐息。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {
+    "wudang-gate": "武当山门",
+    "wudang-yard": "武当练功院",
+    "wudang-hall": "武当静室"
+  },
+  "activities": {},
+  "hearsay": "汉水渡夫夸赞武当道长有涵养，五岳剑派客官上了船也不再横眉怒目。"
+}

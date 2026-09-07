@@ -39,5 +39,5 @@ for (const [zoneIndex, zone] of ZONES.entries()) {
     if (routine.opponent) assert.ok(OPPONENTS[routine.opponent], `zone ${zoneIndex}:${routine.id} opponent`);
   }
 }
-assert.equal(Object.keys(PACK_EVENTS).length, 13);
+assert.ok(Object.keys(PACK_EVENTS).length >= 13, 'region packs');
 console.log(`Validated ${ids.size} quest trees, audio references, ${Object.keys(FATES).length} fate nodes, ${Object.keys(PACK_EVENTS).length} region packs and ${ZONES.length * 3} repeatable routines; ${validateP0()}.`);

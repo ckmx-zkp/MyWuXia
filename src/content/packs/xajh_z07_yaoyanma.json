@@ -1,0 +1,277 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z07_yaoyanma",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z07_yaoyanma.json",
+  "zone": 7,
+  "design": {
+    "title": "谣言换马",
+    "hook": "兴庆府马市上，一支河西商队散布“辟邪剑谱现世”的谣言压价收马，马主们人心惶惶。",
+    "playerRole": "过路辨谣人，可拆穿可护送，不学那路剑法。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "辟邪剑谱现世引来的觊觎与家破",
+          "use": "谣言的吓人效力"
+        },
+        {
+          "beat": "林平之一家因谱遭祸",
+          "use": "市人宁可信其有的心理"
+        }
+      ],
+      "history": [
+        {
+          "fact": "河西马市以驼马互市为业",
+          "use": "压价收马的场景"
+        },
+        {
+          "fact": "商队借谣言操纵市价是旧伎俩",
+          "use": "反派手段的出处"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "谣言机制建议",
+          "use": "拆穿靠学识不靠打"
+        },
+        {
+          "slot": "护送失败讨论",
+          "use": "货损赔付的代价线"
+        }
+      ]
+    },
+    "echo": "xajh_z07_rumor_busted 后马主对白改为“哪来的剑谱”；xajh_z07_settled 后河西传闻说起过客拆谣。",
+    "facts": [
+      "xajh_z07_rumor_busted",
+      "xajh_z07_settled",
+      "xajh_z07_failed_escort"
+    ],
+    "blocked": [],
+    "routes": [
+      "拆穿谣言令其补偿",
+      "护送途中击退或买通马贼",
+      "护货失手赔付收场"
+    ]
+  },
+  "event": {
+    "name": "谣言换马",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 7,
+        "scene": "兴庆府马市，一支河西商队压价收马，口中散布着吓人的消息。",
+        "dialogues": [
+          [
+            "商队头领",
+            "听说了么，辟邪剑谱现世，得谱者人人自危，马匹贱卖是为逃命！"
+          ],
+          [
+            "马主",
+            "这……这价也太低了。"
+          ]
+        ],
+        "hearsay": "市面上关于剑谱的谣言，一日三变。",
+        "choices": [
+          {
+            "id": "xajh_z07_rumor_busted",
+            "text": "当场拆解谣言的破绽",
+            "requires": {
+              "knowledge": 3
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "xajh_z07_rumor_busted": true
+              },
+              "knowledge": 1,
+              "exp": 5
+            },
+            "outcome": "你三言两语，市人听得频频点头。"
+          },
+          {
+            "id": "take_escort",
+            "text": "不问真假，接下商队的护送活计",
+            "cost": {
+              "silver": 2
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "商队头领痛快地付了定钱。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 7,
+        "scene": "河西道上黄沙扑面，一伙马贼斜刺里杀出，口口声声要搜“剑谱”。",
+        "dialogues": [
+          [
+            "马贼",
+            "把剑谱交出来，饶你们不死！"
+          ],
+          [
+            "商队伙计",
+            "哪来的剑谱！都是谣言啊！"
+          ]
+        ],
+        "hearsay": "谣言一起，河西道上多了不少拦路的。",
+        "choices": [
+          {
+            "id": "fight_bandit",
+            "text": "护住商队，击退马贼",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "马贼来去如风，货物散了一地，你挂了彩。",
+            "outcome": "刀光几合，马贼拨马便走。"
+          },
+          {
+            "id": "pay_passage",
+            "text": "花六两买路，息事宁人",
+            "cost": {
+              "silver": 6
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "马贼收钱让路，骂骂咧咧去了。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 7,
+        "scene": "谣言拆穿，市人哗然，商队头领脸上挂不住，连连作揖。",
+        "dialogues": [
+          [
+            "商队头领",
+            "误会，都是误会！小人愿意补偿。"
+          ],
+          [
+            "马主",
+            "我就说嘛，哪来的剑谱！"
+          ]
+        ],
+        "hearsay": "马市恢复了往日的公道价。",
+        "choices": [
+          {
+            "id": "compensate",
+            "text": "令他当场补给马主差价",
+            "cost": {
+              "silver": 1
+            },
+            "next": "n4",
+            "effects": {
+              "silver": 6,
+              "rep": 4,
+              "exp": 5
+            },
+            "outcome": "差价补齐，马主硬塞给你谢仪。"
+          },
+          {
+            "id": "report",
+            "text": "花二两请人写状，送官府备案",
+            "cost": {
+              "silver": 2
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 3,
+              "exp": 5
+            },
+            "outcome": "官府记下这一笔，商队再不敢乱说话。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 7,
+        "scene": "事了，商队整顿行装，头领特意来谢。",
+        "dialogues": [
+          [
+            "商队头领",
+            "足下仗义，这点心意请收下。"
+          ]
+        ],
+        "hearsay": "河西道上，过客拆谣言的事传开了。",
+        "choices": [
+          {
+            "id": "xajh_z07_settled",
+            "text": "收下谢仪，各自上路",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 18,
+              "rep": 3,
+              "flag": {
+                "xajh_z07_settled": true
+              }
+            },
+            "outcome": "谢仪落袋，商队的驼铃渐远。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 7,
+        "scene": "货物散了一地，商队伙计垂头丧气，你的伤也要紧。",
+        "dialogues": [
+          [
+            "商队头领",
+            "货损了三成……这可如何向货主交代。"
+          ]
+        ],
+        "hearsay": "护镖失了手，行规是护镖人担待。",
+        "choices": [
+          {
+            "id": "xajh_z07_failed_escort",
+            "text": "出八两赔付货主，了此一段",
+            "cost": {
+              "silver": 8
+            },
+            "next": "end",
+            "effects": {
+              "exp": 8,
+              "rep": -2,
+              "flag": {
+                "xajh_z07_failed_escort": true
+              }
+            },
+            "outcome": "赔付清楚，你默默记下了这一课。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 7,
+        "scene": "再经马市，驼铃叮当，市价如常。",
+        "dialogues": [
+          [
+            "马主",
+            "多亏那位过客，谣言散了，马价回来了。"
+          ],
+          [
+            "行商",
+            "河西道上的马贼，近来也少了。"
+          ]
+        ],
+        "hearsay": "马市太平了几日；关于剑谱的谣言再没人信。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "马市的剑谱谣言散了，马价回到公道。过客拆谣护商的事，在河西道上传开了。"
+}

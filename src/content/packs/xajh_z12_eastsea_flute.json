@@ -1,0 +1,242 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z12_eastsea_flute",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z12_eastsea_flute.json",
+  "zone": 12,
+  "design": {
+    "title": "海隅退隐书",
+    "hook": "东海渔村码头，一个老渔夫在破渔网中捞起一只油布裹紧的红木匣，内有一管断竹箫与一封衡山刘正风手书的退隐遗信，海盗闻风而动欲夺匣换赏。",
+    "playerRole": "泛海行舟的避世散人，保护遗墨免遭贼手或交付海防公所",
+    "sources": {
+      "novel": [
+        {
+          "beat": "刘正风金盆洗手惨遭嵩山屠灭的余音",
+          "use": "遗落海外的残萧与手书印证正邪知音之痛"
+        },
+        {
+          "beat": "海波汪洋天高水阔",
+          "use": "远离中原争端后的释怀与归宿"
+        }
+      ],
+      "history": [
+        {
+          "fact": "东南沿海海禁与倭乱平息后的巡检司防务",
+          "use": "官府巡检对海上漂流物及海外船只的查验规程"
+        },
+        {
+          "fact": "闽浙沿海岛民渔帮打捞海捞物分润规矩",
+          "use": "按行规海中捞得无主之物归全舟共分之俗"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不登侠客岛，不夺神兵",
+          "use": "严格恪守东海边缘海隅的平民视点"
+        },
+        {
+          "slot": "金石曲调归于浩瀚",
+          "use": "琴萧遗墨用于抚慰人心而非发秘笈"
+        }
+      ]
+    },
+    "echo": "改变东海荒滩渔村对打捞神功残简的流言",
+    "facts": [
+      "c_fight_pirate",
+      "c_bury_cliff"
+    ],
+    "blocked": [],
+    "routes": [
+      "击退劫匣海盗保全遗物",
+      "出资向渔人赎取沉匣供奉",
+      "交予海防巡检归档入库"
+    ]
+  },
+  "event": {
+    "name": "海隅退隐书",
+    "start": "fisher_wharf",
+    "requires": {},
+    "nodes": {
+      "fisher_wharf": {
+        "zone": 12,
+        "scene": "东海荒滩渔村，潮声澎湃。几个晒网的渔汉正聚在老槐树下，端详着一只裹着厚漆油布的匣子。",
+        "dialogues": [
+          [
+            "老渔翁",
+            "打鱼四十年没见过这等细巧物事，里头有根断了的绿竹箫，还有几张写满曲谱的素绢。"
+          ],
+          [
+            "海匪斥候",
+            "老东西别动！这可是悬赏三十两要找的衡山遗物！拿来！"
+          ]
+        ],
+        "hearsay": "近来东海海盗常受中原神秘大顾主指使，搜寻沿海漂流的逃亡武人文卷。",
+        "choices": [
+          {
+            "id": "c_shield_fisher",
+            "text": "拦在渔翁身前，喝止海匪强夺",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "海匪斥候按刀狞笑，哨音一吹，岸边礁石后又钻出两个持叉凶徒。",
+            "next": "pirate_skirmish"
+          },
+          {
+            "id": "c_buy_box",
+            "text": "拿出银钱向渔民买断此匣所有权",
+            "requires": {
+              "silver": 10
+            },
+            "cost": {
+              "silver": 10
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 4
+            },
+            "outcome": "老渔翁得了实在银两欢喜交匣，海匪见你横插一手，暴跳如雷。",
+            "next": "pirate_skirmish"
+          }
+        ]
+      },
+      "pirate_skirmish": {
+        "zone": 12,
+        "scene": "海潮拍打礁石，溅起雪白浪花。三名海盗散开阵形，分三路包抄而上。",
+        "dialogues": [
+          [
+            "海盗头目",
+            "不识相的旱鸭子，阎王叫你三更死，休怪大爷把你丢进海里喂鱼！"
+          ]
+        ],
+        "hearsay": "东海浪人刀法诡谲，极善借湿滑礁石扑杀行客。",
+        "choices": [
+          {
+            "id": "c_fight_pirate",
+            "text": "迎着海风力挫海盗头目",
+            "combat": {
+              "opponent": "pirate",
+              "danger": 4
+            },
+            "effects": {
+              "potential": 20,
+              "exp": 30,
+              "flag": {
+                "c_fight_pirate": true
+              }
+            },
+            "failEffects": {},
+            "failText": "海盗借浪花迷人眼目，钢叉刺中你肩头，你踉跄退入浅滩。",
+            "retreatNext": "tide_retreat",
+            "outcome": "你步法扎实不惧湿滑，刀光闪烁震飞钢叉，一脚将海盗头目踹翻入海潮之中。",
+            "next": "box_inspect",
+            "failNext": "tide_retreat"
+          },
+          {
+            "id": "c_alarm_guard",
+            "text": "击响渔村望海楼铜锣，呼唤海防巡检巡船",
+            "requires": {
+              "potential": 4
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "knowledge": 2,
+              "rep": 2
+            },
+            "outcome": "锣声大作，巡检哨船自海湾飞驰杀出，海盗唯恐遭包抄，掉头跳水逃命。",
+            "next": "box_inspect"
+          }
+        ]
+      },
+      "tide_retreat": {
+        "zone": 12,
+        "scene": "退潮后的海蚀洞窟内，水滴声清脆。海盗已被驱散，天色渐晚。",
+        "dialogues": [
+          [
+            "老渔翁",
+            "好汉好功夫！这匣子晦气招灾，若非好汉相救，小老儿一家今日遭难矣！"
+          ]
+        ],
+        "hearsay": "东海巡检司已在海滩增设哨卡。",
+        "choices": [
+          {
+            "id": "c_take_box_cave",
+            "text": "在洞中接过匣子，擦去泥水盐霜",
+            "cost": {},
+            "effects": {
+              "potential": 5,
+              "knowledge": 2
+            },
+            "outcome": "木匣虽残，内中素绢字迹宛然，叹尽江湖波涛险恶。",
+            "next": "box_inspect"
+          }
+        ]
+      },
+      "box_inspect": {
+        "zone": 12,
+        "scene": "海边石崖之上，孤松临海。红木匣开启，断箫横陈，书信依稀可辨乃是刘公手泽。",
+        "dialogues": [
+          [
+            "行者",
+            "刘三爷一生好音律，洗手不得反招杀身之祸，这断箫残信，当得一个清净归宿。"
+          ]
+        ],
+        "hearsay": "刘正风金盆洗手悲剧在东南沿海传为悲歌。",
+        "choices": [
+          {
+            "id": "c_bury_cliff",
+            "text": "在面海石崖下掘土将断箫残信深埋立石，使逝者安宁",
+            "requires": {
+              "potential": 3
+            },
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "rep": 3,
+              "potential": 12,
+              "flag": {
+                "c_bury_cliff": true
+              }
+            },
+            "outcome": "你垒石为冢，对着茫茫沧海躬身三拜，心中一片旷达从容。",
+            "next": "sea_terminal"
+          },
+          {
+            "id": "c_hand_court",
+            "text": "将遗书呈送临安海防同知衙门存案，洗清逆党污名",
+            "requires": {
+              "silver": 2
+            },
+            "cost": {
+              "silver": 2
+            },
+            "effects": {
+              "rep": 2,
+              "knowledge": 3
+            },
+            "outcome": "官府盖印立档，刘公遗文得以见容于公牍，免遭践踏。",
+            "next": "sea_terminal"
+          }
+        ]
+      },
+      "sea_terminal": {
+        "zone": 12,
+        "scene": "万里洪涛连天涌，海风吹散万里愁。笑傲一曲终成海阔天空，江湖行客登舟自去。",
+        "dialogues": [],
+        "hearsay": "万里洪涛连天涌，海风吹散万里愁。笑傲一曲终成海阔天空，江湖行客登舟自去。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "东海渔村传唱起一首古怪箫调，苍凉旷远，闻者皆心平气和。"
+}

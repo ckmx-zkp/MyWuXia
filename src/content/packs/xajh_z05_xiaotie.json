@@ -1,0 +1,267 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z05_xiaotie",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z05_xiaotie.json",
+  "zone": 5,
+  "design": {
+    "title": "销帖",
+    "hook": "辽阳边市的通事把一张五岳剑会请帖当成了军情，江南行商被锁进班房。",
+    "playerRole": "过路懂行人，辨口风或花钱销案，不搅边事。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "五岳剑会以帖会友的规矩",
+          "use": "误会的道具来源"
+        },
+        {
+          "beat": "江湖文书不通边关文法",
+          "use": "通事误判的合理性"
+        }
+      ],
+      "history": [
+        {
+          "fact": "边市通事掌译介与稽查",
+          "use": "误判的职权依据"
+        },
+        {
+          "fact": "边关书办常借案勒索",
+          "use": "花钱销帖的解法"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "知识检定反馈",
+          "use": "辨帖走学识，不走战力"
+        },
+        {
+          "slot": "软失败讨论",
+          "use": "夜探失败认罚加倍的补救"
+        }
+      ]
+    },
+    "echo": "xajh_z05_cleared 或 xajh_z05_bought_post 后通事对白改为“江湖人约架，散了散了”；边市传闻添贵人一段。",
+    "facts": [
+      "xajh_z05_cleared",
+      "xajh_z05_bought_post",
+      "xajh_z05_merchant_free"
+    ],
+    "blocked": [],
+    "routes": [
+      "说开误会或作保销案",
+      "夜探失败认罚补救",
+      "照付赎银息事"
+    ]
+  },
+  "event": {
+    "name": "销帖",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 5,
+        "scene": "辽阳边市，几名差役锁了个江南行商，说他身上搜出的帖子是军情。",
+        "dialogues": [
+          [
+            "行商",
+            "那是五岳剑会的请帖！华山论剑的帖子，不是军情！"
+          ],
+          [
+            "通事",
+            "图上画着山川关隘，不是军情是什么？"
+          ]
+        ],
+        "hearsay": "边市近来风声紧，一纸一物都要盘查。",
+        "choices": [
+          {
+            "id": "argue",
+            "text": "上前向通事拆解帖子的来历",
+            "requires": {
+              "knowledge": 2
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 5
+            },
+            "outcome": "通事将信将疑，容你细说。"
+          },
+          {
+            "id": "raise_silver",
+            "text": "先凑五两打点差役，免得人受刑",
+            "cost": {
+              "silver": 5
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "差役收了钱，镣铐松了些。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 5,
+        "scene": "你把剑会的规矩、帖子的纹样一一说开，通事摸着胡子沉吟。",
+        "dialogues": [
+          [
+            "通事",
+            "江湖人的把式……也罢，只是这上报的文书不好撤。"
+          ]
+        ],
+        "hearsay": "通事最怕担干系，只要台阶下得去。",
+        "choices": [
+          {
+            "id": "xajh_z05_cleared",
+            "text": "请他喝酒，顺着台阶改口",
+            "cost": {
+              "silver": 6
+            },
+            "next": "n5",
+            "effects": {
+              "flag": {
+                "xajh_z05_cleared": true
+              },
+              "exp": 5
+            },
+            "outcome": "三杯下肚，通事提笔改写文书。"
+          },
+          {
+            "id": "vouch_soldier",
+            "text": "请熟识的老卒作保",
+            "requires": {
+              "knowledge": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 8,
+              "rep": 2
+            },
+            "outcome": "老卒一句话，通事顺势销了案。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 5,
+        "scene": "官府书办狮子大开口，赎帖的价一日三涨。",
+        "dialogues": [
+          [
+            "书办",
+            "十二两，少一文，这案子就往军里报。"
+          ]
+        ],
+        "hearsay": "书办的胃口，边市人人知晓。",
+        "choices": [
+          {
+            "id": "xajh_z05_bought_post",
+            "text": "照付十二两销帖",
+            "cost": {
+              "silver": 12
+            },
+            "next": "n5",
+            "effects": {
+              "flag": {
+                "xajh_z05_bought_post": true
+              },
+              "exp": 5
+            },
+            "outcome": "银子过手，帖子发还。"
+          },
+          {
+            "id": "sneak",
+            "text": "夜里摸进文案房销档",
+            "combat": {
+              "opponent": "spy",
+              "danger": 2
+            },
+            "next": "n5",
+            "failNext": "n4",
+            "retreatNext": "n3",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "守夜的探子一嗓子喊醒半条街，你翻窗逃走。",
+            "outcome": "烛火一晃，那页案卷进了你的袖子。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 5,
+        "scene": "事败加罚，书办冷笑连连。",
+        "dialogues": [
+          [
+            "书办",
+            "加罚三倍，十五两。不然人就移交军前。"
+          ]
+        ],
+        "hearsay": "夜探文案房的，还没人讨到便宜。",
+        "choices": [
+          {
+            "id": "pay_triple",
+            "text": "咬牙认罚十五两",
+            "cost": {
+              "silver": 15
+            },
+            "next": "n5",
+            "effects": {
+              "rep": -2,
+              "exp": 5
+            },
+            "outcome": "银子像流水，案子总算销了。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 5,
+        "scene": "行商揉着手腕走出班房，对着你连连作揖。",
+        "dialogues": [
+          [
+            "行商",
+            "帖子回来了，命也回来了。恩公贵姓？"
+          ]
+        ],
+        "hearsay": "江南行商逢人便说边市遇贵人。",
+        "choices": [
+          {
+            "id": "xajh_z05_merchant_free",
+            "text": "收一两谢仪，劝他早日南归",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "silver": 6,
+              "exp": 18,
+              "rep": 4,
+              "flag": {
+                "xajh_z05_merchant_free": true
+              }
+            },
+            "outcome": "行商坚持多添了几两，登车南去。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 5,
+        "scene": "边市茶楼，通事与人闲谈，口风已变。",
+        "dialogues": [
+          [
+            "通事",
+            "什么军情，不过是江湖人约架，散了散了。"
+          ],
+          [
+            "茶客",
+            "听说有个过路的，三言两语就把案子说没了。"
+          ]
+        ],
+        "hearsay": "剑会帖子的误会解开了；书办照常收他的银子。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "剑会帖子的误会解开了，行商平安南归。边市书办的价码，还是那个价码。"
+}

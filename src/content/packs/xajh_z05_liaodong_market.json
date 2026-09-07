@@ -1,0 +1,240 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z05_liaodong_market",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z05_liaodong_market.json",
+  "zone": 5,
+  "design": {
+    "title": "边市风谍",
+    "hook": "上京边市互市牙行内，一名女真通事将一份华山与嵩山论剑的名册误当成关内武备军情，正欲报呈边关千户所邀功。",
+    "playerRole": "行脚辽东的关内行商，设法辨明江湖帖子、免去一场无妄边患",
+    "sources": {
+      "novel": [
+        {
+          "beat": "五岳各派往来拜山名帖常涉兵器口诀",
+          "use": "名册中载有剑派切口与铸剑名目引人疑窦"
+        },
+        {
+          "beat": "关外武人对关内剑派名头既羡且惧",
+          "use": "地方通事草木皆兵疑神疑鬼的市井心态"
+        }
+      ],
+      "history": [
+        {
+          "fact": "辽东互市女真女直各卫所验看关引文牒制度",
+          "use": "马市通事借私扣汉商货物文书索贿的潜规则"
+        },
+        {
+          "fact": "明代辽东都司与金国遗民杂处之严苛边禁",
+          "use": "涉及军器私运皆处以斩刑的严厉禁令"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "文斗与辨伪胜过无脑杀怪",
+          "use": "利用武学渊源知识拆穿伪证，避免边塞厮杀"
+        },
+        {
+          "slot": "市井小吏贪财好面",
+          "use": "可用盘缠与学识双轨推进"
+        }
+      ]
+    },
+    "echo": "改变辽东边市牙行通事对关内武人名帖的戒备流言",
+    "facts": [
+      "c_dissect_wushu",
+      "c_pay_blackmail"
+    ],
+    "blocked": [],
+    "routes": [
+      "凭武林渊源文辨消灾",
+      "花钱赎回名帖焚毁",
+      "揭明利害迫使放关"
+    ]
+  },
+  "event": {
+    "name": "边市风谍",
+    "start": "market_dispute",
+    "requires": {},
+    "nodes": {
+      "market_dispute": {
+        "zone": 5,
+        "scene": "辽阳边市货栈内外，貂皮与参包人来人往。通事房前围着几名关内皮货商人，个个神色惨白。",
+        "dialogues": [
+          [
+            "女真通事",
+            "这帖子上写着'五岳令至、万剑听调'，这不是私调大军，是甚么？！"
+          ],
+          [
+            "老客商",
+            "大人明鉴，那不过是江湖朋友切磋剑术的倡议，哪来的官兵啊！"
+          ]
+        ],
+        "hearsay": "辽阳千户所近来抓了几个私运铁料出关的走私贩子，正要借题发挥。",
+        "choices": [
+          {
+            "id": "c_read_doc",
+            "text": "借查验之名浏览那卷名帖字迹",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你搭眼一瞧，正是嵩山十三太保签押的五岳会盟帖，附有点穴与长拳要旨。",
+            "next": "explain_doc"
+          },
+          {
+            "id": "c_bribe_interp",
+            "text": "袖中滑出重银，请通事借一步说话",
+            "requires": {
+              "silver": 10
+            },
+            "cost": {
+              "silver": 10
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "通事手掌拢过银两，神色立时缓和三分，屏退左右闲杂。",
+            "next": "deal_interp"
+          }
+        ]
+      },
+      "explain_doc": {
+        "zone": 5,
+        "scene": "通事签押房内，鹿皮帘外风刀霜剑。通事手按腰刀，双目精光闪烁。",
+        "dialogues": [
+          [
+            "女真通事",
+            "你说这是江湖比武？若是说不出个子丑寅卯，连你一并枷送官府！"
+          ]
+        ],
+        "hearsay": "边关通事大多读过几本汉书，但对中原门派掌故一窍不通。",
+        "choices": [
+          {
+            "id": "c_dissect_wushu",
+            "text": "指出帖中'落叶归根'皆是剑法招式名，绝非军阵阵图",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "knowledge": 3,
+              "rep": 2,
+              "flag": {
+                "c_dissect_wushu": true
+              }
+            },
+            "outcome": "你信手拆解寻常剑架，将字里行间招式说得清清楚楚，通事听得一愣一愣。",
+            "next": "resolve_peace"
+          },
+          {
+            "id": "c_call_witness",
+            "text": "引客商出示关内正规镖局路引与牙贴佐证",
+            "requires": {
+              "silver": 5
+            },
+            "cost": {
+              "silver": 5
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 2
+            },
+            "outcome": "两相对照，文书印记确系民间商行，并无兵部花押，证据凿凿。",
+            "next": "deal_interp"
+          }
+        ]
+      },
+      "deal_interp": {
+        "zone": 5,
+        "scene": "货栈暖阁内炕火正旺。通事抽着旱烟袋，神色狡黠。",
+        "dialogues": [
+          [
+            "女真通事",
+            "纵然不是军情，私带违禁武帖入边市，依律也当没收货殖。除非……"
+          ]
+        ],
+        "hearsay": "边市小吏惯用敲骨吸髓手段盘剥南来富商。",
+        "choices": [
+          {
+            "id": "c_pay_blackmail",
+            "text": "与客商凑足银两，将那帖纸买断焚化",
+            "requires": {
+              "silver": 15
+            },
+            "cost": {
+              "silver": 15
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 8,
+              "flag": {
+                "c_pay_blackmail": true
+              }
+            },
+            "outcome": "通事接过银两，当面将名帖塞入炭盆，灰飞烟灭，众人悬心落定。",
+            "next": "resolve_peace"
+          },
+          {
+            "id": "c_threaten_trouble",
+            "text": "冷言点明私扣武林名帖易引来关内剑客夜入官宅取命",
+            "requires": {
+              "potential": 6
+            },
+            "cost": {
+              "potential": 6
+            },
+            "effects": {
+              "knowledge": 2,
+              "rep": 1
+            },
+            "outcome": "通事想到中原剑客杀人无形的传闻，额头渗出冷汗，讪讪将册子推回案中。",
+            "next": "resolve_peace"
+          }
+        ]
+      },
+      "resolve_peace": {
+        "zone": 5,
+        "scene": "边市栅门大开，货车轮轴重新转动。客商们劫后余生，纷纷围拢向你称谢。",
+        "dialogues": [
+          [
+            "老客商",
+            "若非恩公见识过人，小老儿这一车老山参便教他们抄没了！"
+          ]
+        ],
+        "hearsay": "辽东互市今日通行无阻，通事官差皆敛容迎客。",
+        "choices": [
+          {
+            "id": "c_take_ginseng",
+            "text": "收下客商馈赠的草药与盘费",
+            "cost": {},
+            "effects": {
+              "herbs": 5,
+              "silver": 12,
+              "potential": 10
+            },
+            "outcome": "老客商硬塞给你包袱，内盛辽东良药与程仪，你拱手笑纳。",
+            "next": "liaodong_terminal"
+          }
+        ]
+      },
+      "liaodong_terminal": {
+        "zone": 5,
+        "scene": "辽东古城墙外积雪皑皑，边市旗幡在冻风中猎猎作响。关山虽隔，江湖人自有一片从容。",
+        "dialogues": [],
+        "hearsay": "辽东古城墙外积雪皑皑，边市旗幡在冻风中猎猎作响。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "边市牙人传话，往后关内来的杂谱武帖不必大惊小怪，权当是跑江湖的经书。"
+}

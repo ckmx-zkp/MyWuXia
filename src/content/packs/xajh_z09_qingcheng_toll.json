@@ -1,0 +1,272 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z09_qingcheng_toll",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z09_qingcheng_toll.json",
+  "zone": 9,
+  "design": {
+    "title": "剑门旧怨",
+    "hook": "剑门关蜀道驿亭旁，两名青城派三代弟子正向过往行脚客索取'防盗平乱资'，偶遇自福建流亡至此的林家远亲，拔剑相向。",
+    "playerRole": "入蜀行脚客，设法从中调停解救孤弱或仗义惩戒",
+    "sources": {
+      "novel": [
+        {
+          "beat": "青城派余沧海灭林家满门后骄横不可一世",
+          "use": "青城门人在入蜀要道设卡敲诈的跋扈做派"
+        },
+        {
+          "beat": "林家远支族人闻变避入深山避祸的惊弓之鸟心态",
+          "use": "孤弱远亲走投无路的凄惶"
+        }
+      ],
+      "history": [
+        {
+          "fact": "剑门关一夫当关万夫莫开之险峻关防",
+          "use": "悬崖栈道与关门盘诘行人的地势险要"
+        },
+        {
+          "fact": "明代川陕驿道商客雇请保镖过栈道的旧俗",
+          "use": "走蜀道必结队而行互纳保金的市规"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不可屠灭青城门派",
+          "use": "惩戒恶徒化解纠纷即可，不可强攻青城山观"
+        },
+        {
+          "slot": "高危对手洪人雄必须有逃跑退路",
+          "use": "洪人雄巡关可战可撤，不可锁死生路"
+        }
+      ]
+    },
+    "echo": "改变剑门关茶铺对青城门人设卡收钱的议论",
+    "facts": [
+      "c_fight_qc_low",
+      "c_fight_hong"
+    ],
+    "blocked": [],
+    "routes": [
+      "依例交涉除其私卡",
+      "力战青城剑客护人过关",
+      "败退中巧借栈道脱困"
+    ]
+  },
+  "event": {
+    "name": "剑门旧怨",
+    "start": "jianmen_pavilion",
+    "requires": {},
+    "nodes": {
+      "jianmen_pavilion": {
+        "zone": 9,
+        "scene": "蜀道盘旋，绝壁千仞。剑门关外木亭前，两名着青布道袍的青年剑客正将一名携包裹的行商拦在栈道口。",
+        "dialogues": [
+          [
+            "青城弟子",
+            "福州林家的余孽也敢入川？放下身上包裹银两，滚下山去，饶你狗命！"
+          ],
+          [
+            "外地客商",
+            "小民只是做茶叶买卖，八百年前同福威镖局是一家，二位道爷饶命啊！"
+          ]
+        ],
+        "hearsay": "青城派近日在川北各要隘严查福建口音的商旅行人。",
+        "choices": [
+          {
+            "id": "c_intercede",
+            "text": "出亭拱手讲理，调停纠纷",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "rep": 1,
+              "knowledge": 1
+            },
+            "outcome": "两名青城门人转过身来，手中松风剑出鞘半寸，冷笑相讥。",
+            "next": "qc_challenge"
+          },
+          {
+            "id": "c_pay_pass",
+            "text": "塞给青城弟子过路酒钱，劝其放行孤客",
+            "requires": {
+              "silver": 8
+            },
+            "cost": {
+              "silver": 8
+            },
+            "effects": {
+              "rep": 1,
+              "potential": 4
+            },
+            "outcome": "那弟子掂了掂银子冷哼一声，叱骂客商速滚。",
+            "next": "pass_safely"
+          }
+        ]
+      },
+      "qc_challenge": {
+        "zone": 9,
+        "scene": "栈道狭窄，脚下云雾翻腾，万丈深渊。风吹剑袍，猎猎作响。",
+        "dialogues": [
+          [
+            "青城门客",
+            "管闲事的野杂种！教你尝尝松风剑法的厉害！"
+          ]
+        ],
+        "hearsay": "青城四秀剑法狠辣，动辄挑人手筋。",
+        "choices": [
+          {
+            "id": "c_fight_qc_low",
+            "text": "施展平生拳脚功夫制伏挑衅门徒",
+            "combat": {
+              "opponent": "qingcheng",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20,
+              "flag": {
+                "c_fight_qc_low": true
+              }
+            },
+            "failEffects": {},
+            "failText": "对方剑尖刺破你衣襟，你侧身贴壁险些跌落悬崖。",
+            "retreatNext": "pass_safely",
+            "outcome": "你闪身避其直刺，一记重拳将其打翻在地长剑脱手。",
+            "next": "boss_hong",
+            "failNext": "pass_safely"
+          },
+          {
+            "id": "c_bluff_constable",
+            "text": "高呼剑门巡检司大队官兵已至栈道",
+            "requires": {
+              "knowledge": 3
+            },
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "knowledge": 2,
+              "rep": 1
+            },
+            "outcome": "青城弟子作贼心虚，张望关门方向，剑势顿时迟疑散乱。",
+            "next": "pass_safely"
+          }
+        ]
+      },
+      "boss_hong": {
+        "zone": 9,
+        "scene": "栈道拐角处，一名青袍汉子按剑大步走出，面带戾气，目光如刀。",
+        "dialogues": [
+          [
+            "洪人雄",
+            "何方狂徒敢伤我青城同门？老子洪人雄剑下不收无名野鬼！"
+          ]
+        ],
+        "hearsay": "青城四秀之一洪人雄手底甚硬，在川中行事肆无忌惮。",
+        "choices": [
+          {
+            "id": "c_fight_hong",
+            "text": "沉着迎战洪人雄狠辣的松风快剑",
+            "combat": {
+              "opponent": "hongrenxiong",
+              "danger": 5
+            },
+            "effects": {
+              "potential": 25,
+              "exp": 35,
+              "rep": 3,
+              "flag": {
+                "c_fight_hong": true
+              }
+            },
+            "failEffects": {},
+            "failText": "洪人雄剑招如急雨，你中剑挂彩，只得踢翻山石断后逃脱。",
+            "retreatNext": "cliff_escape",
+            "outcome": "你觑准其换气之隙猛攻其下盘，震裂其虎口，迫其弃剑退后。",
+            "next": "pass_safely",
+            "failNext": "cliff_escape"
+          },
+          {
+            "id": "c_run_cliff",
+            "text": "自知难敌高危强手，翻下栈道小径退避",
+            "requires": {
+              "potential": 5
+            },
+            "cost": {
+              "potential": 5
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你抓着绝壁藤蔓滑下十余丈摆脱追击，险之又险。",
+            "next": "cliff_escape"
+          }
+        ]
+      },
+      "cliff_escape": {
+        "zone": 9,
+        "scene": "绝壁幽谷之中，冷泉滴沥。客商躲在岩洞内迎候，见你无恙方才宽心。",
+        "dialogues": [
+          [
+            "客商",
+            "恩公大德，青城派势大遮天，咱们抄小道连夜去成都罢！"
+          ]
+        ],
+        "hearsay": "剑门关守卒已出动驱散在栈道滋事的青城弟子。",
+        "choices": [
+          {
+            "id": "c_escort_chengdu",
+            "text": "护送客商穿过古道直奔锦官城",
+            "cost": {
+              "potential": 3
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 6
+            },
+            "outcome": "两人踏月而行，破晓时分已见成都平原炊烟袅袅。",
+            "next": "qingcheng_terminal"
+          }
+        ]
+      },
+      "pass_safely": {
+        "zone": 9,
+        "scene": "剑门关门大开，旌旗猎猎。官道之上车马辚辚，青城恶徒已被逼退。",
+        "dialogues": [
+          [
+            "客商",
+            "若非大侠拔刀相助，小民早已命丧黄泉。这点盘缠草药，万望笑纳！"
+          ]
+        ],
+        "hearsay": "剑门关贴出告示，严禁江湖帮派私在栈道设卡抽取行资。",
+        "choices": [
+          {
+            "id": "c_part_peace",
+            "text": "收下赠礼，拱手作别入蜀",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "silver": 12,
+              "herbs": 3
+            },
+            "outcome": "你踏上青石古道，蜀江春水在望，心中一片坦荡清明。",
+            "next": "qingcheng_terminal"
+          }
+        ]
+      },
+      "qingcheng_terminal": {
+        "zone": 9,
+        "scene": "蜀道难，难于上青天。然侠义所在，万仞险峰亦通坦途。",
+        "dialogues": [],
+        "hearsay": "蜀道难，难于上青天。然侠义所在，万仞险峰亦通坦途。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "成都茶馆伙计乐道：剑门关的青城恶秀吃了瘪，如今老实多喽。"
+}

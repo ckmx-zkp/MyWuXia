@@ -1,0 +1,277 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z11_weipu",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z11_weipu.json",
+  "zone": 11,
+  "design": {
+    "title": "伪谱",
+    "hook": "大理城茶肆，有人把几页杂拼剑谱当作无量剑真传兜售，外乡人接连上当。",
+    "playerRole": "过路辨谱人，以学识辨伪，不入剑湖宫夺籍。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "无量剑东西二宗比剑旧事",
+          "use": "伪谱借用的名目"
+        },
+        {
+          "beat": "江湖人觊觎剑谱的通病",
+          "use": "买家上当的心理"
+        }
+      ],
+      "history": [
+        {
+          "fact": "古籍做旧牟利是旧伎俩",
+          "use": "伪谱的工艺依据"
+        },
+        {
+          "fact": "大理茶马市集多外乡行商",
+          "use": "受骗人群的来源"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "学识玩法反馈",
+          "use": "辨伪全靠 knowledge 线"
+        },
+        {
+          "slot": "切磋软失败讨论",
+          "use": "落败可置酒化解"
+        }
+      ]
+    },
+    "echo": "xajh_z11_debunked 后茶客对白改为称你“行家”；xajh_z11_settled 后茶肆传闻多了辨伪一段。",
+    "facts": [
+      "xajh_z11_debunked",
+      "xajh_z11_refunded",
+      "xajh_z11_settled",
+      "xajh_z11_apology"
+    ],
+    "blocked": [],
+    "routes": [
+      "辨伪成功令其收摊",
+      "切磋落败置酒化解",
+      "买下赝品讨回银两"
+    ]
+  },
+  "event": {
+    "name": "伪谱",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 11,
+        "scene": "大理城茶肆，一个行脚过客铺开几页剑谱，口口声声是无量剑的真传。",
+        "dialogues": [
+          [
+            "过客",
+            "无量剑谱，东宗真传，十两银子，错过不再！"
+          ],
+          [
+            "茶客",
+            "无量剑……不是早已……"
+          ]
+        ],
+        "hearsay": "有人在大理兜售无量剑谱，真伪难辨。",
+        "choices": [
+          {
+            "id": "xajh_z11_debunked",
+            "text": "细辨剑路，当场指出破绽",
+            "requires": {
+              "knowledge": 3
+            },
+            "next": "n2",
+            "effects": {
+              "flag": {
+                "xajh_z11_debunked": true
+              },
+              "knowledge": 1,
+              "exp": 5
+            },
+            "outcome": "三处剑路不合无量门径，过客张口结舌。"
+          },
+          {
+            "id": "buy_look",
+            "text": "花六两买下一观",
+            "cost": {
+              "silver": 6
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "谱入手沉甸甸，真伪还要细看。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 11,
+        "scene": "你话音未落，邻座一名无量东宗弟子拍案而起，以为你辱及师门。",
+        "dialogues": [
+          [
+            "东宗弟子",
+            "无量剑的事，轮得到外人说嘴？"
+          ]
+        ],
+        "hearsay": "无量剑东西二宗的旧事，大理茶客都能说上一段。",
+        "choices": [
+          {
+            "id": "explain",
+            "text": "摆明道理，说明是辨伪非辱门",
+            "requires": {
+              "knowledge": 2
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 5,
+              "rep": 2
+            },
+            "outcome": "弟子听完，收了怒气，反向你道谢。"
+          },
+          {
+            "id": "spar",
+            "text": "切磋一场，以武会友自证",
+            "combat": {
+              "opponent": "wuliang",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "对方剑走轻灵，你招架不住，茶杯碎了一地。",
+            "outcome": "点到为止，弟子收剑：“足下剑理不差。”"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 11,
+        "scene": "灯下细看，谱中剑路杂拼，确是赝品，只是纸张做旧，颇费心思。",
+        "dialogues": [
+          [
+            "过客",
+            "客官，看也看了，可还满意？"
+          ]
+        ],
+        "hearsay": "做旧的赝品剑谱，坑了不少外乡人。",
+        "choices": [
+          {
+            "id": "xajh_z11_refunded",
+            "text": "拿着破绽退货讨银",
+            "requires": {
+              "knowledge": 1
+            },
+            "next": "n4",
+            "effects": {
+              "silver": 6,
+              "flag": {
+                "xajh_z11_refunded": true
+              },
+              "exp": 5
+            },
+            "outcome": "过客理亏，银子如数退还。"
+          },
+          {
+            "id": "keep",
+            "text": "花二两请人装裱，留作辨伪的样本",
+            "cost": {
+              "silver": 2
+            },
+            "next": "n4",
+            "effects": {
+              "knowledge": 1,
+              "exp": 3
+            },
+            "outcome": "赝品也有赝品的用处。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 11,
+        "scene": "赝品一事传开，茶肆里议论纷纷，过客灰溜溜收摊。",
+        "dialogues": [
+          [
+            "茶客",
+            "多亏这位行家，不然又有人上当。"
+          ],
+          [
+            "东宗弟子",
+            "无量剑的名声，岂容赝品糟蹋。"
+          ]
+        ],
+        "hearsay": "大理茶肆多了段辨伪的谈资。",
+        "choices": [
+          {
+            "id": "xajh_z11_settled",
+            "text": "付一两茶钱，听完这段议论再走",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 18,
+              "rep": 3,
+              "flag": {
+                "xajh_z11_settled": true
+              }
+            },
+            "outcome": "你成了茶客口中的“行家”。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 11,
+        "scene": "切磋落败，茶客哄笑，你揉着手腕，气氛尴尬。",
+        "dialogues": [
+          [
+            "东宗弟子",
+            "足下剑理尚可，手上差些火候。"
+          ]
+        ],
+        "hearsay": "无量东宗弟子的剑，名不虚传。",
+        "choices": [
+          {
+            "id": "xajh_z11_apology",
+            "text": "花三两置酒赔礼，化干戈为玉帛",
+            "cost": {
+              "silver": 3
+            },
+            "next": "end",
+            "effects": {
+              "exp": 8,
+              "rep": 2,
+              "flag": {
+                "xajh_z11_apology": true
+              }
+            },
+            "outcome": "酒过三巡，弟子反与你论起剑理。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 11,
+        "scene": "数日后再过茶肆，赝品的摊子没了。",
+        "dialogues": [
+          [
+            "茶客",
+            "自打那位行家辨了伪，卖假谱的不敢来了。"
+          ],
+          [
+            "过客",
+            "……"
+          ]
+        ],
+        "hearsay": "大理的剑谱市集，消停了一阵。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "卖假无量剑谱的摊子，被一位过客辨没了。东宗弟子说，那位行家剑理不差。"
+}

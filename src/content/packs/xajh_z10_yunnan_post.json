@@ -1,0 +1,201 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z10_yunnan_post",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z10_yunnan_post.json",
+  "zone": 10,
+  "design": {
+    "title": "滇南瘴驿",
+    "hook": "云南府外茶马古道旁一处废弃驿站里，一名老驿丞面对倒毙的役马唉声叹气，几个身带苗刀与神教文身的疲惫男女正求购避瘴药散。",
+    "playerRole": "游历云贵的过路行者，调配避瘴散剂解救病民",
+    "sources": {
+      "novel": [
+        {
+          "beat": "五毒教与日月神教分支退避云贵深山险境",
+          "use": "逃难教徒染上深山岚瘴濒临绝境的苦痛"
+        },
+        {
+          "beat": "云南百药灵秀能解奇毒",
+          "use": "苗岭草药与中原医道之融汇"
+        }
+      ],
+      "history": [
+        {
+          "fact": "明代沐氏镇守云南时期设驿站通西双版纳之制",
+          "use": "烟瘴驿路递送文书差役极易染疾折损的史实"
+        },
+        {
+          "fact": "滇南少数民族洞寨与土司互市药材规矩",
+          "use": "用牛黄三七穿山甲等换取熟地当归之交易"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不赶尽杀绝，侧重生存互助",
+          "use": "对逃亡教众不予捕杀，医治生命为第一要务"
+        },
+        {
+          "slot": "发挥草药配制与医理功用",
+          "use": "以草药投入换取声望与稀缺药散"
+        }
+      ]
+    },
+    "echo": "改变云南府茶马小铺对烟瘴吃人与逃难教众的传言",
+    "facts": [
+      "c_give_ready_pill",
+      "c_learn_remedy"
+    ],
+    "blocked": [],
+    "routes": [
+      "采配草药治愈驿站众人",
+      "出资代购官药救急",
+      "以学识辨毒去腐生肌"
+    ]
+  },
+  "event": {
+    "name": "滇南瘴驿",
+    "start": "post_crisis",
+    "requires": {},
+    "nodes": {
+      "post_crisis": {
+        "zone": 10,
+        "scene": "苍山洱海之南，古木蔽日，红泥小道散发着腐烂草木的腥味。破败驿房内，横七竖八躺着几个高热发抖的男女。",
+        "dialogues": [
+          [
+            "老驿丞",
+            "这深谷里的绿岚瘴发作起来头痛欲裂，眼看三日便要烂穿肠肚，药全空了啊！"
+          ],
+          [
+            "异服男子",
+            "我们虽入过神教，早已脱身自耕，只求有一剂凉药救我妹子……"
+          ]
+        ],
+        "hearsay": "云贵山道入夏后多有恶瘴闭路，行客十不存一。",
+        "choices": [
+          {
+            "id": "c_check_pulse",
+            "text": "按中原脉理为病患切脉诊视",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你辨出此系湿热郁结、山岚秽气侵体之恶疾，需以清凉解毒大剂攻之。",
+            "next": "herb_concoct"
+          },
+          {
+            "id": "c_give_ready_pill",
+            "text": "取出身带草药救急分发",
+            "requires": {
+              "herbs": 4
+            },
+            "cost": {
+              "herbs": 4
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 6,
+              "flag": {
+                "c_give_ready_pill": true
+              }
+            },
+            "outcome": "草药化水灌下，几人胸口烦热稍退，苏醒过来泣谢恩德。",
+            "next": "post_terminal"
+          }
+        ]
+      },
+      "herb_concoct": {
+        "zone": 10,
+        "scene": "驿站泥炉火苗摇曳，陶罐内药汁咕嘟作响，苦涩药气弥漫开来。",
+        "dialogues": [
+          [
+            "老驿丞",
+            "恩公妙手！只是这方子里尚缺两味引经之药，后山密林有野草，奈何常有毒虫伏路……"
+          ]
+        ],
+        "hearsay": "滇南山林多奇花毒草，亦生灵药，采摘极凶险。",
+        "choices": [
+          {
+            "id": "c_gather_wild",
+            "text": "孤身入后山密林寻采灵药",
+            "requires": {
+              "potential": 4
+            },
+            "cost": {
+              "potential": 4
+            },
+            "effects": {
+              "potential": 8,
+              "herbs": 5
+            },
+            "outcome": "你凭敏锐身法拨开荆棘采得数株野生良药，安然回返。",
+            "next": "post_brew"
+          },
+          {
+            "id": "c_fight_guardian",
+            "text": "采药途中遭遇守护草丛的凶恶异教刀客",
+            "combat": {
+              "opponent": "shennong",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20,
+              "herbs": 3
+            },
+            "failEffects": {},
+            "failText": "对方弯刀涂有草汁腥气逼人，你击退其攻势，亦擦伤小臂。",
+            "retreatNext": "post_brew",
+            "outcome": "你识破其刀路破绽扫堂腿将其击翻，取药而还。",
+            "next": "post_brew",
+            "failNext": "post_brew"
+          }
+        ]
+      },
+      "post_brew": {
+        "zone": 10,
+        "scene": "药汤浓缩成膏，分与众人服下，驿房中痛呻声渐息。",
+        "dialogues": [
+          [
+            "异服女子",
+            "恩公大慈大悲！此乃苗疆先人遗留的解毒清神之法，愿抄录赠予恩公防身！"
+          ]
+        ],
+        "hearsay": "滇南驿卒纷纷传抄避瘴良方。",
+        "choices": [
+          {
+            "id": "c_learn_remedy",
+            "text": "收录药方要诀，温习调和之道",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {},
+            "effects": {
+              "knowledge": 4,
+              "potential": 10,
+              "rep": 3,
+              "flag": {
+                "c_learn_remedy": true
+              }
+            },
+            "outcome": "你医理见识大进，通晓南疆草木之性，得益匪浅。",
+            "next": "post_terminal"
+          }
+        ]
+      },
+      "post_terminal": {
+        "zone": 10,
+        "scene": "驿站外山岚散尽，碧空如洗。茶马古道上马帮铜铃脆响，重新启程。",
+        "dialogues": [],
+        "hearsay": "驿站外山岚散尽，碧空如洗。茶马古道上马帮铜铃脆响，重新启程。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "云南驿丞逢人便讲：中原过客留下的良方救了全驿上下性命。"
+}

@@ -1,0 +1,298 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z02_songshan_notice",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z02_songshan_notice.json",
+  "zone": 2,
+  "design": {
+    "title": "中原帖乱",
+    "hook": "洛阳城外官道茶棚里，一张嵩山派送往少林的并派盟帖教人撕落在地，过路镖师与游侠争相传抄，火药味十足。",
+    "playerRole": "在中原游历的游侠，帮少林知客僧平息争端或销毁引战伪帖",
+    "sources": {
+      "novel": [
+        {
+          "beat": "左冷禅派人四出散布五岳归一少林难支的风声",
+          "use": "茶棚谣言四起引发江湖游侠恐慌"
+        },
+        {
+          "beat": "任我行少室山下行踪莫测引得各路戒备",
+          "use": "高危暗影伏线，遇险可退不可硬拼"
+        }
+      ],
+      "history": [
+        {
+          "fact": "河南开封与洛阳明代中原驿路递铺与马驿",
+          "use": "驿道旁递铺公文与茶铺私信混杂流转"
+        },
+        {
+          "fact": "少林寺禅宗祖庭在地方调解民间土地词讼旧案",
+          "use": "少林僧人愿散粮解纷而不愿卷入剑派杀伐"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "少林门前不打狂妄仗",
+          "use": "化解嵩山门徒挑衅，不参与攻山分赃"
+        },
+        {
+          "slot": "高危对手任我行出场必须给生路",
+          "use": "暗林遇险仅撑回合或脱逃，不强求战胜"
+        }
+      ]
+    },
+    "echo": "改变洛阳马市与茶棚对少林受逼风声的流传",
+    "facts": [
+      "c_fight_thug",
+      "c_stand_firm"
+    ],
+    "blocked": [],
+    "routes": [
+      "助少林平息并派风声",
+      "击退嵩山散帖恶徒",
+      "暗林遇巨擘侥幸脱身"
+    ]
+  },
+  "event": {
+    "name": "中原帖乱",
+    "start": "tea_booth",
+    "requires": {},
+    "nodes": {
+      "tea_booth": {
+        "zone": 2,
+        "scene": "中原腹地官道旁，老槐树荫下摆着三张粗木茶桌。桌上丢着半截染血的锦缎封套，上书'五岳统合'朱字。",
+        "dialogues": [
+          [
+            "粗豪客",
+            "左盟主好大魄力！五岳合为一家，往后连少林武当也得让三分！"
+          ],
+          [
+            "行脚僧",
+            "阿弥陀佛。出家人本无门户之争，施主何苦在此摇唇鼓舌，挑起杀业？"
+          ]
+        ],
+        "hearsay": "开封府茶楼中处处在议论嵩山大会的请帖已送抵各路豪杰。",
+        "choices": [
+          {
+            "id": "c_pick_paper",
+            "text": "拾起锦缎残纸细看字迹图章",
+            "cost": {
+              "potential": 2
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你辨出印泥透着市井伪造的硫磺气，显是有人故意在中原大道挑拨是非。",
+            "next": "songshan_thugs"
+          },
+          {
+            "id": "c_monk_peace",
+            "text": "坐到行脚僧桌旁，施舍铜板换一碗粗茶",
+            "requires": {
+              "silver": 2
+            },
+            "cost": {
+              "silver": 2
+            },
+            "effects": {
+              "rep": 1,
+              "potential": 4
+            },
+            "outcome": "行脚僧合十还礼，低语道少林门外近日伏着不少各派耳目，不可轻动。",
+            "next": "monk_whisper"
+          }
+        ]
+      },
+      "songshan_thugs": {
+        "zone": 2,
+        "scene": "官道拐角处，几个佩带嵩山剑穗的汉子正围着一辆运粮车勒索盘费。",
+        "dialogues": [
+          [
+            "带头剑客",
+            "中原地面上走货，不奉五岳令旗便是通匪！车扣下！"
+          ],
+          [
+            "车夫",
+            "好汉爷，这可是给少林下院送的素面啊！"
+          ]
+        ],
+        "hearsay": "嵩山派近日四处设卡盘查，盘缠索要极苛。",
+        "choices": [
+          {
+            "id": "c_pay_toll",
+            "text": "出面代垫粮车盘缠，免伤无辜",
+            "requires": {
+              "silver": 15
+            },
+            "cost": {
+              "silver": 15
+            },
+            "effects": {
+              "rep": 2,
+              "potential": 8
+            },
+            "outcome": "那几个剑客掂了掂碎银，冷笑放关，车夫跪地叩首谢恩。",
+            "next": "crossroad_choice"
+          },
+          {
+            "id": "c_fight_thug",
+            "text": "看不过恃强凌弱，出拳教训嵩山恶客",
+            "combat": {
+              "opponent": "thug",
+              "danger": 3
+            },
+            "effects": {
+              "potential": 15,
+              "exp": 20,
+              "flag": {
+                "c_fight_thug": true
+              }
+            },
+            "failEffects": {},
+            "failText": "对方合围攻你下盘，你拳势受阻，撤步退开数尺。",
+            "retreatNext": "crossroad_choice",
+            "outcome": "你展动拳脚击倒两人，其余散汉见势不妙抱头逃窜。",
+            "next": "crossroad_choice",
+            "failNext": "crossroad_choice"
+          }
+        ]
+      },
+      "monk_whisper": {
+        "zone": 2,
+        "scene": "少室山下松林小径，石阶幽深。知客僧停下脚步，神色凝重。",
+        "dialogues": [
+          [
+            "知客僧",
+            "少室山后林这几日总有黑袍长发的高人啸聚，掌门命僧众闭关诵经，切莫招惹。"
+          ]
+        ],
+        "hearsay": "少室山阴有人听闻怪啸连连，震得落叶飞坠。",
+        "choices": [
+          {
+            "id": "c_enter_woods",
+            "text": "往后山幽篁深处探看虚实",
+            "requires": {
+              "potential": 5
+            },
+            "cost": {
+              "potential": 5
+            },
+            "effects": {
+              "knowledge": 2
+            },
+            "outcome": "你潜入黑松林，林间雾气弥漫，忽有一股狂烈罡风排山倒海般压来！",
+            "next": "danger_ren"
+          },
+          {
+            "id": "c_stay_gate",
+            "text": "留在山道前协助知客僧收捡伪帖",
+            "cost": {},
+            "effects": {
+              "rep": 2,
+              "potential": 6
+            },
+            "outcome": "你帮寺僧将散落在山道上的伪帖收拢焚化，免除了一场无谓火并。",
+            "next": "peace_terminal"
+          }
+        ]
+      },
+      "danger_ren": {
+        "zone": 2,
+        "scene": "黑松林深处怪石嶙峋，一具青袍怪客背对山风负手而立，衣袂无风自鼓，威压逼人。",
+        "dialogues": [
+          [
+            "黑袍人",
+            "哪里来的微末小辈，也敢在老夫面前探头探脑？滚！"
+          ]
+        ],
+        "hearsay": "黑木崖旧主人重现人间的风声如雷贯耳。",
+        "choices": [
+          {
+            "id": "c_stand_firm",
+            "text": "抱元守一，拼尽生平所学苦撑其磅礴掌力",
+            "combat": {
+              "opponent": "renwoxing",
+              "danger": 6
+            },
+            "effects": {
+              "potential": 30,
+              "exp": 40,
+              "flag": {
+                "c_stand_firm": true
+              }
+            },
+            "failEffects": {
+              "mp": -30
+            },
+            "failText": "狂暴气劲震裂你的护体真气，你借反震之力倒飞出林。",
+            "retreatNext": "woods_escape",
+            "outcome": "你咬牙苦支数招，对方似不愿徒耗真力，拂袖震退你后冷笑飘然远去。",
+            "next": "woods_escape",
+            "failNext": "woods_escape"
+          }
+        ]
+      },
+      "crossroad_choice": {
+        "zone": 2,
+        "scene": "官道驿亭前，粮车已安稳停驻，夕阳将少室群峰染成如血残红。",
+        "dialogues": [
+          [
+            "少林执事僧",
+            "阿弥陀佛，多亏施主周旋，这批口粮才得以及时入厨供养四方饥民。"
+          ]
+        ],
+        "hearsay": "开封到洛阳的粮道今日复通，百姓称善。",
+        "choices": [
+          {
+            "id": "c_farewell_monk",
+            "text": "向寺僧合十作别，踏着暮色赶回洛阳",
+            "cost": {},
+            "effects": {
+              "rep": 3,
+              "potential": 10,
+              "silver": 10
+            },
+            "outcome": "僧人赠你盘费以酬辛劳，中原大道烟尘暂息。",
+            "next": "peace_terminal"
+          }
+        ]
+      },
+      "woods_escape": {
+        "zone": 2,
+        "scene": "少林山下洗髓池旁，你背倚青石大口喘息，只觉方才宛如从阎罗殿走了一遭。",
+        "dialogues": [
+          [
+            "少林药僧",
+            "善哉善哉！施主身中霸道气劲竟能全身而退，快饮下这碗定志汤药。"
+          ]
+        ],
+        "hearsay": "少林后山怪客已不知所踪，众僧加紧山防。",
+        "choices": [
+          {
+            "id": "c_drink_soup",
+            "text": "服下药汤，默运内功调理激荡的气血",
+            "cost": {},
+            "effects": {
+              "hp": 20,
+              "knowledge": 3,
+              "rep": 2
+            },
+            "outcome": "真气归元，你心知当世绝顶高手之威，眼界大开。",
+            "next": "peace_terminal"
+          }
+        ]
+      },
+      "peace_terminal": {
+        "zone": 2,
+        "scene": "中原落日浑圆，少林钟声隔林传来。任他五岳翻天、魔教倾轧，这片厚土依旧容纳着过往黎庶。",
+        "dialogues": [],
+        "hearsay": "中原落日浑圆，少林钟声隔林传来。任他五岳翻天、魔教倾轧，这片厚土依旧容纳着过往黎庶。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "洛阳城门张贴出公文，严禁私聚兵刃勒索客商，嵩山恶徒收敛许多。"
+}

@@ -1,0 +1,273 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "xajh_z12_yugequ",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/xajh_z12_yugequ.json",
+  "zone": 12,
+  "design": {
+    "title": "渔歌退隐书",
+    "hook": "东海渔市上，老渔翁起网捞到一个油布包，里面是几页残谱和一封衡山高人的退隐书。",
+    "playerRole": "过路识物人，送还或封存，不登岛不夺谱。",
+    "sources": {
+      "novel": [
+        {
+          "beat": "刘正风金盆洗手、曲洋合谱旧事",
+          "use": "退隐书与残谱的来历"
+        },
+        {
+          "beat": "衡山派以音律传世",
+          "use": "识物的知识门槛"
+        }
+      ],
+      "history": [
+        {
+          "fact": "沿海渔捞常得海上漂流物",
+          "use": "油布包的来源"
+        },
+        {
+          "fact": "官府备案封存无主之物",
+          "use": "封存解法"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "双结局建议",
+          "use": "送还与封存各留事实"
+        },
+        {
+          "slot": "战斗强度反馈",
+          "use": "海盗只中低烈度"
+        }
+      ]
+    },
+    "echo": "xajh_z12_returned 后渔市传闻改为“物归原主”；xajh_z12_sealed 后官府对白提及备案封存。",
+    "facts": [
+      "xajh_z12_returned",
+      "xajh_z12_sealed",
+      "xajh_z12_rest",
+      "xajh_z12_half"
+    ],
+    "blocked": [],
+    "routes": [
+      "送还曲友或交官封存",
+      "海盗抢去半页后凭记忆补救",
+      "破财免灾保物周全"
+    ]
+  },
+  "event": {
+    "name": "渔歌退隐书",
+    "start": "n1",
+    "requires": {},
+    "nodes": {
+      "n1": {
+        "zone": 12,
+        "scene": "东海边的渔市上，老渔翁摆弄一个油布包，说是起网时捞上来的。",
+        "dialogues": [
+          [
+            "渔翁",
+            "几页纸，一根竹筒，看着像读书人的东西。"
+          ],
+          [
+            "鱼贩",
+            "海里的东西，邪性，别沾。"
+          ]
+        ],
+        "hearsay": "海上常漂来各岛的物件，渔人见怪不怪。",
+        "choices": [
+          {
+            "id": "buy_pack",
+            "text": "花五两买下油布包",
+            "cost": {
+              "silver": 5
+            },
+            "next": "n2",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "油布包入手，里面纸页完好。"
+          },
+          {
+            "id": "inspect",
+            "text": "先请渔翁容你验看",
+            "requires": {
+              "knowledge": 2
+            },
+            "next": "n3",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "墨迹沉着，是衡山一路的手笔。"
+          }
+        ]
+      },
+      "n2": {
+        "zone": 12,
+        "scene": "你刚收好油布包，几个短打扮的汉子围拢过来，为首的手按刀柄。",
+        "dialogues": [
+          [
+            "海盗",
+            "海里的东西，见者有份。交出来。"
+          ],
+          [
+            "渔翁",
+            "有话好说……"
+          ]
+        ],
+        "hearsay": "近海不太平，海盗连渔市都敢上。",
+        "choices": [
+          {
+            "id": "fight_pirate",
+            "text": "护住渔翁，击退海盗",
+            "combat": {
+              "opponent": "pirate",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n5",
+            "retreatNext": "n1",
+            "effects": {
+              "exp": 10
+            },
+            "failEffects": {},
+            "failText": "海盗人多，你被砍伤了手臂，油布包被扯去一角。",
+            "outcome": "刀落人散，海盗跳上舢板逃了。"
+          },
+          {
+            "id": "pay_off",
+            "text": "花八两破财免灾",
+            "cost": {
+              "silver": 8
+            },
+            "next": "n4",
+            "effects": {
+              "exp": 3
+            },
+            "outcome": "海盗掂着银子，骂骂咧咧散了。"
+          }
+        ]
+      },
+      "n3": {
+        "zone": 12,
+        "scene": "残谱之侧是一封退隐书，字迹清瘦，说的是辞别江湖、琴箫终老的意思。",
+        "dialogues": [
+          [
+            "渔翁",
+            "读书人的心事，咱看不懂。客官你说呢？"
+          ]
+        ],
+        "hearsay": "衡山有位高人金盆洗手的旧事，沿海也有耳闻。",
+        "choices": [
+          {
+            "id": "xajh_z12_returned",
+            "text": "寻访那位高人的曲友，送还此物",
+            "requires": {
+              "knowledge": 2
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 5,
+              "flag": {
+                "xajh_z12_returned": true
+              },
+              "exp": 5
+            },
+            "outcome": "对方捧书良久，向你长揖到地。"
+          },
+          {
+            "id": "xajh_z12_sealed",
+            "text": "花一两请官府封存备案",
+            "cost": {
+              "silver": 1
+            },
+            "next": "n4",
+            "effects": {
+              "flag": {
+                "xajh_z12_sealed": true
+              },
+              "exp": 3
+            },
+            "outcome": "库吏登记入册，贴封收存。"
+          }
+        ]
+      },
+      "n4": {
+        "zone": 12,
+        "scene": "物得其所，渔市恢复了喧闹。",
+        "dialogues": [
+          [
+            "渔翁",
+            "客官是厚道人。往后出海，给你留最肥的网。"
+          ]
+        ],
+        "hearsay": "渔市上都在说，海捞的东西有了好归宿。",
+        "choices": [
+          {
+            "id": "xajh_z12_rest",
+            "text": "付一两买几条鲜鱼，犒劳自己",
+            "cost": {
+              "silver": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 20,
+              "rep": 4,
+              "flag": {
+                "xajh_z12_rest": true
+              }
+            },
+            "outcome": "鱼鲜汤浓，海风也温柔。"
+          }
+        ]
+      },
+      "n5": {
+        "zone": 12,
+        "scene": "手臂的伤火辣辣的，残谱被扯去半页，渔翁替你包扎。",
+        "dialogues": [
+          [
+            "渔翁",
+            "东西缺了一角，可惜喽。"
+          ]
+        ],
+        "hearsay": "海盗抢走的半页残谱，不知流落何处。",
+        "choices": [
+          {
+            "id": "xajh_z12_half",
+            "text": "用一包草药养伤，凭记忆录下残句一并送出",
+            "cost": {
+              "herbs": 1
+            },
+            "next": "end",
+            "effects": {
+              "exp": 8,
+              "flag": {
+                "xajh_z12_half": true
+              }
+            },
+            "outcome": "残句虽不全，总胜于无。"
+          }
+        ]
+      },
+      "end": {
+        "zone": 12,
+        "scene": "潮起潮落，渔市上新添了一段说头。",
+        "dialogues": [
+          [
+            "鱼贩",
+            "那包海捞的东西，听说送到正主手里了。"
+          ],
+          [
+            "渔翁",
+            "海里的物件，也有认主的一天。"
+          ]
+        ],
+        "hearsay": "退隐书物归原主；沿海渔人念着过客的厚道。",
+        "choices": [],
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "海捞的退隐书，送到了正主手里。渔市都说，那位过客是个厚道人。"
+}
