@@ -22,6 +22,9 @@ export function validateProgression(p) {
     || !Array.isArray(p.journal) || p.journal.length > 200 || !p.journal.every(j => object(j) && number(j.id, p.sequence) && number(j.at) && ['eventId', 'nodeId', 'choiceId', 'result', 'text'].every(k => text(j[k])))) fail();
   for (const [id, q] of Object.entries(p.quests)) {
     const node = SIDE_EVENTS[id].nodes[q.node];
+    if (q.receipts !== undefined && (!Array.isArray(q.receipts) || q.receipts.some(r => typeof r !== 'string' || !Object.entries(SIDE_EVENTS[id].nodes).some(([nodeId,n]) => n.choices.some(c => r === `${nodeId}:${c.id}:success` || r === `${nodeId}:${c.id}:failure`))))) fail();
+    if (q.version !== undefined && q.version !== (SIDE_EVENTS[id].version || 1)) fail();
+    if (q.choices !== undefined && (!object(q.choices) || !Object.entries(q.choices).every(([nodeId,c]) => SIDE_EVENTS[id].nodes[nodeId]?.choices.some(x => x.id === c?.choiceId) && ['success','failure','lost','escaped','draw'].includes(c.result)))) fail();
     if (!node || q.done !== !!node.terminal || (q.pending !== null && !node.choices.some(c => c.id === q.pending && c.combat))) fail();
   }
   if (p.activity !== null) {

@@ -23,8 +23,8 @@ function enter(state, next, choice, text) {
   });
   return n;
 }
-export function advanceFate(state) {
-  const n = { ...state, worldTime: Math.min(1e12, (state.worldTime || 0) + 1) };
+function advanceOne(state, delta) {
+  const n = { ...state, worldTime: Math.min(1e12, (state.worldTime || 0) + delta) };
   if (n.fate.node === 'locked' && n.flag['0:WX-01:complete']) {
     return enter(n, 'dispute', 'opened', '杏子林事后，三帮信使携失粮案书信来寻你。');
   }
@@ -41,4 +41,17 @@ export function resolveFateChoice(state, nodeId, choiceId) {
   let n = applyEff({ ...state, silver: state.silver - (choice.cost || 0) }, choice.effect);
   n = enter(n, choice.next, choice.id, choice.outcome);
   return n;
+}
+
+// World seconds are distinct from wall-clock activity time. Visit timeout boundaries.
+export function advanceFate(state, seconds = 1) {
+  if (!Number.isInteger(seconds) || seconds < 0) throw new Error('世界时间增量无效');
+  let s = advanceOne(state, 0), remaining = seconds;
+  while (remaining > 0) {
+    const node = FATES[s.fate.node];
+    const boundary = node.window ? Math.max(1, node.window - (s.worldTime - s.fate.enteredAt)) : remaining;
+    const step = Math.min(boundary, remaining);
+    s = advanceOne(s, step); remaining -= step;
+  }
+  return s;
 }

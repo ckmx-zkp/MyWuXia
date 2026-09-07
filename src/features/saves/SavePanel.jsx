@@ -1,3 +1,4 @@
+import { browserPlatform } from '../../platform/browser.js';
 import React, { useRef, useState } from 'react';
 import { SAVE_KEY, SLOT_KEYS, readSave, writeSave, encodeSave, migrateSave } from '../../game/saves.js';
 
@@ -9,13 +10,11 @@ export default function SavePanel({ snapshot, options, onLoad, onClose, notice }
   const [working, setWorking] = useState(false);
   const workingRef = useRef(false);
   const run = async task => { if (workingRef.current) return; workingRef.current = true; setWorking(true); try { await task(); setRevision(n => n + 1); } catch (error) { setMessage(`未完成：${error.message}`); } finally { workingRef.current = false; setWorking(false); } };
-  const save = key => run(() => { writeSave(localStorage, snapshot(), key, options); setMessage('已保存。'); setPending(null); });
-  const restore = key => run(async () => { const result = readSave(localStorage, key, options); if (!result) throw new Error('此槽位没有存档。'); await onLoad(result.state); });
-  const inspect = key => { try { return readSave(localStorage, key, options); } catch { return { invalid: true }; } };
+  const save = key => run(() => { writeSave(browserPlatform.storage, snapshot(), key, options); setMessage('已保存。'); setPending(null); });
+  const restore = key => run(async () => { const result = readSave(browserPlatform.storage, key, options); if (!result) throw new Error('此槽位没有存档。'); await onLoad(result.state); });
+  const inspect = key => { try { return readSave(browserPlatform.storage, key, options); } catch { return { invalid: true }; } };
   const exportFile = () => run(() => {
-    const url = URL.createObjectURL(new Blob([encodeSave(snapshot())], { type: 'application/json' }));
-    const a = document.createElement('a'); a.href = url; a.download = `jianghu-${new Date().toISOString().slice(0, 10)}.json`; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    browserPlatform.exportSave(encodeSave(snapshot()));
     setMessage('存档已导出，可在另一浏览器导入。');
   });
   const importFile = async event => {

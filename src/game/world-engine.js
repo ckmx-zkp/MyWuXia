@@ -62,7 +62,7 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
     n.log = n.log.slice(0, 8);
     return n;
   }
-  function resolveRoutine(s, combatResult, rng = Math.random) {
+  function resolveRoutine(s, combatResult, rng) {
     const { zone, id } = s.action;
     const z = ZONES[zone], routine = routinesForZone(z).find(x => x.id === id);
     if (!routine) return { ...s, action: null };

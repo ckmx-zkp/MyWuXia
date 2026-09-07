@@ -20,3 +20,10 @@
 .p0-page select { max-width: 100%; padding: 8px; margin: 8px; }
 .p0-report { width: min(480px, calc(100vw - 32px)); max-height: 85dvh; overflow: auto; padding: 24px; background: #f5f3ee; border: 1px solid #756d5f; border-radius: 6px; }
 @media (max-width:600px) { .p0-row { align-items: flex-start; } .p0-page h1 { font-size: 26px; } .p0-exits button { flex: 1 1 40%; } .primary-nav { grid-template-columns: repeat(4,minmax(0,1fr)) !important; } }
+
+.city-hub { padding: 0 0 22px; border-bottom: 2px solid #8b7661; margin-bottom: 24px; }
+.city-hub h3 { margin: 14px 0 8px; }
+.city-hub details { margin: 14px 0; border: 1px solid #b1a28e; padding: 12px; }
+.city-hub summary { cursor: pointer; font-size: 18px; font-weight: bold; line-height: 1.7; }
+.city-hub .p0-event { margin-top: 12px; }
+.city-hub .p0-row { flex-wrap: wrap; }

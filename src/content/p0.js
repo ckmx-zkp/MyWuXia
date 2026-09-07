@@ -42,7 +42,33 @@ export const ACTIVITIES = {
   internal: { name: '修炼内功', seconds: 5, train: 5, text: '吐纳有节，内息沿熟悉的脉路缓缓运转。' },
 };
 export const SIDE_EVENTS = {
-  medicine: { name: '一车救命药', start: 'request', nodes: {
+  wudang_exam: { name: '武当外门考核', version: 1, start: 'test', requires: { all: [{ ref: 'sect', op: 'eq', value: 'wudang' }, { ref: 'rank', op: 'eq', value: 0 }] }, nodes: {
+    test: { room: 'wudang-hall', scene: '执事翻开名册，教习将木杖放在廊下，示意你站稳脚步。', dialogues: [['执事', '差事做得稳，还须看你能否收放自如。失手也无妨，回院修习再来。']], hearsay: '武当外门弟子可凭差事与绵掌修为参加考核。', choices: [
+      { id: 'test', text: '行礼，请教习考校绵掌', requires: { all: [{ ref: 'resource:contribution', op: 'gte', value: 10, reason: '需贡献十点，可在练功院洒扫' }, { ref: 'style:武当绵掌', op: 'gte', value: 100, reason: '需绵掌心得一百，先请教并修炼' }] }, combat: { opponent: 'student', danger: 25 }, next: 'end', failNext: 'retry', retreatNext: 'retry', effects: [{ op: 'add', ref: 'resource:potential', value: 30 }, { op: 'add', ref: 'resource:exp', value: 60 }, { op: 'set', ref: 'rank', value: 1 }, { op: 'teaching', ref: '武当绵掌', value: 3600 }], outcome: '考核通过，晋为入室弟子。绵掌教学上限提高至三千六百，得潜能三十。', failText: '教习收势指出你运劲未稳，回院修养练习后仍可再试。' },
+    ] },
+    retry: { room: 'wudang-hall', scene: '执事仍将你的名页留在案上，并未划去。', dialogues: [['执事', '胜负只是一时。养好伤，再来走这一趟。']], hearsay: '武当考核不以一败拒人。', choices: [{ id: 'return', text: '重新报名，待准备妥当再交手', next: 'test', effects: {}, outcome: '执事重新摆好名册，等你示意。' }] },
+    end: { terminal: true, scene: '你已晋为入室弟子，练功院仍可洒扫、请教和修炼。', dialogues: [], hearsay: '武当又有弟子通过考核，教习允其进修绵掌。', choices: [] },
+  } },
+  jiangnan_letter: { name: '查清江南密信的主人', version: 1, requires:{not:{ref:'quest:0:0',op:'eq',value:true}}, start: 'inquiry', nodes: {
+    inquiry: { zone: 0, scene: '客栈掌柜把那封沾着茶渍的信放在灯下，信角依稀留着盐号印泥。', dialogues: [['掌柜', '像是扬州盐号的封记。我认得一个跑船的，你若肯等我问一句，也能找到去处。']], hearsay: '临安有人拿着旧信寻主，线索指向扬州盐号。', choices: [
+      { id: 'ask', text: '托掌柜询问旧识', next: 'end', effects: [{ op:'completeQuest',ref:'0:0',value:true }, { op:'set',ref:'fact:letter_contact',value:true }, { op:'add',ref:'resource:silver',value:45 }, { op:'add',ref:'resource:exp',value:30 }], outcome: '船夫认出盐号，写下账房的称呼。你可继续拜访扬州盐商，也可在扬州打听小宝的消息。' },
+      { id: 'read', text: '借书肆所学，细辨印记', requires: { ref:'resource:knowledge',op:'gte',value:3,reason:'草木学识需三点，可去书肆研读' }, next: 'end', effects: [{ op:'completeQuest',ref:'0:0',value:true }, { op:'set',ref:'fact:letter_contact',value:true }, { op:'set',ref:'fact:letter_read',value:true }, { op:'add',ref:'resource:silver',value:45 }, { op:'add',ref:'resource:exp',value:30 }, { op:'add',ref:'resource:potential',value:5 }], outcome: '你辨出印泥中的草木纤维，又核对盐号的旧记，记下了线索。掌柜愿替你引见跑船人。' },
+    ] },
+    end: { terminal:true, scene:'盐号的线索已记下，扬州的人与事可以继续追查。',dialogues:[],hearsay:'问信的外乡人已寻到盐号的门路。',choices:[] },
+  } },
+  medicine_return: { name: '药路回信', version: 1, start: 'letter', requires: { ref:'fact:medicine_complete',op:'eq',value:true }, nodes: {
+    letter: { room:'pharmacy',scene:'沈药师将一封回信压在药秤下，信上提到汉水沿岸也有伤者缺药。',dialogues:[['沈药师','你已护过一程。武当常照应伤者，可否替我问一声？不急着拔剑，把话带到便好。']],hearsay:'回春堂收到汉水来信，想找熟识的护药人传话。',choices:[
+      {id:'carry',text:'收下回信，往荆襄武当问讯',next:'visit',effects:{flag:{medicine_northbound:true}},outcome:'药师写明来历。你可从江南启程到荆襄，去武当山门找道童。'},
+    ]},
+    visit:{room:'wudang-gate',scene:'道童读过药师的来信，将它收进竹筒，招呼你在石阶边歇脚。',dialogues:[['道童','路上辛苦。汉水伤兵须有人照料，你也可进院学些护身本领。']],hearsay:'江南药师与武当有了往来，送信人获许回程领取备药。',choices:[
+      {id:'deliver',text:'交代沿途见闻，带回武当口信',next:'return',effects:{potential:15,flag:{medicine_wudang:true}},outcome:'道童谢过你，托你回告药师：山门愿照应往来的药车。回春堂为你留有谢礼。'},
+    ]},
+    return:{room:'pharmacy',scene:'药师听完口信，把一小包青叶草推到你面前。',dialogues:[['沈药师','路走通了，比多卖几包药要紧。留着这些，日后也能救急。']],hearsay:'江南与汉水间多了一条互相照应的药路。',choices:[
+      {id:'finish',text:'交清口信，收下备药',next:'end',effects:{herbs:3,potential:15,flag:{medicine_returned:true},npc:{shen:'托你联络过武当，愿继续收购草药'}},outcome:'你收好备药。回春堂仍按五两收草药，武馆的引荐也一直有效。'},
+    ]},
+    end:{terminal:true,scene:'药路口信往返已成，回春堂与武当记得你的来往。',dialogues:[],hearsay:'护药人的足迹从城南走到了汉水。',choices:[]},
+  } },
+  medicine: { name: '一车救命药', version: 1, start: 'request', nodes: {
     request: { room: 'pharmacy', scene: '沈药师将封好的药箱推到门口，迟迟找不到肯押车的人。', dialogues: [['沈药师', '药要送去城南。护住车，便是救人，不必追着拦路人分生死。']], hearsay: '回春堂在找人护送城南的药车。', choices: [
       { id: 'accept', text: '应下护送，去码头接车', next: 'road', effects: {}, outcome: '药师把路引交给你，约好在钱塘码头接车。' },
       { id: 'prepare', text: '先帮忙备药，再接护送', next: 'gather', effects: {}, outcome: '你先问清缺少的药材，准备从城郊补齐。' },
@@ -65,3 +91,9 @@ export const SIDE_EVENTS = {
     end: { terminal: true, scene: '救命药已送达，城南人家记下这份恩情。', dialogues: [], hearsay: '护药旧事在街坊口中传开。', choices: [] },
   } },
 };
+
+// Fixed variants are content, selected by the same world query used for choices.
+ROOMS.pharmacy.variants = [{ priority:20, when:{ref:'fact:medicine_returned',op:'eq',value:true}, dialogues:[['沈药师','汉水的回话我收到了。草药仍按五两一份收，路上遇见伤者，多留一份心。']] }, { priority:10,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['沈药师','城南的药送到了。草药我按五两收，另有一封汉水回信想托你。']] }];
+ROOMS.gym.variants = [{ priority:10,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['教习','药师的引荐我收到了，你若有意，可来学华山剑法。']] }];
+ROOMS.home.variants = [{ priority:10,when:{ref:'fact:medicine_mercy',op:'eq',value:true},dialogues:[['老者','听说你还分药救了拦车人的家眷。往后大家总有照应。']] },{priority:5,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['老者','多亏你护住药车，街坊们记着这份情。']]}];
+ACTIVITIES.errand = { name:'行脚差事',seconds:12,silver:8,potential:5,text:'行脚掌柜：递信、认路、照看行李，做满一趟结一趟的工钱。' };

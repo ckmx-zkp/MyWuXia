@@ -1,3 +1,8 @@
+import { LINKS } from './content/city-leads.js';
+import { SOUND } from './content/audio.js';
+import { createAudioManager } from './services/audio-manager.js';
+import { browserPlatform } from './platform/browser.js';
+import CityHub from './features/progression/CityHub.jsx';
 import { createWorldEngine } from './game/world-engine.js';
 import { createGameReducer } from './game/commands.js';
 import { beginProgression, ownsStyle } from './game/progression.js';
@@ -22,129 +27,11 @@ import { vitalStats, needsInnRest } from './game/vitals.js';
 import FatePanel from './features/fates/FatePanel.jsx';
 import { routinesForZone, routineReward } from './content/routines.js';
 
-/* ================= 音效（复用 Audio，避免每次点击新建） ================= */
-const SOUND = { click: '/audio/wood-pluck.wav', quest: '/audio/quest-complete.wav', bell: '/audio/breath-bell.wav' };
-const sfxPool = {};
-function play(src, mute) {
-  if (mute) return;
-  try {
-    let a = sfxPool[src];
-    if (!a) { a = new Audio(src); a.volume = 1.0; sfxPool[src] = a; }
-    a.currentTime = 0;
-    a.play().catch(() => {});
-  } catch (e) { /* 浏览器未解锁音频时忽略 */ }
-}
-
-/* ================= BGM：13 区主题曲（docs/gdd/05，切区交叉淡化） ================= */
-const BGM = [
-  '/audio/bgm/zone/T01-jiangnan-rain.mp3', '/audio/bgm/zone/T02-jingxiang-drums.mp3',
-  '/audio/bgm/zone/T03-zhongyuan-meet.mp3', '/audio/bgm/zone/T04-yanyun-frost.mp3',
-  '/audio/bgm/zone/T05-saibei-longsong.mp3', '/audio/bgm/zone/T06-liaodong-cavalry.mp3',
-  '/audio/bgm/zone/T07-baishan-forest.mp3', '/audio/bgm/zone/T08-xixia-desert.mp3',
-  '/audio/bgm/zone/T09-guanzhong-sword.mp3', '/audio/bgm/zone/T10-bashu-plankroad.mp3',
-  '/audio/bgm/zone/T11-yungui-teahorse.mp3', '/audio/bgm/zone/T12-dali-chant.mp3',
-  '/audio/bgm/zone/T13-donghai-waves.mp3',
-];
-const BGM_VOLUME = 0.5;
-let bgmCur = null;   // 当前播放的 Audio
-let bgmSrc = null;   // 当前曲目路径
-function fadeTo(a, target, ms, done) {
-  const step = 50, dv = (target - a.volume) / (ms / step);
-  const t = setInterval(() => {
-    a.volume = Math.max(0, Math.min(1, a.volume + dv));
-    if ((dv > 0 && a.volume >= target) || (dv < 0 && a.volume <= target)) {
-      clearInterval(t);
-      if (done) done();
-    }
-  }, step);
-}
-function bgmSwitch(zoneIdx, mute) {
-  try {
-    const src = BGM[zoneIdx];
-    if (mute) { if (bgmCur) bgmCur.pause(); return; }
-    if (bgmSrc === src) {
-      /* 同曲：首次自动播放被拦截或暂停时恢复，并补淡入（修复音量停在 0 的问题） */
-      if (bgmCur) {
-        if (bgmCur.paused) bgmCur.play().catch(() => {});
-        if (bgmCur.volume < BGM_VOLUME) fadeTo(bgmCur, BGM_VOLUME, 800);
-      }
-      return;
-    }
-    bgmSrc = src;
-    if (bgmCur) { const old = bgmCur; fadeTo(old, 0, 400, () => { old.pause(); old.src = ''; }); }
-    const next = new Audio(src);
-    next.loop = true;
-    next.volume = 0;
-    next.play().then(() => fadeTo(next, BGM_VOLUME, 1200)).catch(() => { /* 首次交互前被浏览器拦截，下次点击重试 */ });
-    bgmCur = next;
-  } catch (e) { /* 忽略 */ }
-}
-
-/* ================= 语音（docs/gdd/05：对白期间 BGM duck；多句按序连播） ================= */
-let voiceCur = null;
-let voiceGen = 0;
-let voiceLineCb = null;
-const VOICE_GAP = 420;
-function setVoiceLine(i) { if (voiceLineCb) voiceLineCb(i); }
-function haltVoice() {
-  voiceGen += 1;
-  if (voiceCur) {
-    try { voiceCur.onended = null; voiceCur.onerror = null; voiceCur.pause(); } catch (e) { /* 忽略 */ }
-    voiceCur = null;
-  }
-}
-function stopVoice() {
-  haltVoice();
-  setVoiceLine(-1);
-  if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 600);
-}
-function playVoiceQueue(srcs, mute, lineAt) {
-  const list = (srcs || []).filter(Boolean);
-  if (mute || !list.length) return;
-  haltVoice();
-  const gen = voiceGen;
-  setVoiceLine(-1);
-  if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME * 0.3, 300);
-  let i = 0;
-  const next = () => {
-    if (gen !== voiceGen) return;
-    if (i >= list.length) {
-      voiceCur = null;
-      setVoiceLine(-1);
-      if (bgmCur && !bgmCur.paused) fadeTo(bgmCur, BGM_VOLUME, 800);
-      return;
-    }
-    const idx = i;
-    const src = list[i];
-    i += 1;
-    if (lineAt) setVoiceLine(lineAt[idx]);
-    try {
-      const a = new Audio(src);
-      a.volume = 1.0;
-      a.onended = () => { if (gen === voiceGen) setTimeout(next, VOICE_GAP); };
-      a.onerror = () => { if (gen === voiceGen) setTimeout(next, 80); };
-      a.play().catch(() => { if (gen === voiceGen) next(); });
-      voiceCur = a;
-    } catch (e) { next(); }
-  };
-  next();
-}
-function playVoice(src, mute) {
-  playVoiceQueue(src ? [src] : [], mute);
-}
-function playDialogues(dialogues, mute, from = 0) {
-  const seq = [];
-  const at = [];
-  (dialogues || []).forEach((d, i) => {
-    if (d[2] && i >= from) { seq.push(d[2]); at.push(i); }
-  });
-  playVoiceQueue(seq, mute, at);
-}
 /* ================= 世界数据 ================= */
 
 
 /* 道路连通关系（索引对应 ZONES） */
-const LINKS = { 0: [1, 12], 1: [0, 2, 9], 2: [1, 3, 8], 3: [2, 4, 5], 4: [3], 5: [3, 6], 6: [5], 7: [8], 8: [2, 7, 9], 9: [1, 8, 10], 10: [9, 11], 11: [10], 12: [0] };
+
 
 const WORLD_INTRO = '五朝并立，三大缓冲区烽烟不息，四大边疆与海外自成江湖。你是一名无门无派的行侠者，一卷《天下舆图》在身——走到哪里，哪里便是你的江湖。道路相连处皆可前往，越是深处，越是凶险。';
 
@@ -338,7 +225,7 @@ const rankTier = ab => ab >= 300 ? '天榜' : ab >= 120 ? '地榜' : '人榜';
 
 function load() {
   try {
-    const result = readSave(localStorage, SAVE_KEY, saveOptions);
+    const result = readSave(browserPlatform.storage, SAVE_KEY, saveOptions);
     return { state: result?.state || null, notice: result?.recovered ? '主存档损坏，已从备用存档恢复。' : '' };
   } catch (error) { return { state: null, notice: `读取失败：${error.message}。可从存档面板导入或读取手动存档。` }; }
 }
@@ -358,14 +245,16 @@ const { tick, settleStory } = createWorldEngine({ ability, questReward, clamp, I
 const reduceGame = createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS, ITEMS, RUMORS, ORIGINS, START_SKILLS, questReward, clamp, ability });
 
 function App({ saved }) {
-  const [s, commitState] = useState(() => saved.state ? p0Command(beginProgression(saved.state, true), { type: 'RESUME' }, Date.now()) : beginProgression(initial()));
+  const [audio] = useState(() => createAudioManager(browserPlatform.audio));
+  const { play, bgmSwitch, stopVoice, playVoice, playDialogues } = audio;
+  const [s, commitState] = useState(() => saved.state ? reduceGame(saved.state, { type:'LOAD', state:saved.state }, browserPlatform.now()) : beginProgression(initial()));
   const sRef = useRef(s);
   const dispatch = command => {
-    const next = reduceGame(sRef.current, command, Date.now());
+    const next = reduceGame(sRef.current, command, browserPlatform.now());
     sRef.current = next;
     commitState(next);
     if (!creating && command.type !== 'RESET') {
-      try { writeSave(localStorage, next, SAVE_KEY, saveOptions); }
+      try { writeSave(browserPlatform.storage, next, SAVE_KEY, saveOptions); }
       catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
     }
   };
@@ -393,46 +282,39 @@ function App({ saved }) {
   const vitals = vitalStats(s);
   const fac = FAC[s.loc] || FAC_DEFAULT;
   const doneArr = s.done[s.loc] || [];
-  const busy = !!s.action || travelLoading;
+  const busy = !!s.action || !!s.battle || travelLoading;
 
-  useEffect(() => { voiceLineCb = setSpeakI; return () => { voiceLineCb = null; }; }, []);
+  useEffect(() => { audio.onLine(setSpeakI); return () => audio.dispose(); }, [audio]);
   useEffect(() => {
     if (creating || savesOpen) return;
-    const timer = setInterval(() => {
-      if (document.hidden) return;
-      const next = reduceGame(sRef.current, { type: 'HEARTBEAT' }, Date.now());
+    const timer = browserPlatform.every(() => {
+      if (browserPlatform.hidden()) return;
+      const next = reduceGame(sRef.current, { type: 'HEARTBEAT' }, browserPlatform.now());
       sRef.current = next;
       commitState(next);
     }, 1000);
-    return () => clearInterval(timer);
+    return () => timer();
   }, [creating, savesOpen]);
   useEffect(() => {
     if (creating) return;
     const persist = () => {
-      try { writeSave(localStorage, sRef.current, SAVE_KEY, saveOptions); } catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
+      try { writeSave(browserPlatform.storage, sRef.current, SAVE_KEY, saveOptions); } catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
     };
     persist();
-    const timer = setInterval(persist, 2500);
+    const timer = browserPlatform.every(persist, 2500);
     const onVis = () => {
-      if (!document.hidden) {
-        const next = p0Command(sRef.current, { type: 'RESUME' }, Date.now());
+      if (!browserPlatform.hidden()) {
+        const next = reduceGame(sRef.current, { type: 'RESUME' }, browserPlatform.now());
         sRef.current = next; commitState(next);
       }
       persist();
     };
-    window.addEventListener('beforeunload', persist);
-    window.addEventListener('pagehide', persist);
-    document.addEventListener('visibilitychange', onVis);
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('beforeunload', persist);
-      window.removeEventListener('pagehide', persist);
-      document.removeEventListener('visibilitychange', onVis);
-    };
+    const unsubscribe = browserPlatform.lifecycle({ save:persist, visibility:onVis });
+    return () => { timer(); unsubscribe(); };
   }, [creating, savesOpen]);
   useEffect(() => {
     if (creating || (!s.action && !s.battle)) return;
-    try { writeSave(localStorage, sRef.current, SAVE_KEY, saveOptions); }
+    try { writeSave(browserPlatform.storage, sRef.current, SAVE_KEY, saveOptions); }
     catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
   }, [s.action, s.battle, creating]);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.muteSfx); }, [s.fx, s.muteSfx]);
@@ -457,13 +339,13 @@ function App({ saved }) {
     try {
       await loadZoneQuests(i);
       if (request !== travelRequest.current || sRef.current.action) return;
-      dispatch({ type: 'TRAVEL', to: i });
+      dispatch({ type: 'TRAVEL', to: i }); setSide('江湖');
     } catch (error) { setSaveNotice(`地域记事读取失败：${error.message}，可再次启程重试。`); }
     finally { if (request === travelRequest.current) setTravelLoading(false); }
   };
   const startQuest = i => {
     if (busy) return;
-    dispatch({ type: 'QUEST', index: i });
+    dispatch({ type: 'QUEST', index: i }); if (s.loc === 0 && i === 0) setSide('江湖');
   };
   const startRoutine = id => {
     if (busy) return;
@@ -474,6 +356,7 @@ function App({ saved }) {
   /* 普通任务：先出剧情卡，再动身 */
   const openQuestCard = i => {
     click();
+    if (s.loc === 0 && i === 0) { startQuest(i); return; }
     setQuestCard(i);
   };
   const startSpar = () => {
@@ -488,10 +371,10 @@ function App({ saved }) {
   const loadCharacter = async state => {
     await prepareCharacter(state);
     travelRequest.current++; setTravelLoading(false);
-    if (!creating) writeSave(localStorage, sRef.current, SAVE_KEY, saveOptions);
-    const restored = p0Command(beginProgression(state, true), { type: 'RESUME' }, Date.now());
-    writeSave(localStorage, restored, SAVE_KEY, saveOptions);
-    stopVoice(); dispatch({ type: 'LOAD', state: restored });
+    if (!creating) writeSave(browserPlatform.storage, sRef.current, SAVE_KEY, saveOptions);
+    const restored = reduceGame(state, {type:'LOAD',state}, browserPlatform.now());
+    writeSave(browserPlatform.storage, restored, SAVE_KEY, saveOptions);
+    audio.dispose(); bgmSwitch(restored.loc,restored.muteBgm); dispatch({ type: 'LOAD', state: restored });
     setStory(null); setOutcome(null); setQuestCard(null); setRoutineCard(null); setPanel(null); setCombatSetup(null);
     setCreating(false); setSavesOpen(false); setSaveNotice('存档已恢复。');
   };
@@ -548,8 +431,8 @@ function App({ saved }) {
 
   const reset = () => {
     if (!window.confirm('重开将清空全部江湖进度，确定？')) return;
-    try { clearAutoSave(localStorage); } catch (error) { setSaveNotice(`重开失败：${error.message}`); return; }
-    stopVoice();
+    try { clearAutoSave(browserPlatform.storage); } catch (error) { setSaveNotice(`重开失败：${error.message}`); return; }
+    audio.dispose();
     travelRequest.current++; setTravelLoading(false);
     setCombatSetup(null); setSavesOpen(false);
     dispatch({ type: 'RESET' });
@@ -560,7 +443,7 @@ function App({ saved }) {
   /* 开局创角：名号 + 出身 + 天赋加点 + 家传武学 */
   const finishCreate = () => {
     click();
-    dispatch({ type: 'CREATE', name: cName, origin, skill: cSkill, alloc, seed: crypto.getRandomValues(new Uint32Array(1))[0] || 1 });
+    dispatch({ type: 'CREATE', name: cName, origin, skill: cSkill, alloc, seed: browserPlatform.seed() });
     setCreating(false);
   };
 
@@ -592,7 +475,9 @@ function App({ saved }) {
       {/* 中栏：当前区域与任务 */}
       <section>
         <article className="paper">
-          {(side === '江湖' && currentRoom(s)) || side === '修炼' || side === '门派' ? <ProgressionPanel state={s} dispatch={dispatch} mode={side} onLegacy={() => setSide('旧闻')} onSpar={startSpar} /> : side === '游历' ? <>
+          {side === '江湖' && <CityHub state={s} dispatch={dispatch} onStory={openStory} onQuest={openQuestCard} onTravel={go} onLegacy={() => setSide('旧闻')} onFate={() => setSide('命运')} onRoutine={id => setRoutineCard(id)} />}
+          {side === '旧闻' && <button className="hbtn" onClick={() => setSide('江湖')}>返回当地线索与后续</button>}
+          {side === '江湖' && !currentRoom(s) ? null : (side === '江湖' && currentRoom(s)) || side === '修炼' || side === '门派' ? <ProgressionPanel state={s} dispatch={dispatch} mode={side} onLegacy={() => setSide('旧闻')} onTown={() => setSide('江湖')} onSpar={startSpar} /> : side === '游历' ? <>
             <div className="chapter">
               <small>江湖舆图 · 十三大区 · 道路相连处皆可前往</small>
               <h1>天下风物</h1>
@@ -608,7 +493,7 @@ function App({ saved }) {
                   <span>{zn.faction} · <em className={`tag t${t}`}>{DANGER_TAGS[t]}</em></span>
                   <b>{zn.name}</b>
                   <small>{zn.cities}</small>
-                  <small>{i === s.loc ? '◈ 当前所在' : near ? '可前往（约十息）' : '道路不通，需经邻区辗转'} · 任务 {done}/4{(zn.trees || []).length ? ` · 剧情 ${zn.trees.length}` : ''}</small>
+                  <small>{i === s.loc ? '◈ 当前所在' : near ? '启程（世界时间十息）' : '道路不通，需经邻区辗转'} · 任务 {done}/4{(zn.trees || []).length ? ` · 剧情 ${zn.trees.length}` : ''}</small>
                 </button>;
               })}
             </div>
@@ -708,14 +593,14 @@ function App({ saved }) {
                 </div>
                 <div className="routine-section">
                   <h3>循环历练</h3>
-                  <p>可反复完成，提升角色等级，并训练当前装备的武学与内功。</p>
+                  <p>谋生与练招按实际时间结算；护送通过交手结算，撤退不领奖。</p>
                   <div className="mission-list">{routinesForZone(z).map(routine => {
                     const reward = routineReward(z, routine);
                     const count = s.routineDone?.[`${s.loc}:${routine.id}`] || 0;
                     const active = s.action?.type === 'routine' && s.action.zone === s.loc && s.action.id === routine.id;
                     return <button key={routine.id} className={`mission routine ${active ? 'active' : ''}`} disabled={busy} onClick={() => setRoutineCard(routine.id)}>
                       <span>日常</span><div className="qbody"><b>{routine.name}</b><i>{routine.text}</i></div>
-                      <small>{active ? `行动中 ${s.action.left}s` : `历练 +${reward.exp} · 心得 +${reward.training}`}<br />已完成 {count} 次</small>
+                      <small>{routine.id === 'errand' ? '持续谋生 · 银两与潜能' : routine.id === 'practice' ? '持续修习 · 消耗潜能' : `护送交手 · 历练 +${reward.exp}`}<br />已完成 {count} 次</small>
                     </button>;
                   })}</div>
                 </div>
@@ -915,7 +800,7 @@ function App({ saved }) {
           <h2>{q.name}</h2>
           <p className="scene">{q.text}</p>
           <p className="dlg"><b>{who}</b>{line}</p>
-          <p className="hint" style={{ color: '#6d5a3c' }}>此行约需 {r.time} 息。酬劳：银两 +{r.silver}、历练 +{r.exp}{q.item ? `、${ITEMS[q.item].name}` : ''}。{q.kind === 'main' ? '小主线纵有不济，自有高人相助。' : '实力不足时可能受挫，养足气血再来。'}</p>
+          <p className="hint" style={{ color: '#6d5a3c' }}>此行消耗世界时间 {r.time} 息，动身即处理事件。酬劳：银两 +{r.silver}、历练 +{r.exp}{q.item ? `、${ITEMS[q.item].name}` : ''}。{q.kind === 'main' ? '小主线纵有不济，自有高人相助。' : '实力不足时可能受挫，养足气血再来。'}</p>
           <div className="choices">
             <button onClick={() => { startQuest(questCard); setQuestCard(null); }}>动身前往</button>
             <button onClick={() => { click(); setQuestCard(null); }}>暂且离开</button>
@@ -932,7 +817,7 @@ function App({ saved }) {
           {routine.opponent && <p className="combat-warning">途中可能遭遇{OPPONENTS[routine.opponent].name}，将使用当前武学与内功自动交手；主动脱身没有本次历练收益。</p>}
           <small className="st-tag">循环支线 · {z.name}</small><h2>{routine.name}</h2>
           <p className="scene">{routine.text}</p><p className="dlg"><b>{routine.dialogue[0]}</b>{routine.dialogue[1]}</p>
-          <p className="hint" style={{ color: '#6d5a3c' }}>约需 {routine.time} 息。完成可得历练 +{reward.exp}、武学/内功心得 +{reward.training}、银两 +{reward.silver}。</p>
+          <p className="hint" style={{ color: '#6d5a3c' }}>{routine.id === 'errand' ? '持续活动：每十二秒银两 +8、潜能 +5，离线最多结算八小时。' : routine.id === 'practice' ? '持续演练基本拳脚：每五秒消耗五点潜能，增加五点基本功心得。' : `动身即交手；护送成功得历练 +${reward.exp}、心得 +${reward.training}、银两 +${reward.silver}。`}</p>
           <div className="choices"><button onClick={() => { startRoutine(routine.id); setRoutineCard(null); }}>开始历练</button><button onClick={() => setRoutineCard(null)}>暂且离开</button></div>
         </div>
       </div>;

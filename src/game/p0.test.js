@@ -120,7 +120,8 @@ test('sect progression requires earned contribution, learned skill and successfu
   s = cmd(s, 'START_ACTIVITY', { id: 'style', target: '武当绵掌' }, 401000); s = settleActivity(s, 421000);
   s = at(cmd(s, 'STOP_ACTIVITY', {}, 421000), 'wudang-hall', 1);
   s = cmd(s, 'EXAM', {}, 421000);
-  assert.equal(s.battle.context.kind, 'exam');
+  assert.equal(s.battle.context.kind, 'side');
+  assert.equal(s.battle.context.eventId, 'wudang_exam');
   const won = settleP0Combat({ ...s, action: null, battle: { ...s.battle, status: 'won', settled: true, result: '取胜' } }, { kind: 'exam' }, true);
   assert.equal(won.p0.rank, 1); assert.equal(won.p0.styles['武当绵掌'].cap, 3600);
   assert.equal(settleP0Combat(won, { kind: 'exam' }, true).p0.potential, won.p0.potential);

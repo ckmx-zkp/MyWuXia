@@ -1,3 +1,4 @@
+import { chooseDialogue, lessonRequirements, readWorld } from '../../game/world-rules.js';
 import React from 'react';
 import { ACTIVITIES, BASICS, LESSONS, ROOMS, SIDE_EVENTS, WEAPONS } from '../../content/p0.js';
 import { currentRoom, activityReason } from '../../game/p0-engine.js';
@@ -18,7 +19,7 @@ export function OfflineReport({ state, dispatch }) {
     <button onClick={() => dispatch({ type: 'DISMISS_REPORT' })}>收起记事</button>
   </section></div>;
 }
-export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', onLegacy, onSpar }) {
+export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', onLegacy, onSpar, onTown }) {
   const p = s.p0, roomId = currentRoom(s), room = ROOMS[roomId];
   const busy = !!s.action || !!s.battle;
   const act = (id, target) => dispatch({ type: 'START_ACTIVITY', id, target });
@@ -39,27 +40,23 @@ export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', 
       <h2>随身兵器</h2><label>兵器<select value={p.weapon} disabled={busy} onChange={e => dispatch({ type: 'EQUIP_WEAPON', id: e.target.value })}>{p.weapons.map(id => <option key={id} value={id}>{WEAPONS[id].name} · 攻击 +{WEAPONS[id].attack}</option>)}</select></label>
       <h2>江湖经历</h2>{p.journal.slice(-8).reverse().map(j => <p key={j.id}>{j.text}</p>)}
     </> : <>
-      {room && <><p className="p0-scene">{room.scene}</p>{room.npcs.map(([name, text]) => <p key={name}><b>{name}：</b>{text}</p>)}
-        {p.facts.medicine_complete && ['gym', 'pharmacy', 'home'].includes(roomId) && <p className="p0-echo">{roomId === 'gym' ? '教习：药师的引荐我收到了，你若有意，可来学剑。' : roomId === 'pharmacy' ? '沈药师：往后你送来的草药，我按五两一份收。' : '街坊见你经过，纷纷开门招呼。'}</p>}
+      {room && <><p className="p0-scene">{room.scene}</p>{chooseDialogue(s,room).map(([name, text]) => <p key={name}><b>{name}：</b>{text}</p>)}
+
         <div className="p0-exits">{room.exits.map(id => <button disabled={busy} key={id} onClick={() => dispatch({ type: 'MOVE_ROOM', id })}>{ROOMS[id].name}</button>)}</div></>}
+      {mode === '门派' && <button onClick={onTown}>查看当地事件与考核</button>}
       {mode === '门派' && !p.sect && <p>武当山门设在荆襄。城南武馆也向无门无派之人传授拳脚与刀法。</p>}
       {roomId === 'wudang-gate' && !p.sect && <button disabled={busy} onClick={() => dispatch({ type: 'JOIN_SECT' })}>向道童执礼入门</button>}
-      {roomId === 'wudang-hall' && p.sect && <div><p>{p.rank ? '考核已过，绵掌教学上限增至 3600。' : '外门考核：贡献 10，绵掌心得 100。'}</p><button disabled={busy || p.rank > 0 || p.contribution < 10 || (s.training.styles['武当绵掌'] || 0) < 100} onClick={() => dispatch({ type: 'EXAM' })}>参加考核</button></div>}
+
       <div className="p0-actions">{Object.entries(ACTIVITIES).filter(([, a]) => a.rooms?.includes(roomId)).map(([id, a]) => <div key={id}>{activityButton(id)}<small>{Object.entries(a).filter(([k, v]) => rewardNames[k] && typeof v === 'number').map(([k, v]) => `${rewardNames[k]} +${v}`).join(' · ')} / {a.seconds} 秒</small></div>)}</div>
       {roomId === 'inn' && <button disabled={busy || s.silver < 5} onClick={() => dispatch({ type: 'INN_REST' })}>投宿 · 五两</button>}
-      {roomId === 'pharmacy' && <div className="p0-actions"><button disabled={busy || s.silver < 10} onClick={() => dispatch({ type: 'BUY_MEDICINE' })}>药师疗伤 · 十两</button><button disabled={busy || !p.materials.herbs} onClick={() => dispatch({ type: 'SELL_HERBS' })}>售出一份青叶草 · {p.facts.medicine_complete ? '五' : '三'}两</button></div>}
+      {roomId === 'pharmacy' && <div className="p0-actions"><button disabled={busy || s.silver < 10} onClick={() => dispatch({ type: 'BUY_MEDICINE' })}>药师疗伤 · 十两</button><button disabled={busy || !p.materials.herbs} onClick={() => dispatch({ type: 'SELL_HERBS' })}>售出一份青叶草 · {readWorld(s,'fact:medicine_complete') ? '五' : '三'}两</button></div>}
       {roomId === 'smith' && Object.entries(WEAPONS).filter(([id]) => id !== 'hands').map(([id, w]) => <div className="p0-row" key={id}><span>{w.name} · 攻击 +{w.attack}</span><button disabled={busy || p.weapons.includes(id) || s.silver < w.price} onClick={() => dispatch({ type: 'BUY_WEAPON', id })}>{p.weapons.includes(id) ? '已购得' : `购买 · ${w.price}两`}</button></div>)}
       {lessons.length > 0 && <><h2>请教学艺</h2>{lessons.map(([id, l]) => {
         const learned = p[l.kind === 'style' ? 'styles' : 'internals'][l.target];
-        const reason = requirementReason(s, l);
+        const reason = requirementReason(s, lessonRequirements(l));
         return <div className="p0-row" key={id}><div><b>{l.name}</b><small>银两 {l.silver} · 潜能 {l.potential}{l.contribution ? ` · 贡献 ${l.contribution}` : ''}{reason ? ` · ${reason}` : ''}</small></div><button title={reason} disabled={busy || !!learned || !!reason} onClick={() => dispatch({ type: 'LEARN_SKILL', id })}>{learned ? '已传授' : '请教'}</button></div>;
       })}</>}
       {roomId === 'gym' && <button disabled={busy} onClick={onSpar}>请教习陪练</button>}
-      {Object.entries(SIDE_EVENTS).map(([id, event]) => {
-        const progress = p.quests[id], node = event.nodes[progress?.node || event.start];
-        if (!progress && node.room !== roomId) return null;
-        return <section className="p0-event" key={id}><h2>{event.name}</h2>{!progress ? <><p>{node.hearsay}</p><button disabled={busy} onClick={() => dispatch({ type: 'DISCOVER_EVENT', id })}>问清此事</button></> : progress.done ? <p>{node.scene}</p> : node.room !== roomId ? <p>下一处去向：{ROOMS[node.room].name}</p> : <><p>{node.scene}</p>{node.dialogues.map(([who, line]) => <p key={who}><b>{who}：</b>{line}</p>)}<div className="p0-choices">{node.choices.map(c => { const reason = sideChoiceReason(s, id, c.id); return <div key={c.id}><button disabled={!!reason} title={reason} onClick={() => dispatch({ type: 'CHOOSE_EVENT', id, choice: c.id })}>{c.text}</button>{reason && <small>{reason}</small>}</div>; })}</div><p className="p0-hearsay">{node.hearsay}</p></>}</section>;
-      })}
       <div className="p0-actions"><button onClick={onLegacy}>查阅区域旧闻</button>{activityButton('rest')}</div>
     </>}
   </div>;

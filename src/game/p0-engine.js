@@ -1,8 +1,9 @@
 import { ACTIVITIES, BASICS, LESSONS, ROOMS, SIDE_EVENTS, WEAPONS } from '../content/p0.js';
 import { beginProgression, trainingCap, ownsStyle } from './progression.js';
 import { normalizeLoadout, STYLES } from '../content/combat.js';
+import { lessonRequirements, transact, testCondition } from './world-rules.js';
 import { startCombat } from './combat.js';
-import { requirementReason, spend, sideChoiceReason, settleSideEvent, recordExperience, applyWorldEffects } from './side-events.js';
+import { requirementReason, spend, sideChoiceReason, settleSideEvent, recordExperience, applyWorldEffects, atEventNode, eventReason } from './side-events.js';
 
 export const OFFLINE_CAP = 8 * 60 * 60 * 1000;
 const note = (s, text) => ({ ...s, log: [text, ...s.log].slice(0, 8) });
@@ -79,18 +80,18 @@ export function p0Command(input, command, now) {
     }
     case 'DISCOVER_EVENT': {
       const event = SIDE_EVENTS[command.id];
-      if (!event || event.nodes[event.start].room !== roomId || p.quests[command.id]) return s;
+      if (!event || !atEventNode({ ...s, p0: { ...p, room: roomId } }, event.nodes[event.start]) || eventReason(s, event) || p.quests[command.id]) return s;
       return recordExperience(stop({ ...s, p0: { ...p, quests: { ...p.quests, [command.id]: { node: event.start, pending: null, done: false } } } }), command.id, event.start, 'discover', 'discovered', event.nodes[event.start].hearsay);
     }
     case 'CHOOSE_EVENT': {
       const reason = sideChoiceReason({ ...s, p0: { ...p, room: roomId } }, command.id, command.choice);
       if (reason) return note(s, reason);
       const progress = p.quests[command.id], choice = SIDE_EVENTS[command.id].nodes[progress.node].choices.find(c => c.id === command.choice);
-      s = stop(spend(s, choice.cost));
+      s = stop(transact(s, { requires: choice.requires, cost: choice.cost }).state);
       const context = { kind: 'side', eventId: command.id, nodeId: progress.node, choiceId: choice.id };
       if (choice.combat) {
         s.p0 = { ...s.p0, quests: { ...s.p0.quests, [command.id]: { ...progress, pending: choice.id } } };
-        return startCombat(s, { ...choice.combat, place: ROOMS[roomId].name, context });
+        return startCombat(s, { ...choice.combat, place: ROOMS[roomId]?.name || SIDE_EVENTS[command.id].name, context });
       }
       return settleSideEvent(s, context, true);
     }
@@ -99,7 +100,7 @@ export function p0Command(input, command, now) {
       if (!lesson || lesson.room !== roomId) return note(s, '请先找到传授此功的师傅。');
       const kind = lesson.kind === 'style' ? 'styles' : 'internals';
       if (p[kind][lesson.target]) return note(s, '此功已经学过。');
-      const reason = requirementReason(s, lesson);
+      const reason = requirementReason(s, lessonRequirements(lesson));
       if (reason) return note(s, reason);
       s = stop(spend(s, { silver: lesson.silver, potential: lesson.potential, contribution: lesson.contribution || 0 }));
       s.p0 = { ...s.p0, [kind]: { ...s.p0[kind], [lesson.target]: { cap: lesson.cap, source: ROOMS[roomId].name } } };
@@ -110,9 +111,8 @@ export function p0Command(input, command, now) {
       return recordExperience(stop({ ...s, p0: { ...p, sect: 'wudang' } }), 'wudang', 'entry', 'join', 'success', '你向道童执礼，记入武当外门名册。');
     }
     case 'EXAM': {
-      if (roomId !== 'wudang-hall' || p.sect !== 'wudang' || p.rank > 0) return s;
-      if (p.contribution < 10 || (s.training.styles['武当绵掌'] || 0) < 100) return note(s, '考核需贡献十点、绵掌心得一百。');
-      return startCombat(stop(s), { opponent: 'student', danger: 25, place: '武当外门考核', context: { kind: 'exam' } });
+      s = p0Command(s, { type: 'DISCOVER_EVENT', id: 'wudang_exam' }, now);
+      return p0Command(s, { type: 'CHOOSE_EVENT', id: 'wudang_exam', choice: 'test' }, now);
     }
     case 'BUY_WEAPON': {
       const weapon = WEAPONS[command.id];
@@ -127,7 +127,7 @@ export function p0Command(input, command, now) {
     case 'EQUIP_LOADOUT': return stop({ ...s, loadout: normalizeLoadout(s, command.loadout) });
     case 'SELL_HERBS': {
       if (roomId !== 'pharmacy' || p.materials.herbs < 1) return s;
-      return applyWorldEffects(s, { herbs: -1, silver: p.facts.medicine_complete ? 5 : 3 });
+      return applyWorldEffects(s, { herbs: -1, silver: testCondition(s, { ref: 'fact:medicine_complete', op: 'eq', value: true }) ? 5 : 3 });
     }
     case 'BUY_MEDICINE': {
       if (roomId !== 'pharmacy' || s.silver < 10) return s;
@@ -142,10 +142,8 @@ export function p0Command(input, command, now) {
 }
 export function settleP0Combat(s, context, won) {
   if (context.kind === 'side') return settleSideEvent(s, context, won);
+  // v1-v6 examination battles resume through the same event contract.
   if (context.kind !== 'exam' || s.p0.rank > 0) return s;
-  let n = won ? applyWorldEffects(s, { potential: 30, exp: 60 }) : s;
-  if (won) n.p0 = { ...n.p0, rank: 1, styles: { ...n.p0.styles, '武当绵掌': { ...n.p0.styles['武当绵掌'], cap: 3600 } } };
-  const text = won ? '考核通过，晋为入室弟子。绵掌教学上限提高，得潜能三十。' : '教习收手，指出你运劲未稳。修养练习后仍可再试。';
-  n = recordExperience(n, 'wudang', 'exam', 'combat', won ? 'success' : 'failure', text);
-  return { ...n, battle: { ...n.battle, result: `${n.battle.result}\n\n${text}` } };
+  const bridged = { ...s, p0: { ...s.p0, quests: { ...s.p0.quests, wudang_exam: { node: 'test', pending: 'test', done: false } } } };
+  return settleSideEvent(bridged, { kind: 'side', eventId: 'wudang_exam', nodeId: 'test', choiceId: 'test' }, won);
 }

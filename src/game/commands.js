@@ -10,8 +10,10 @@ import { restAtInn } from './vitals.js';
 
 export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS, ITEMS, RUMORS, ORIGINS, START_SKILLS, questReward, clamp, ability }) {
   const log = (s, text) => ({ ...s, log: [text, ...s.log].slice(0, 8) });
+  const immediate = (s, action, seconds) => tick({ ...advanceFate(s, seconds), idle:false, p0: s.p0 ? { ...s.p0, activity:null } : s.p0, action: { ...action, left:1, total:1 } });
+  const resume = s => s.action && s.action.type !== 'combat' ? immediate(s, s.action, s.action.left || 0) : s;
   return function reduce(input, command, now) {
-    if (command.type === 'LOAD') return p0Command(beginProgression(command.state, true), { type: 'RESUME' }, now);
+    if (command.type === 'LOAD') return resume(p0Command(beginProgression(command.state, true), { type: 'RESUME' }, now));
     if (command.type === 'RESET') return beginProgression(initial());
     if (command.type === 'CREATE') {
       const base = initial(), origin = ORIGINS.find(x => x.id === command.origin), skill = START_SKILLS.find(x => x.id === command.skill);
@@ -25,7 +27,7 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
         log: [`${name}踏入江湖。出身${origin.name}，家传「${skill.name}」。`, ...base.log] });
     }
     if (command.type === 'HEARTBEAT') return advanceFate(tick(p0Command(input, command, now)));
-    if (command.type === 'RESUME') return p0Command(input, command, now);
+    if (command.type === 'RESUME') return resume(p0Command(input, command, now));
     let s = settleActivity(input, now);
     const busy = !!s.action || !!s.battle;
     let n;
@@ -34,17 +36,20 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
       case 'MULTIPLIER': return log({ ...s, devMult: s.devMult === 10 ? 1 : 10 }, `管理员：战斗测试收益调整为 ×${s.devMult === 10 ? 1 : 10}。`);
       case 'TRAVEL': {
         if (busy || !LINKS[s.loc].includes(command.to)) return s;
-        n = log({ ...s, action: { type: 'travel', to: command.to, left: 10, total: 10 } }, `启程前往${ZONES[command.to].name}……`); break;
+        n = immediate(s, { type:'travel', to:command.to }, 10); break;
       }
       case 'QUEST': {
         if (busy || !ZONES[s.loc].quests[command.index] || s.done[s.loc]?.[command.index] || (command.index > 0 && !s.done[s.loc]?.[command.index - 1])) return s;
+        if (s.loc === 0 && command.index === 0) return p0Command(s, { type:'DISCOVER_EVENT', id:'jiangnan_letter' }, now);
         const q = ZONES[s.loc].quests[command.index], r = questReward(ZONES[s.loc], q.kind === 'main');
-        n = log({ ...s, action: { type: 'quest', zone: s.loc, idx: command.index, left: r.time, total: r.time } }, `着手「${q.name}」……`); break;
+        n = immediate(s, { type:'quest', zone:s.loc, idx:command.index }, r.time); break;
       }
       case 'ROUTINE': {
         const r = routinesForZone(ZONES[s.loc]).find(x => x.id === command.id);
         if (busy || !r) return s;
-        n = log({ ...s, action: { type: 'routine', zone: s.loc, id: r.id, left: r.time, total: r.time } }, `开始循环支线「${r.name}」……`); break;
+        if (r.id === 'errand') return p0Command(s, { type:'START_ACTIVITY', id:'errand' }, now);
+        if (r.id === 'practice') return p0Command(s, { type:'START_ACTIVITY', id:'basic', target:'fist' }, now);
+        n = immediate(s, { type:'routine', zone:s.loc, id:r.id }, r.time); break;
       }
       case 'COMBAT': n = startCombat({ ...s, loadout: command.config.loadout }, command.config); break;
       case 'RETREAT': n = levelUpLog(retreatCombat(s, settleStory), s); break;
@@ -73,7 +78,12 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
       }
       case 'REST': return busy ? s : restAtInn(s);
       case 'CLAIM_LEGACY': return claimIdleRewards(s);
-      default: return p0Command(s, command, now);
+      default: {
+        const next = p0Command(s, command, now);
+        const moved = command.type === 'MOVE_ROOM' && next.p0.room !== s.p0.room;
+        const chose = command.type === 'CHOOSE_EVENT' && next.p0.quests[command.id] !== s.p0.quests[command.id];
+        return moved || chose ? advanceFate(next, moved ? 1 : 2) : next;
+      }
     }
     if (n.p0 && (n.action || n.battle)) n = { ...n, idle: false, p0: { ...n.p0, activity: null } };
     return n;
