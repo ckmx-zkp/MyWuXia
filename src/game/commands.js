@@ -7,6 +7,7 @@ import { nextRandom } from './random.js';
 import { claimIdleRewards } from './training.js';
 import { initial } from './state.js';
 import { restAtInn } from './vitals.js';
+import { newSaveId } from './save-id.js';
 
 export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS, ITEMS, RUMORS, ORIGINS, START_SKILLS, questReward, clamp, ability }) {
   const log = (s, text) => ({ ...s, log: [text, ...s.log].slice(0, 8) });
@@ -14,13 +15,14 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
   const resume = s => s.action && s.action.type !== 'combat' ? immediate(s, s.action, s.action.left || 0) : s;
   return function reduce(input, command, now) {
     if (command.type === 'LOAD') return resume(p0Command(beginProgression(command.state, true), { type: 'RESUME' }, now));
-    if (command.type === 'RESET') return beginProgression(initial());
+    if (command.type === 'RESET') return beginProgression({ ...initial(), saveId: newSaveId() });
+    if (command.type === 'ENSURE_SAVE_ID') return input.saveId ? input : { ...input, saveId: newSaveId() };
     if (command.type === 'CREATE') {
       const base = initial(), origin = ORIGINS.find(x => x.id === command.origin), skill = START_SKILLS.find(x => x.id === command.skill);
       const alloc = command.alloc;
       if (!origin || !skill || !alloc || !['hp', 'ab', 'exp'].every(k => Number.isInteger(alloc[k]) && alloc[k] >= 0) || Object.values(alloc).reduce((a, b) => a + b, 0) > 5) return input;
       const name = (command.name || '').trim().slice(0, 40) || '沈孤鸿';
-      return beginProgression({ ...base, name, hp: clamp(base.hp + (origin.apply.hp || 0) + alloc.hp * 5 + (skill.hp || 0)),
+      return beginProgression({ ...base, saveId: newSaveId(), name, hp: clamp(base.hp + (origin.apply.hp || 0) + alloc.hp * 5 + (skill.hp || 0)),
         silver: base.silver + (origin.apply.silver || 0), expTotal: base.expTotal + (origin.apply.exp || 0) + alloc.exp * 15 + (skill.exp || 0),
         attrAb: (origin.apply.ab || 0) + alloc.ab * 2, bonusSkill: { name: skill.name, text: skill.text, bonus: skill.bonus || 0 },
         loadout: { ...base.loadout, style: skill.name }, rngState: command.seed || 1,

@@ -8,3 +8,5 @@ generated/
 *.meta.json
 Key.txt
 music/
+data/
+*.sqlite

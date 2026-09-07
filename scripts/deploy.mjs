@@ -46,6 +46,7 @@ trap - ERR
 echo "Release: $release; previous: $previous"
 `;
 run('ssh', ['-o', 'BatchMode=yes', host, 'bash', '-s', '--', release], { input: remote, stdio: ['pipe', 'inherit', 'inherit'] });
+deployApi(host);
 console.log(`已部署: http://47.108.114.17:8082/ （域名: http://wuxia.47.108.114.17.sslip.io:8082/ ）`);
 
 function sshConfigHosts() {
@@ -67,6 +68,28 @@ function sshReachable(alias) {
   } catch {
     return false;
   }
+}
+
+function deployApi(host) {
+  const files = ['index.mjs', 'db.mjs', 'keys.mjs', 'minimax.mjs', 'narrative.mjs'];
+  run('ssh', ['-o', 'BatchMode=yes', host, 'mkdir -p /srv/jianghu-api/server /srv/jianghu-api/src/game /srv/jianghu-api/data']);
+  run('scp', ['-o', 'BatchMode=yes', ...files.map(name => join('server', name)), `${host}:/srv/jianghu-api/server/`]);
+  run('scp', ['-o', 'BatchMode=yes', 'src/game/narrative-overlay.js', 'src/game/memory-doc.js', 'src/game/save-id.js', `${host}:/srv/jianghu-api/src/game/`]);
+  if (existsSync('Key.txt')) run('scp', ['-o', 'BatchMode=yes', 'Key.txt', `${host}:/srv/jianghu-api/Key.txt`]);
+  run('scp', ['-o', 'BatchMode=yes', 'scripts/patch-nginx-api.py', `${host}:/srv/jianghu-api/patch-nginx-api.py`]);
+  const start = `set -euo pipefail
+cd /srv/jianghu-api
+if [ -f api.pid ] && kill -0 "$(cat api.pid)" 2>/dev/null; then kill "$(cat api.pid)" || true; sleep 1; fi
+export JIANGHU_API_PORT=8083
+export JIANGHU_DB_PATH=/srv/jianghu-api/data/jianghu.sqlite
+export JIANGHU_KEY_PATH=/srv/jianghu-api/Key.txt
+nohup node server/index.mjs >/srv/jianghu-api/api.log 2>&1 &
+echo $! > api.pid
+sleep 1
+curl --fail --silent --show-error http://127.0.0.1:8083/api/health >/dev/null
+if [ -f /etc/nginx/conf.d/jianghu.conf ]; then python3 /srv/jianghu-api/patch-nginx-api.py /etc/nginx/conf.d/jianghu.conf; fi
+`;
+  run('ssh', ['-o', 'BatchMode=yes', host, 'bash', '-s'], { input: start, stdio: ['pipe', 'inherit', 'inherit'] });
 }
 
 function resolveDeployHost() {

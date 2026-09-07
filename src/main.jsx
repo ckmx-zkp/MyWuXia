@@ -26,6 +26,7 @@ import { ability, abilityParts } from './game/ability.js';
 import { vitalStats, needsInnRest } from './game/vitals.js';
 import FatePanel from './features/fates/FatePanel.jsx';
 import { routinesForZone, routineReward } from './content/routines.js';
+import { syncMemory } from './services/narrative-client.js';
 
 /* ================= 世界数据 ================= */
 
@@ -285,6 +286,14 @@ function App({ saved }) {
   const busy = !!s.action || !!s.battle || travelLoading;
 
   useEffect(() => { audio.onLine(setSpeakI); return () => audio.dispose(); }, [audio]);
+  useEffect(() => {
+    if (creating || s.saveId) return;
+    dispatch({ type: 'ENSURE_SAVE_ID' });
+  }, [creating, s.saveId]);
+  useEffect(() => {
+    if (creating || !s.saveId || !s.p0) return;
+    syncMemory(s);
+  }, [creating, s.saveId, s.name, s.p0?.sequence]);
   useEffect(() => {
     if (creating || savesOpen) return;
     const timer = browserPlatform.every(() => {

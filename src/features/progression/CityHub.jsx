@@ -1,11 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cityLeads, routeBetween, roomRoute } from '../../game/city-leads.js';
 import { ZONES } from '../../content/world.js';
 import { ROOMS } from '../../content/p0.js';
 import { currentRoom } from '../../game/p0-engine.js';
 import { sideChoiceReason, atEventNode } from '../../game/side-events.js';
 import { chooseDialogue, testCondition } from '../../game/world-rules.js';
+import { applyOverlay, factHash } from '../../game/narrative-overlay.js';
+import { requestNarrativeNode } from '../../services/narrative-client.js';
 import './progression.css';
+
+function usePersonalizedNode(state, eventId, nodeId, node, eventName) {
+  const [overlay, setOverlay] = useState(null);
+  const hash = factHash({ name: state.name, loc: state.loc, facts: state.p0?.facts, journal: state.p0?.journal });
+  useEffect(() => {
+    let live = true;
+    setOverlay(null);
+    requestNarrativeNode(state, eventId, nodeId, node, eventName).then(result => {
+      if (live) setOverlay(result.overlay);
+    });
+    return () => { live = false; };
+  }, [state.saveId, eventId, nodeId, hash, node, eventName]);
+  return { view: applyOverlay(node, overlay), personalized: !!overlay };
+}
+
+function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, destination, room }) {
+  const nodeId = progress?.node || event.start;
+  const { view, personalized } = usePersonalizedNode(s, id, nodeId, node, event.name);
+  const here = { ...s, p0: { ...s.p0, room } };
+  const lines = personalized ? view.dialogues : chooseDialogue(s, node);
+  return <section className="p0-event">
+    <h3>{event.name} · {progress ? '继续此事' : '新线索'}</h3>
+    {!atEventNode(here, node) ? <><p>{view.hearsay}</p>{destination(zone, node.room)}</> : !progress ? <><p>{view.hearsay}</p><button disabled={busy} onClick={() => dispatch({ type: 'DISCOVER_EVENT', id })}>问清此事</button></> : <>
+      <p>{view.scene}</p>{lines.map(([who, text], i) => <p key={i}><b>{who}：</b>{text}</p>)}
+      <div className="p0-choices">{view.choices.filter(c => testCondition(s, c.visibleWhen)).map(c => {
+        const reason = sideChoiceReason(here, id, c.id);
+        return <div key={c.id}><button disabled={!!reason} onClick={() => dispatch({ type: 'CHOOSE_EVENT', id, choice: c.id })}>{c.text}{c.combat && ' · 自动交手，败退可继续'}</button>{reason && <small>{reason}</small>}</div>;
+      })}</div><p className="p0-hearsay">{view.hearsay}</p>
+    </>}
+  </section>;
+}
 
 export default function CityHub({ state:s, dispatch, onStory, onQuest, onTravel, onLegacy, onFate, onRoutine }) {
   const { stories, events, intro, completed } = cityLeads(s), busy = !!s.action || !!s.battle;
@@ -24,16 +57,9 @@ export default function CityHub({ state:s, dispatch, onStory, onQuest, onTravel,
     <p>{completed === 4 ? '当地初识的四桩事已了，人物旧事、来往差事与后续机缘仍可继续。' : '从眼前的事结识当地人，也可随时追寻人物旧事。'} 当前位置：{ZONES[s.loc].name}{ROOMS[room] ? ` · ${ROOMS[room].name}` : ''}。</p>
     {ROOMS[room] && <div className="p0-exits">{ROOMS[room].exits.map(id => <button key={id} disabled={busy} onClick={() => dispatch({type:'MOVE_ROOM',id})}>{ROOMS[id].name}</button>)}</div>}
     {intro >= 0 && !(s.loc === 0 && intro === 0) && <div className="p0-row"><div><b>初识当地 · {ZONES[s.loc].quests[intro].name}</b><small>{ZONES[s.loc].quests[intro].text}</small></div><button disabled={busy} onClick={() => onQuest(intro)}>循线问询</button></div>}
-    {events.filter(e => e.zone === s.loc || e.progress).map(({id,event,progress,node,zone}) => <section className="p0-event" key={id}>
-      <h3>{event.name} · {progress ? '继续此事' : '新线索'}</h3>
-      {!atEventNode({...s,p0:{...s.p0,room}},node) ? <><p>{node.hearsay}</p>{destination(zone,node.room)}</> : !progress ? <><p>{node.hearsay}</p><button disabled={busy} onClick={() => dispatch({type:'DISCOVER_EVENT',id})}>问清此事</button></> : <>
-        <p>{node.scene}</p>{chooseDialogue(s,node).map(([who,text],i) => <p key={i}><b>{who}：</b>{text}</p>)}
-        <div className="p0-choices">{node.choices.filter(c => testCondition(s,c.visibleWhen)).map(c => {
-          const reason = sideChoiceReason({...s,p0:{...s.p0,room}},id,c.id);
-          return <div key={c.id}><button disabled={!!reason} onClick={() => dispatch({type:'CHOOSE_EVENT',id,choice:c.id})}>{c.text}{c.combat && ' · 自动交手，败退可继续'}</button>{reason && <small>{reason}</small>}</div>;
-        })}</div><p className="p0-hearsay">{node.hearsay}</p>
-      </>}
-    </section>)}
+    {events.filter(e => e.zone === s.loc || e.progress).map(({id,event,progress,node,zone}) => (
+      <SideEventCard key={id} s={s} id={id} event={event} progress={progress} node={node} zone={zone} busy={busy} dispatch={dispatch} destination={destination} room={room} />
+    ))}
     {s.p0.journal.length > 0 && <p className="p0-echo" role="status">近事：{s.p0.journal.at(-1).text}</p>}
     <details className="city-stories"><summary>人物与江湖主线 · 本区 {stories.filter(t => t.zone === s.loc).length} 条可继续</summary>
     {stories.filter(t => t.zone === s.loc).map(t => <div className="p0-row" key={t.id}><div><b>{t.where} · {t.name}</b><small>{t.speaker}：{t.text}</small><small>{t.count ? `已走过 ${t.count}/${t.total} 段，继续后事` : '可独立介入，不必先清完四项历练'}</small></div><button disabled={busy} onClick={() => onStory(t.index,t.count)}>继续探访</button></div>)}

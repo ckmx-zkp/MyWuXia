@@ -5,6 +5,17 @@ import { startCombat } from './combat.js';
 import { SAVE_KEY, SLOT_KEYS, encodeSave, migrateSave, writeSave, readSave, clearAutoSave } from './saves.js';
 const memory = () => { const data = new Map(); return { getItem: k => data.get(k) ?? null, setItem: (k, v) => data.set(k, v), removeItem: k => data.delete(k) }; };
 
+test('save identifiers persist across migrate and are assigned on create', async () => {
+  const { createGameReducer } = await import('./commands.js');
+  const { ZONES } = await import('../content/world.js');
+  const { LINKS } = await import('../content/city-leads.js');
+  const { START_SKILLS } = await import('../content/martial.js');
+  const reduce = createGameReducer({ tick: s => s, settleStory: s => s, levelUpLog: n => n, ZONES, LINKS, ORIGINS: [{ id: 'hunter', name: '猎户之子', apply: { hp: 0 } }], START_SKILLS, questReward: () => ({ time: 1, silver: 1, exp: 1 }), clamp: x => x, ability: () => 1 });
+  const created = reduce(initial(), { type: 'CREATE', name: '沈孤鸿', origin: 'hunter', skill: 'taizu', alloc: { hp: 0, ab: 0, exp: 0 }, seed: 1 });
+  assert.match(created.saveId, /^[0-9a-f-]{36}$/i);
+  assert.equal(migrateSave(encodeSave(created)).saveId, created.saveId);
+  assert.equal(migrateSave(encodeSave(initial())).saveId, undefined);
+});
 test('legacy saves migrate nested defaults and independent mute switches', () => {
   const legacy = { ...initial(), mute: true, muteBgm: false, items: null, flag: undefined, loadout: undefined };
   delete legacy.muteVoice; delete legacy.muteSfx;

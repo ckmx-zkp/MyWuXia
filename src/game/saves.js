@@ -5,6 +5,7 @@ import { FATES } from '../content/fates.js';
 import { QUEST_INDEX } from '../content/quest-index.js';
 import { validateProgression } from './p0-save.js';
 import { ACTIVITIES, ROOMS } from '../content/p0.js';
+import { isSaveId } from './save-id.js';
 
 export const SAVE_KEY = 'jianghu-save-v1';
 export const SAVE_VERSION = 7;
@@ -76,6 +77,7 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
   if (Array.isArray(input.visited)) state.visited = [...new Set(input.visited.filter(v => Number.isInteger(v) && v >= 0 && v < 13))];
   if (!state.visited.includes(state.loc)) state.visited.push(state.loc);
   if (finite(input.rngState, 1, 4294967295) && Number.isInteger(input.rngState)) state.rngState = input.rngState;
+  if (isSaveId(input.saveId)) state.saveId = input.saveId;
   if (input.p0 !== undefined) state.p0 = validateProgression(input.p0);
   state.loadout = normalizeLoadout(state, input.loadout || {});
   if (input.battle) {
