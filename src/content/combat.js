@@ -1,4 +1,5 @@
 import { SKILLS, START_SKILLS } from './martial.js';
+import { internalId } from '../game/training.js';
 
 // 招名用于战斗演绎；未解锁的武学不能配入战斗。
 const forms = {
@@ -89,5 +90,6 @@ export function normalizeLoadout(state, input = state.loadout || {}) {
     strategy: STRATEGIES[input.strategy] ? input.strategy : 'balanced',
     breath: BREATHS[input.breath] ? input.breath : 'flowing',
     footwork: FOOTWORK[input.footwork] ? input.footwork : 'light',
+    internal: internalId(state, input.internal),
   };
 }

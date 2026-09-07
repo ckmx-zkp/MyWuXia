@@ -6,9 +6,11 @@ export default function SavePanel({ snapshot, options, onLoad, onClose, notice }
   const [revision, setRevision] = useState(0);
   const file = useRef(null);
   const [pending, setPending] = useState(null);
-  const run = task => { try { task(); setRevision(n => n + 1); } catch (error) { setMessage(`未完成：${error.message}`); } };
+  const [working, setWorking] = useState(false);
+  const workingRef = useRef(false);
+  const run = async task => { if (workingRef.current) return; workingRef.current = true; setWorking(true); try { await task(); setRevision(n => n + 1); } catch (error) { setMessage(`未完成：${error.message}`); } finally { workingRef.current = false; setWorking(false); } };
   const save = key => run(() => { writeSave(localStorage, snapshot(), key, options); setMessage('已保存。'); setPending(null); });
-  const restore = key => run(() => { const result = readSave(localStorage, key, options); if (!result) throw new Error('此槽位没有存档。'); onLoad(result.state); });
+  const restore = key => run(async () => { const result = readSave(localStorage, key, options); if (!result) throw new Error('此槽位没有存档。'); await onLoad(result.state); });
   const inspect = key => { try { return readSave(localStorage, key, options); } catch { return { invalid: true }; } };
   const exportFile = () => run(() => {
     const url = URL.createObjectURL(new Blob([encodeSave(snapshot())], { type: 'application/json' }));
@@ -27,7 +29,9 @@ export default function SavePanel({ snapshot, options, onLoad, onClose, notice }
     } catch (error) { setMessage(`导入失败：${error.message}`); }
   };
   return <div className="story-mask save-mask"><section className="save-panel" role="dialog" aria-modal="true" aria-labelledby="save-title">
-    <div className="combat-heading"><h2 id="save-title">江湖存档</h2><button onClick={onClose} aria-label="关闭存档">✕</button></div>
+    <div className="combat-heading"><h2 id="save-title">江湖存档</h2><button disabled={working} onClick={onClose} aria-label="关闭存档">✕</button></div>
+    {working && <p role="status">正在整理行囊与地域记事……</p>}
+    <fieldset disabled={working} className="save-fields">
     <p className="save-status" role="status">{message}</p>
     <p>整理存档期间暂停计时。读档前会把当前角色写入自动存档；手动槽位不会被重开清除。</p>
     {[SAVE_KEY, ...SLOT_KEYS].map((key, i) => {
@@ -38,5 +42,6 @@ export default function SavePanel({ snapshot, options, onLoad, onClose, notice }
     {pending && <div className="combat-result"><p>{pending.type === 'save' ? '覆盖此槽位？原存档将保留一份备用。' : '确认读取？当前进度会先写入自动存档。'}</p><div className="save-buttons"><button onClick={() => setPending(null)}>取消</button><button onClick={() => pending.type === 'save' ? save(pending.key) : pending.type === 'load' ? restore(pending.key) : run(() => onLoad(pending.state))}>确认</button></div></div>}
     <div className="combat-actions"><button onClick={exportFile}>导出存档</button><button onClick={() => file.current.click()}>导入存档</button></div>
     <input ref={file} type="file" accept=".json,application/json" hidden onChange={importFile} />
+    </fieldset>
   </section></div>;
 }

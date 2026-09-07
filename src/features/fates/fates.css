@@ -1,0 +1,13 @@
+.fate-section { min-width: 0; overflow-wrap: anywhere; letter-spacing: 0; }
+.fate-section h2 { font-size: 26px; margin: 10px 0; }
+.fate-section p { line-height: 1.8; }
+.fate-section .choices { display: grid; gap: 10px; }
+.fate-section .choices button { white-space: normal; overflow-wrap: anywhere; text-align: left; }
+.fate-section details { margin-top: 20px; border-top: 1px solid #87683f85; padding-top: 14px; }
+.fate-section summary { cursor: pointer; }
+.save-fields { border: 0; margin: 0; padding: 0; min-width: 0; }
+.boot-screen { min-height: 100dvh; display: grid; align-content: center; justify-items: center; padding: 24px; background: url('/art/jianghu-rain-bg.webp') center/cover; }
+.boot-screen h1 { font-size: 36px; }
+.boot-screen p { padding: 12px; background: #07100de8; }
+.idle .claim { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .fate-section h2 { font-size: 22px; } }

@@ -1,5 +1,6 @@
 import { STYLES, STRATEGIES, BREATHS, FOOTWORK, OPPONENTS, normalizeLoadout } from '../content/combat.js';
 import { nextRandom } from './random.js';
+import { pairing, earnTraining } from './training.js';
 
 export const MAX_ROUNDS = 60;
 function draw(battle) {
@@ -29,6 +30,13 @@ export function startCombat(state, { opponent = 'student', danger = 20, place = 
     enemy: fighter(enemy.name, enemyLevel, 100, { style: enemy.style, strategy: enemy.strategy, breath: enemy.breath, footwork: enemy.footwork }),
     log: [`${state.name}在${place}站定，与${enemy.name}遥遥相对。`, '双方依照武学配置自行出招，内力不济时会自动调息。'],
   };
+  const bonuses = pairing(state, loadout);
+  battle.player.attack *= bonuses.damage;
+  battle.player.recoveryBonus = bonuses.recovery;
+  battle.player.armorBonus = bonuses.armor;
+  battle.player.maxMp = Math.round(battle.player.maxMp * (1 + (bonuses.innerLevel - 1) * 0.05));
+  battle.player.mp = battle.player.maxMp;
+  battle.log.push(`主修${loadout.style} ${bonuses.styleLevel}重，${bonuses.inner.name} ${bonuses.innerLevel}重，${bonuses.compatible ? '招气相合' : '各循其法'}。`);
   return { ...state, rngState: random.seed, loadout, battle, action: { type: 'combat' }, fx: null };
 }
 function strike(battle, actor, target, isEnemy) {
@@ -38,7 +46,7 @@ function strike(battle, actor, target, isEnemy) {
   const cost = Math.round(actor.maxMp * (actor.loadout.strategy === 'aggressive' ? 0.26 : 0.2));
   actor.cooldown = Math.max(0, actor.cooldown - 1);
   if (actor.mp < actor.maxMp * plan.threshold || (actor.cooldown === 0 && actor.mp < cost)) {
-    const gained = Math.min(actor.maxMp - actor.mp, Math.ceil(actor.maxMp * breath.recovery));
+    const gained = Math.min(actor.maxMp - actor.mp, Math.ceil(actor.maxMp * (breath.recovery + (actor.recoveryBonus || 0))));
     actor.mp += gained;
     battle.log.push(`${actor.name}收势凝神，运起「${breath.name}」，内力恢复 ${gained}。`);
     return;
@@ -56,7 +64,7 @@ function strike(battle, actor, target, isEnemy) {
     return;
   }
   const parried = roll < dodge + Math.max(0, STYLES[target.loadout.style].parry + defense.guard);
-  const armor = Math.min(0.5, BREATHS[target.loadout.breath].armor + foot.armor);
+  const armor = Math.min(0.5, BREATHS[target.loadout.breath].armor + foot.armor + (target.armorBonus || 0));
   const damage = Math.max(1, Math.round(actor.attack * (special ? style.power * 1.5 : 0.8) * plan.damage
     * (0.85 + draw(battle) * 0.3) * (1 - armor) * (parried ? 0.45 : 1)));
   target.hp = Math.max(0, target.hp - damage);
@@ -91,6 +99,7 @@ export function finishCombat(state, battle, settleStory) {
     battle: { ...battle, settled: true, result: `${label}。${exp ? `历练 +${exp}。` : ''}${battle.context ? '这场交手的余波已记入江湖。' : won ? '教头抱拳，点到为止。' : '切磋不伤性命，歇息后仍可再来。'}` },
     fx: won ? 'quest' : 'click', log: [`在${battle.place}与${battle.enemy.name}交手，${label}${exp ? `，历练 +${exp}` : ''}。`, ...state.log].slice(0, 8) };
   if (battle.context && settleStory) next = settleStory(next, battle.context, won);
+  if (!retreat) next = earnTraining(next, (won ? 12 : 6) * battle.rewardMult, battle.player.loadout.style, battle.player.loadout.internal || 'basic');
   return next;
 }
 export function advanceCombat(state, settleStory) {

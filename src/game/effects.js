@@ -11,5 +11,6 @@ export function applyEff(n, e = {}) {
   if (e.letters) n.letters = [...(n.letters || []), ...e.letters];
   if (e.flag) n.flag = { ...n.flag, ...e.flag };
   if (e.npcStates) n.npcStates = { ...n.npcStates, ...e.npcStates };
+  if (e.factionRelations) n.factionRelations = { ...n.factionRelations, ...e.factionRelations };
   return n;
 }

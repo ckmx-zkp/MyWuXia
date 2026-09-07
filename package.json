@@ -4,19 +4,21 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run content:validate && vite build",
+    "content:index": "node scripts/sync-quest-index.mjs",
+    "content:validate": "node scripts/sync-quest-index.mjs --check && node scripts/validate-content.mjs",
     "audio:bgm": "node scripts/generate-bgm.mjs",
     "audio:bgm:dry": "node scripts/generate-bgm.mjs --dry-run",
     "audio:voice": "node scripts/generate-voice.mjs",
     "audio:voice:dry": "node scripts/generate-voice.mjs --dry-run",
     "art:optimize": "python scripts/optimize-art.py",
     "deploy": "bash scripts/deploy.sh",
-    "test": "node --test --test-isolation=none src/game/*.test.js"
+    "test": "node --import ./scripts/test-content.mjs --test --test-isolation=none src/game/*.test.js"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "vite": "latest"
+    "@vitejs/plugin-react": "6.1.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "vite": "8.2.2"
   }
 }

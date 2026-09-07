@@ -27,7 +27,10 @@ export function createEncounterSettlement({ ZONES, treeKey, applyEff, resolveQue
     next.questChoices = { ...next.questChoices, [key]: { ...next.questChoices[key], [ni]: { choice: ci, success } } };
     next.flag = { ...next.flag, [`${key}:${ni}`]: success ? 'success' : 'soft-failure' };
     const last = ni === tree.nodes.length - 1;
-    if (last) next = applyEff(next, tree.reward);
+    if (last) {
+      next = applyEff(next, tree.reward);
+      next.flag = { ...next.flag, [`${key}:complete`]: true };
+    }
     const aftermath = effect.text + (last ? `\n\n${tree.reward.text}` : '') + (node.hearsay ? `\n\n江湖传闻：${node.hearsay}` : '');
     if (s.battle?.context) next.battle = { ...next.battle, result: `${next.battle.result}\n\n${aftermath}` };
     next.log = [`【${tree.name}】${node.name}，${success ? '事成' : '受挫脱身，后事仍待你行走'}。`, ...next.log].slice(0, 8);

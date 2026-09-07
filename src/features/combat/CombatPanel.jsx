@@ -1,14 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { availableStyles, normalizeLoadout, STYLES, OPPONENTS, STRATEGIES, BREATHS, FOOTWORK } from '../../content/combat.js';
 import './combat.css';
+import { availableInternals, pairing, mastery } from '../../game/training.js';
 
 export function LoadoutEditor({ state, value, onChange, disabled = false }) {
   const config = normalizeLoadout(state, value);
+  const pair = pairing(state, config);
   const change = (key, val) => onChange({ ...config, [key]: val });
   return <div className="loadout-editor">
     <label>主修武学<select disabled={disabled} value={config.style} onChange={e => change('style', e.target.value)}>
-      {availableStyles(state).map(name => <option key={name}>{name}</option>)}
+      {availableStyles(state).map(name => <option key={name} value={name}>{name} · {mastery(state.training?.styles?.[name])}重</option>)}
     </select><small>{STYLES[config.style].moves.join(' · ')}；强招每隔两次行动自动施展。</small></label>
+    <label>主修内功<select disabled={disabled} value={config.internal} onChange={e => change('internal', e.target.value)}>
+      {availableInternals(state).map(([id, item]) => <option key={id} value={id}>{item.name} · {mastery(state.training?.internals?.[id])}重</option>)}
+    </select><small>{pair.inner.text} {pair.compatible ? '招气相合' : '各循其法'} · 招式威力 +{Math.round((pair.damage - 1) * 100)}% · 调息 +{Math.round(pair.recovery * 100)}% · 护体 +{Math.round(pair.armor * 100)}%</small></label>
     {[[STRATEGIES, 'strategy', '出招策略'], [BREATHS, 'breath', '运功方式'], [FOOTWORK, 'footwork', '身法']].map(([list, key, title]) => <label key={key}>{title}
       <select disabled={disabled} value={config[key]} onChange={e => change(key, e.target.value)}>{Object.entries(list).map(([id, item]) => <option value={id} key={id}>{item.name}</option>)}</select>
       <small>{list[config[key]].text}</small>

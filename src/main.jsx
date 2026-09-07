@@ -1,7 +1,7 @@
 import { createWorldEngine } from './game/world-engine.js';
 import { saveOptions } from './game/save-schema.js';
 import { ZONES } from './content/world.js';
-import { QUEST_COMBATS, OPPONENTS } from './content/combat.js';
+import { QUEST_COMBATS, OPPONENTS, STYLES } from './content/combat.js';
 import CombatPanel, { LoadoutEditor } from './features/combat/CombatPanel.jsx';
 import SavePanel from './features/saves/SavePanel.jsx';
 import { startCombat, retreatCombat } from './game/combat.js';
@@ -13,6 +13,10 @@ import { createRoot } from 'react-dom/client';
 import './style.css';
 import { createIdleRuntime } from './game/idle-runtime.js';
 import { canResolveChoice } from './game/quest-guards.js';
+import { loadZoneQuests, prepareCharacter } from './content/quest-loader.js';
+import { mastery, masteryTarget, availableInternals, claimIdleRewards } from './game/training.js';
+import { advanceFate, resolveFateChoice } from './game/fate-engine.js';
+import FatePanel from './features/fates/FatePanel.jsx';
 
 /* ================= 音效（复用 Audio，避免每次点击新建） ================= */
 const SOUND = { click: '/audio/wood-pluck.wav', quest: '/audio/quest-complete.wav', bell: '/audio/breath-bell.wav' };
@@ -347,8 +351,7 @@ function levelUpLog(n, s) {
 /* 剧情效果统一结算（docs/gdd/07 判定与回响模块） */
 const { tick, settleStory } = createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FAC, FAC_DEFAULT, levelUpLog });
 
-function App() {
-  const [saved] = useState(load);
+function App({ saved }) {
   const [s, commitState] = useState(() => saved.state || initial());
   const runtimeRef = useRef(null);
   if (!runtimeRef.current) runtimeRef.current = createIdleRuntime(levelUpLog, lv);
@@ -363,6 +366,8 @@ function App() {
   const [combatSetup, setCombatSetup] = useState(null);
   const [savesOpen, setSavesOpen] = useState(false);
   const [saveNotice, setSaveNotice] = useState(saved.notice);
+  const [travelLoading, setTravelLoading] = useState(false);
+  const travelRequest = useRef(0);
   const [tab, setTab] = useState('武学');
   const [side, setSide] = useState('江湖');
   const [story, setStory] = useState(null);   // { zone, ti, ni }
@@ -381,13 +386,13 @@ function App() {
   const inner = Math.round(80 + level * 18 + ab * 3);
   const fac = FAC[s.loc] || FAC_DEFAULT;
   const doneArr = s.done[s.loc] || [];
-  const busy = !!s.action;
+  const busy = !!s.action || travelLoading;
 
   useEffect(() => { voiceLineCb = setSpeakI; return () => { voiceLineCb = null; }; }, []);
   useEffect(() => {
     if (creating || savesOpen) return;
     const timer = setInterval(() => {
-      const next = tick(runtime.advance(sRef.current));
+      const next = advanceFate(tick(runtime.advance(sRef.current)));
       sRef.current = next;
       commitState(next);
     }, 1000);
@@ -398,19 +403,24 @@ function App() {
     const persist = () => {
       try { writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions); } catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
     };
-    if (s.action || s.battle || savesOpen) persist();
-    const timer = setTimeout(persist, 2500);
+    persist();
+    const timer = setInterval(persist, 2500);
     const onVis = () => { if (document.hidden) persist(); };
     window.addEventListener('beforeunload', persist);
     window.addEventListener('pagehide', persist);
     document.addEventListener('visibilitychange', onVis);
     return () => {
-      clearTimeout(timer);
+      clearInterval(timer);
       window.removeEventListener('beforeunload', persist);
       window.removeEventListener('pagehide', persist);
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, [s, creating, savesOpen, runtime]);
+  }, [creating, savesOpen, runtime]);
+  useEffect(() => {
+    if (creating || (!s.action && !s.battle)) return;
+    try { writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions); }
+    catch (error) { setSaveNotice(`自动存档失败：${error.message}`); }
+  }, [s.action, s.battle, creating, runtime]);
   useEffect(() => { if (s.fx) play(SOUND[s.fx], s.muteSfx); }, [s.fx, s.muteSfx]);
   useEffect(() => { bgmSwitch(s.loc, s.muteBgm); }, [s.loc, s.muteBgm]);
   useEffect(() => { if (s.muteVoice) stopVoice(); }, [s.muteVoice]);
@@ -418,14 +428,21 @@ function App() {
 
   const click = () => { play(SOUND.click, s.muteSfx); bgmSwitch(s.loc, s.muteBgm); };
   const toggleAudio = key => setS(v => ({ ...v, [key]: !v[key] }));
-  const go = i => {
+  const go = async i => {
     click();
     if (busy || i === s.loc) return;
     if (!LINKS[s.loc].includes(i)) {
       setS(v => ({ ...v, log: [`道路不通：${ZONES[v.loc].name}与${ZONES[i].name}并不相邻，需经邻区辗转。`, ...v.log].slice(0, 8) }));
       return;
     }
-    setS(v => ({ ...v, action: { type: 'travel', to: i, left: 10, total: 10 }, log: [`启程前往${ZONES[i].name}……`, ...v.log].slice(0, 8) }));
+    const request = ++travelRequest.current;
+    setTravelLoading(true);
+    try {
+      await loadZoneQuests(i);
+      if (request !== travelRequest.current || sRef.current.action) return;
+      setS(v => ({ ...v, action: { type: 'travel', to: i, left: 10, total: 10 }, log: [`启程前往${ZONES[i].name}……`, ...v.log].slice(0, 8) }));
+    } catch (error) { setSaveNotice(`地域记事读取失败：${error.message}，可再次启程重试。`); }
+    finally { if (request === travelRequest.current) setTravelLoading(false); }
   };
   const startQuest = i => {
     if (busy) return;
@@ -446,7 +463,9 @@ function App() {
     setS(v => startCombat({ ...v, loadout: config.loadout }, config));
     setCombatSetup(null); setStory(null); setOutcome(null); stopVoice();
   };
-  const loadCharacter = state => {
+  const loadCharacter = async state => {
+    await prepareCharacter(state);
+    travelRequest.current++; setTravelLoading(false);
     if (!creating) writeSave(localStorage, runtime.snapshot(sRef.current), SAVE_KEY, saveOptions);
     writeSave(localStorage, state, SAVE_KEY, saveOptions);
     runtime.clear(); stopVoice(); setS(state);
@@ -479,7 +498,7 @@ function App() {
     play(SOUND.bell, s.muteSfx);
     setS(v => ({ ...v, silver: v.silver - 5, hp: clamp(v.hp + 30), log: ['在客栈歇息半日，气血大复（银两 -5）。', ...v.log].slice(0, 8) }));
   };
-  const claimIdle = () => { click(); const m = s.devMult || 1; setS(v => ({ ...v, silver: v.silver + 5 * m, log: [`领取挂机收益：银两 +${5 * m}。`, ...v.log].slice(0, 8) })); };
+  const claimIdle = () => { click(); setS(claimIdleRewards); };
   /* 剧情节点：打开场景弹窗 */
   const openStory = (ti, ni) => {
     click();
@@ -513,6 +532,7 @@ function App() {
     try { clearAutoSave(localStorage); } catch (error) { setSaveNotice(`重开失败：${error.message}`); return; }
     stopVoice();
     runtime.clear();
+    travelRequest.current++; setTravelLoading(false);
     setCombatSetup(null); setSavesOpen(false);
     setS(initial());
     setStory(null); setOutcome(null); setQuestCard(null); setPanel(null);
@@ -533,7 +553,7 @@ function App() {
       expTotal: base.expTotal + (o.apply.exp || 0) + alloc.exp * 15 + (sk.exp || 0),
       attrAb: (o.apply.ab || 0) + alloc.ab * 2,
       bonusSkill: { name: sk.name, text: sk.text, bonus: sk.bonus || 0 },
-      loadout: { style: sk.name, strategy: 'balanced', breath: 'flowing', footwork: 'light' },
+      loadout: { style: sk.name, strategy: 'balanced', breath: 'flowing', footwork: 'light', internal: 'basic' },
       rngState: crypto.getRandomValues(new Uint32Array(1))[0] || 1,
       log: [`${name}踏入江湖。出身${o.name}，家传「${sk.name}」。`, ...base.log],
     });
@@ -559,7 +579,7 @@ function App() {
     <div className="layout">
       {/* 左栏：主导航；舆图在游历状态展开 */}
       <aside className="map-col">
-        <nav className="primary-nav">{[['江湖','♟'],['行囊','♜'],['武学','▥'],['门派','⌂'],['游历','⌁']].map(([name,icon]) => <button key={name} className={side === name ? 'on' : ''} onClick={() => { click(); setHeroOpen(false); setSide(name); }}><i>{icon}</i><b>{name}</b></button>)}
+        <nav className="primary-nav">{[['江湖','♟'],['行囊','♜'],['武学','▥'],['门派','⌂'],['游历','⌁'],['命运','◇']].map(([name,icon]) => <button key={name} className={side === name ? 'on' : ''} onClick={() => { click(); setHeroOpen(false); setSide(name); }}><i>{icon}</i><b>{name}</b></button>)}
           <button type="button" className={`nav-hero${heroOpen ? ' on' : ''}`} onClick={() => { click(); setHeroOpen(v => !v); }}><i>☯</i><b>属性</b></button>
         </nav>
         <div className="world"><h3>天下大势</h3><p>{WORLD_INTRO}</p></div>
@@ -588,23 +608,25 @@ function App() {
                 </button>;
               })}
             </div>
-          </> : side === '武学' ? <>
+          </> : side === '命运' ? <FatePanel state={s} onChoose={(node, choice) => setS(v => resolveFateChoice(v, node, choice))} /> : side === '武学' ? <>
             <div className="chapter">
               <small>{s.name} · 等级 {level} · {grade(level)}</small>
               <h1>武学</h1>
-              <p>武学随等级自行领悟，各加能力。当前能力 {ab}。</p>
+              <p>当前能力 {ab} · 主修 {s.loadout.style} {mastery(s.training.styles[s.loadout.style])}重</p>
             </div>
             <LoadoutEditor state={s} value={s.loadout} disabled={busy} onChange={loadout => setS(v => ({ ...v, loadout }))} />
             <div className="page-list">
-              {s.bonusSkill && <div className="page-item on"><b>{s.bonusSkill.name}</b><em>家传{s.bonusSkill.bonus ? ` · 能力 +${s.bonusSkill.bonus}` : ''}</em><small>{s.bonusSkill.text}</small></div>}
-              {SKILLS.map(k => {
+              {s.bonusSkill && <div className="page-item on"><b>{s.bonusSkill.name}</b><em>家传 · {mastery(s.training.styles[s.bonusSkill.name])}重</em><small>心得 {s.training.styles[s.bonusSkill.name] || 0} / {masteryTarget(s.training.styles[s.bonusSkill.name]) || '圆满'}</small></div>}
+              {SKILLS.filter(k => STYLES[k.name]).map(k => {
                 const on = level >= k.lv;
                 return <div key={k.name} className={`page-item ${on ? 'on' : ''}`}>
-                  <b>{k.name}</b><em>{on ? `能力 +${k.bonus}` : `${k.lv} 级可悟`}</em>
+                  <b>{k.name}</b><em>{on ? `${mastery(s.training.styles[k.name])}重 · 能力 +${k.bonus}` : `${k.lv} 级可悟`}</em>
                   <small>{on ? k.text : '……'}</small>
+                  {on && <small>心得 {s.training.styles[k.name] || 0} / {masteryTarget(s.training.styles[k.name]) || '圆满'}</small>}
                 </div>;
               })}
             </div>
+            <h2>内功修为</h2><div className="page-list">{availableInternals(s).map(([id, item]) => <div className="page-item on" key={id}><b>{item.name}</b><em>{mastery(s.training.internals[id])}重</em><small>{item.text}</small><small>心得 {s.training.internals[id] || 0} / {masteryTarget(s.training.internals[id]) || '圆满'}</small></div>)}</div>
           </> : side === '行囊' ? <>
             <div className="chapter">
               <small>随身之物 · 银两 {s.silver}</small>
@@ -717,7 +739,7 @@ function App() {
           <b>挂机修行</b>
           <i><em style={{ width: `${s.expTotal % 100}%` }} /></i>
           <button onClick={() => { click(); setS(v => ({ ...v, idle: !v.idle })); }}>{s.idle ? '暂停' : '继续'}</button>
-          <button className="claim" onClick={claimIdle}>领取收益</button>
+          <button className="claim" disabled={!s.idleBank.silver} onClick={claimIdle}>领取银两 {s.idleBank.silver}</button>
           <button className="rest" disabled={s.silver < 5 || s.hp >= 100} onClick={rest}>客栈歇息<br />银两 -5</button>
         </div>
       </section>
@@ -909,4 +931,15 @@ function App() {
   </main>;
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+function Boot() {
+  const [saved, setSaved] = useState(null);
+  const [error, setError] = useState('');
+  const boot = async () => {
+    setError('');
+    try { const result = load(); await prepareCharacter(result.state || initial()); setSaved(result); }
+    catch (e) { setError(`地域记事读取失败：${e.message}`); }
+  };
+  useEffect(() => { boot(); }, []);
+  return saved ? <App saved={saved} /> : <main className="boot-screen"><h1>江湖长夜</h1><p role="status">{error || '正在展开地域记事……'}</p>{error && <button onClick={boot}>重试</button>}</main>;
+}
+createRoot(document.getElementById('root')).render(<Boot />);

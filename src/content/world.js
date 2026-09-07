@@ -1,11 +1,6 @@
-import treeYZ01 from "./quests/YZ-01.js";
-import treeFZ01 from "./quests/FZ-01.js";
-import treeJX01 from "./quests/JX-01.js";
-import treeSZ01 from "./quests/SZ-01.js";
-import treeHZ01 from "./quests/HZ-01.js";
-import treeWX01 from "./quests/WX-01.js";
-import treeDL01 from "./quests/DL-01.js";
-import treeDL02 from "./quests/DL-02.js";
+import { QUEST_INDEX } from './quest-index.js';
+const [treeYZ01, treeFZ01, treeJX01, treeSZ01, treeHZ01, treeWX01, treeDL01, treeDL02] =
+  ['YZ-01', 'FZ-01', 'JX-01', 'SZ-01', 'HZ-01', 'WX-01', 'DL-01', 'DL-02'].map(id => QUEST_INDEX[id]);
 
 export const ZONES = [
   {

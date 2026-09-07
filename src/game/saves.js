@@ -1,8 +1,11 @@
 import { initial } from './state.js';
 import { STYLES, STRATEGIES, BREATHS, FOOTWORK, OPPONENTS, normalizeLoadout } from '../content/combat.js';
+import { INTERNALS } from './training.js';
+import { FATES } from '../content/fates.js';
+import { QUEST_INDEX } from '../content/quest-index.js';
 
 export const SAVE_KEY = 'jianghu-save-v1';
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const SLOT_KEYS = [1, 2, 3].map(n => `jianghu-slot-${n}`);
 const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
 const finite = (x, min = 0, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -12,7 +15,9 @@ const record = (input, check) => object(input) ? Object.fromEntries(Object.entri
 function validFighter(f) {
   return object(f) && text(f.name) && ['hp', 'mp', 'attack', 'speed', 'cooldown', 'moveIndex', 'level'].every(k => finite(f[k]))
     && finite(f.maxHp, 1) && finite(f.maxMp, 1) && f.hp <= f.maxHp && f.mp <= f.maxMp
-    && STYLES[f.loadout?.style] && STRATEGIES[f.loadout?.strategy] && BREATHS[f.loadout?.breath] && FOOTWORK[f.loadout?.footwork];
+    && STYLES[f.loadout?.style] && STRATEGIES[f.loadout?.strategy] && BREATHS[f.loadout?.breath] && FOOTWORK[f.loadout?.footwork]
+    && (f.loadout.internal === undefined || Object.hasOwn(INTERNALS, f.loadout.internal))
+    && ['recoveryBonus', 'armorBonus'].every(k => f[k] === undefined || finite(f[k], 0, 1));
 }
 function validBattle(b, validateContext) {
   return object(b) && b.version === 1 && OPPONENTS[b.opponent] && validFighter(b.player) && validFighter(b.enemy)
@@ -26,7 +31,7 @@ function validBattle(b, validateContext) {
 export function migrateSave(raw, { validateContext, validateTree } = {}) {
   const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   if (!object(parsed)) throw new Error('存档内容不是有效对象。');
-  if (parsed.version !== undefined && parsed.version !== SAVE_VERSION && parsed.version !== 1) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
+  if (parsed.version !== undefined && ![1, 2, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
   const input = parsed.version !== undefined ? parsed.state : parsed;
   if (!object(input) || !finite(input.expTotal) || !finite(input.hp, 0, 100) || !finite(input.loc, 0, 12) || !Number.isInteger(input.loc)) throw new Error('存档缺少有效的角色与区域数据。');
   const state = initial();
@@ -47,6 +52,21 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
   state.flag = record(input.flag, v => typeof v === 'boolean' || text(v) || finite(v, -1e12));
   state.npcStates = record(input.npcStates, text);
   state.questChoices = record(input.questChoices, v => object(v) && Object.values(v).every(x => object(x) && Number.isInteger(x.choice) && x.choice >= 0 && typeof x.success === 'boolean'));
+  state.training = {
+    styles: record(input.training?.styles, (v, k) => Object.hasOwn(STYLES, k) && Number.isInteger(v) && finite(v, 0, 8100)),
+    internals: record(input.training?.internals, (v, k) => Object.hasOwn(INTERNALS, k) && Number.isInteger(v) && finite(v, 0, 8100)),
+  };
+  state.idleBank = { silver: finite(input.idleBank?.silver, 0, 1e9) ? Math.floor(input.idleBank.silver) : 0 };
+  state.worldTime = finite(input.worldTime) && Number.isInteger(input.worldTime) ? input.worldTime : 0;
+  state.factionRelations = record(input.factionRelations, (v, k) => ['north_east', 'north_west', 'east_west'].includes(k) && finite(v, -100, 100));
+  if (input.fate !== undefined) {
+    const f = input.fate;
+    if (!object(f) || !Object.hasOwn(FATES, f.node) || !finite(f.enteredAt, 0, state.worldTime) || !Number.isInteger(f.enteredAt)
+      || !Array.isArray(f.history) || f.history.length > 100 || !f.history.every(h => object(h) && Object.hasOwn(FATES, h.node)
+        && Object.hasOwn(FATES, h.next) && text(h.choice) && text(h.text) && finite(h.at, 0, state.worldTime))) throw new Error('命运记录损坏。');
+    state.fate = structuredClone(f);
+  }
+  if ((state.treeDone['0:WX-01'] || 0) >= QUEST_INDEX['WX-01'].nodes.length) state.flag['0:WX-01:complete'] = true;
   for (const k of ['rumors', 'log']) if (Array.isArray(input[k])) state[k] = input[k].filter(text).slice(0, k === 'log' ? 8 : 500);
   if (Array.isArray(input.letters)) state.letters = input.letters.filter(v => object(v) && text(v.from) && text(v.text)).slice(0, 500);
   if (Array.isArray(input.visited)) state.visited = [...new Set(input.visited.filter(v => Number.isInteger(v) && v >= 0 && v < 13))];
