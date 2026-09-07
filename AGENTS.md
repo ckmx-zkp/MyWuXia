@@ -259,7 +259,7 @@
 - `scripts/deploy.sh` 的线上替换必须可回滚；构建失败、内容校验失败或资源缺失时不得上线。
 ## 10. 部署
 
-- 目标：阿里云 `aliyun-prayer`（47.108.114.17），nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。
+- 目标：阿里云 SSH 别名 `aliyun_ecs`（47.108.114.17，可用 `JIANGHU_DEPLOY_HOST` 覆盖），nginx 站点 `/etc/nginx/conf.d/jianghu.conf`，静态根目录 `/srv/jianghu`，端口 8082（域名 `wuxia.47.108.114.17.sslip.io:8082`）。
 - 流程：开发完成 → `npm run deploy`（`scripts/deploy.mjs`：本地 test/build → scp 原子替换 → 直接生效，无需 reload nginx）。
 - 每次上线以 deploy 脚本内的 build 为验证；构建失败不得上线。
 

@@ -2,13 +2,14 @@
 # 江湖长夜：构建并部署到阿里云 aliyun-prayer（nginx /srv/jianghu，端口 8082）
 set -euo pipefail
 cd "$(dirname "$0")/.."
+deploy_host="${JIANGHU_DEPLOY_HOST:-aliyun_ecs}"
 npm run test
 npm run build
 test -s dist/index.html
 release="$(date -u +%Y%m%dT%H%M%SZ)-$(git rev-parse --short HEAD)"
-ssh -o BatchMode=yes aliyun-prayer "mkdir -p /srv/jianghu-releases/$release"
-scp -o BatchMode=yes -rq dist/. "aliyun-prayer:/srv/jianghu-releases/$release/"
-ssh -o BatchMode=yes aliyun-prayer bash -s -- "$release" <<'REMOTE'
+ssh -o BatchMode=yes "$deploy_host" "mkdir -p /srv/jianghu-releases/$release"
+scp -o BatchMode=yes -rq dist/. "${deploy_host}:/srv/jianghu-releases/$release/"
+ssh -o BatchMode=yes "$deploy_host" bash -s -- "$release" <<'REMOTE'
 set -euo pipefail
 release="/srv/jianghu-releases/$1"
 test -s "$release/index.html"
