@@ -1,0 +1,26 @@
+AGENTS.md
+  s_106aca82155d0d::t_7f41238905d56c 226,263
+package.json
+  s_106aca82155d0d::t_7f41238905d56c 15
+scripts/deploy.mjs
+  s_106aca82155d0d::t_7f41238905d56c 1-41,43
+  s_106aca82155d0d::t_c423e90bed20aa 42
+docs/PROGRESS.md
+  s_106aca82155d0d::t_7f41238905d56c 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2886dad820f018190bf8da73143bc86b12f4a6a8",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
