@@ -52,7 +52,7 @@ export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MO
       const message = payload.choices?.[0]?.message || {};
       const parsed = parseModelJson(asText(message.content)) || parseModelJson(asText(message.reasoning_content));
       if (!parsed) throw new Error('invalid_model_json');
-      return { parsed, model: payload.model || model, raw: content };
+      return { parsed, model: payload.model || model, raw: asText(message.content) };
     } finally {
       clearTimeout(timer);
     }
