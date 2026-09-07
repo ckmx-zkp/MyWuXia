@@ -12,6 +12,9 @@
 | [06-map-infrastructure.md](06-map-infrastructure.md) | 地图基础设施：两层结构（生活+原著）与四大母版规范 |
 | [07-dialogue-framework.md](07-dialogue-framework.md) | 剧本与事件文案工程规范（文案框架与对话标准） |
 | [08-jiangnan-daily-quests.md](08-jiangnan-daily-quests.md) | 基础设施层：江南大宋六大城市生活支线与循环日常库 |
+| [09-auto-combat-and-saves.md](09-auto-combat-and-saves.md) | 自动交手、武学成长、体力内力与存档规范 |
+| [10-changing-fates.md](10-changing-fates.md) | 可改变命运的事件图与世界状态规范 |
+| [11-idle-rpg-roadmap.md](11-idle-rpg-roadmap.md) | 对标成熟放置武侠的目标框架与 P0/P1/P2 路线图 |
 | [quests/DL-01-wuliang-crisis.md](quests/DL-01-wuliang-crisis.md) | 任务树剧本：大理·DL-01《无量山风波》（含完整对话与事件文案） |
 | [quests/DL-02-nandi-track.md](quests/DL-02-nandi-track.md) | 任务树剧本：大理·DL-02《南帝旧踪与桃源避世》（含完整对话与事件文案） |
 | [quests/JX-01-zuixianlou.md](quests/JX-01-zuixianlou.md) | 任务树剧本：嘉兴·JX-01《醉仙楼十八年之约》（含完整对话与事件文案） |

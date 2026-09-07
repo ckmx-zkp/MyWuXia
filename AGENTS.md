@@ -18,6 +18,7 @@
 | 江南六城生活支线与循环日常 | `docs/gdd/08-jiangnan-daily-quests.md` |
 | 自动交手与存档 | `docs/gdd/09-auto-combat-and-saves.md` |
 | 可改变的命运与跨书江湖 | `docs/gdd/10-changing-fates.md` |
+| 放置武侠成长框架与 P0/P1/P2 | `docs/gdd/11-idle-rpg-roadmap.md` |
 | 各任务树完整剧本 | `docs/gdd/quests/<ID>-<slug>.md` |
 | UI 素材规范 | `docs/ui/UI-ASSET-GUIDE.md` |
 | 架构优化方案 | `docs/architecture-optimization.md` |
@@ -275,7 +276,7 @@
 - 战斗采用战前武学配置、属性驱动的自动交手，以文字战报呈现招式、闪避、招架、伤势和调息，省略动画与逐回合手动选招。
 - 已接入三类武馆对手、19 个剧情战斗入口（15 个主动交手、4 个失手追兵战）、8 项战斗历练和旅途山贼遭遇；调查与交涉仍使用非战斗检定。新打斗必须接入统一自动战斗，不得退回“一次能力判定 + 胜负文字”。规则在 `src/game/combat.js` / `world-engine.js`，内容在 `src/content/`，界面在 `src/features/combat/`。
 - 八棵任务树已拆至 `src/content/quests/<ID>.js`，世界区域在 `src/content/world.js`；新增剧情只修改对应内容文件。明确高危高手的境界、危险度与交手目标，支持撑过指定回合、撤退和软失败继续。
-- 存档格式升级为 `{ version: 4, savedAt, state }`，兼容 v1/v2/v3 与旧键 `jianghu-save-v1`；支持备用恢复、三个手动槽位、导入导出、循环支线、行动、战斗及命运事件续存。重开仅清除自动存档及其备用，保留手动槽位。
+- 存档格式升级为 `{ version: 5, savedAt, state }`，兼容 v1/v2/v3/v4 与旧键 `jianghu-save-v1`；支持备用恢复、三个手动槽位、导入导出、循环支线、行动、战斗、气血/内力及命运事件续存。重开仅清除自动存档及其备用，保留手动槽位。
 - 新状态：`loadout`、`battle`、`rngState`、`questChoices`、`npcStates`、`flag`。交手按息推进，不计算离线战斗；战中每回合保存，读档不得重掷随机数或重复结算。
 - 已实装首个动态命运事件图“三帮失粮案”：**北丐帮帮主乔峰、东丐帮帮主洪七公、西丐帮帮主史火龙**可因玩家查证、调停、偏袒或超时形成同盟、停争或失和；结果写入 NPC 状态、世界标记和势力关系。
 - 详见 `docs/gdd/09-auto-combat-and-saves.md` 与 `docs/gdd/10-changing-fates.md`。
