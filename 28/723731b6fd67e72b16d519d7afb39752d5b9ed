@@ -1,0 +1,82 @@
+src/game/ability.js
+  s_ca090b9872f8ca::t_ee7f1e0b03985b 3,9
+src/game/commands.js
+  s_ca090b9872f8ca::t_34eb304afa1248 1-81
+src/content/validate-p0.js
+  s_ca090b9872f8ca::t_5e29f7b8a40b03 1-48
+src/game/progression.js
+  s_ca090b9872f8ca::t_afea49c3882aa6 22
+  s_ca090b9872f8ca::t_f00b6372cf3afd 1-21,23-25
+src/main.jsx
+  s_ca090b9872f8ca::t_afea49c3882aa6 4,19,21,792
+  s_ca090b9872f8ca::t_2b6cf2e50662e3 3,5,361,402,416-421,492-493,586,595,621,625,627
+  s_ca090b9872f8ca::t_8aba4eb47d8716 2,358,363-364,367-370,403,444,447,460,466,472,485,503,508,513,518,520,545,555,563,615,757,759,790,810,812-813,965
+  s_ca090b9872f8ca::t_8ffa574d905d7e 408,412,432,435,437,491,494,814
+  s_106aca82155d0d::t_bf2ad248f3b0a5 422
+src/content/combat.js
+  s_ca090b9872f8ca::t_ee7f1e0b03985b 3,82,84
+scripts/validate-content.mjs
+  s_ca090b9872f8ca::t_5e29f7b8a40b03 8,41
+docs/gdd/11-idle-rpg-roadmap.md
+  s_ca090b9872f8ca::t_3792216ab56e7d 1,3,5,7-11,13,15,17-22,24,26-33,35,37,39,41-47,49,51,53,55,57-62,64,66-73,75,77,79-85,87,89,91
+src/game/save-schema.js
+  s_ca090b9872f8ca::t_ee7f1e0b03985b 4,6-8
+AGENTS.md
+  s_ca090b9872f8ca::t_af2727f0a86cda 283-289
+  s_ca090b9872f8ca::t_7dc26fd69ced39 270
+src/features/progression/ProgressionPanel.jsx
+  s_ca090b9872f8ca::t_af2727f0a86cda 7,27,37
+  s_ca090b9872f8ca::t_78242673f0640c 1-6,8-26,28-36,38-66
+src/game/saves.js
+  s_ca090b9872f8ca::t_bc3f83501e2f7e 6,10,36,79,95-99,104
+  s_ca090b9872f8ca::t_af2727f0a86cda 7,100-103
+  s_106aca82155d0d::t_705ada6bf5b67f 105
+src/game/p0.test.js
+  s_ca090b9872f8ca::t_5e29f7b8a40b03 11,18-23
+  s_ca090b9872f8ca::t_8d2b585fdace76 1-10,13-17,24-133,157
+  s_ca090b9872f8ca::t_4d441fec0e4d1c 12,134-156
+src/game/side-events.js
+  s_ca090b9872f8ca::t_afea49c3882aa6 1,34
+  s_ca090b9872f8ca::t_b5339b4dfd70f7 2-33,35-50
+src/game/p0-save.js
+  s_ca090b9872f8ca::t_bc3f83501e2f7e 1-38
+src/content/p0.js
+  s_ca090b9872f8ca::t_f00b6372cf3afd 1-12,14-67
+  s_ca090b9872f8ca::t_160ac357c74f2d 13
+src/game/combat.js
+  s_ca090b9872f8ca::t_ee7f1e0b03985b 5,39-42,44
+src/game/encounter-settlement.js
+  s_ca090b9872f8ca::t_ee7f1e0b03985b 2,6
+src/features/progression/progression.css
+  s_ca090b9872f8ca::t_af2727f0a86cda 10-11
+  s_ca090b9872f8ca::t_78242673f0640c 1-9,12-22
+src/game/training.js
+  s_ca090b9872f8ca::t_ee7f1e0b03985b 1,11,41-42
+src/game/p0-engine.js
+  s_ca090b9872f8ca::t_b5339b4dfd70f7 1-2,4-16,18-151
+  s_ca090b9872f8ca::t_af2727f0a86cda 3,17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "28723731b6fd67e72b16d519d7afb39752d5b9ed",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    },
+    "s_ca090b9872f8ca": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07b9a-a911-7862-9006-883d2a1cf952",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
