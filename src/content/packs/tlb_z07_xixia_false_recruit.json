@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z07_xixia_false_recruit",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z07_xixia_false_recruit.json",
+  "zone": 7,
+  "design": {
+    "title": "西夏招亲假帖",
+    "hook": "河西客栈有人冒充西夏招亲使者收脚夫押金，旁边又有一品堂信使急着找换马。",
+    "playerRole": "送信或拆骗局，拒绝入宫",
+    "sources": {
+      "novel": [
+        {
+          "beat": "西夏一品堂与招亲线是原著重要情节。",
+          "use": "只取信使与公告余波。"
+        },
+        {
+          "beat": "灵鹫宫传闻在西北流传。",
+          "use": "只作茶客闲话，不奖励逍遥派武学。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "河西驿路适合官方信使换马。",
+          "use": "让送信成为过路店脚可接的小差。"
+        },
+        {
+          "fact": "大型招募或婚选消息容易被骗子仿冒。",
+          "use": "制造假帖骗局。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "玩家可以拒绝进宫。",
+          "use": "绝不能因假招亲帖进入皇宫主线。"
+        },
+        {
+          "slot": "灵鹫传闻不能引出天山六阳掌等奖励。",
+          "use": "只保留地方传说。"
+        }
+      ]
+    },
+    "echo": "改变河西客栈对招亲帖的查验习惯与一品堂信使换马速度。",
+    "facts": [
+      "tlb_z07_xixia_false_recruit_heard",
+      "tlb_z07_xixia_false_recruit_proof",
+      "tlb_z07_xixia_false_recruit_safe",
+      "tlb_z07_xixia_false_recruit_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "西夏招亲假帖",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "河西客栈墙上贴着一张西夏招亲告示，两个脚夫正凑押金；另一桌一品堂信使却说这纸上的印记根本不对。",
+        "dialogues": [
+          [
+            "信使",
+            "真告示不会在客栈先收银。"
+          ],
+          [
+            "脚夫",
+            "可他说交钱便能进宫。"
+          ]
+        ],
+        "hearsay": "假帖最明显的破绽是私收押金。",
+        "choices": [
+          {
+            "id": "tlb_z07_xixia_false_recruit_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z07_xixia_false_recruit_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z07_xixia_false_recruit_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 7
+      },
+      "n1": {
+        "scene": "信使拿出自己的公文边角作比，只让你看封记格式，不许拆阅正文。",
+        "dialogues": [
+          [
+            "信使",
+            "认格式即可，别问信里写什么。"
+          ],
+          [
+            "掌柜",
+            "有真样式，假帖就好拆了。"
+          ]
+        ],
+        "hearsay": "对比印记可证明骗局。",
+        "choices": [
+          {
+            "id": "tlb_z07_xixia_false_recruit_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z07_xixia_false_recruit_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z07_xixia_false_recruit_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 7
+      },
+      "n2": {
+        "scene": "骗子辩称自己只是替人代报名，还把灵鹫宫和西夏皇室扯在一处抬声势。",
+        "dialogues": [
+          [
+            "骗子",
+            "江湖大门路，岂是你们懂的？"
+          ],
+          [
+            "脚夫",
+            "我只想拿回押金。"
+          ]
+        ],
+        "hearsay": "灵鹫宫传闻与招亲押金没有可核实关系。",
+        "choices": [
+          {
+            "id": "tlb_z07_xixia_false_recruit_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 7
+      },
+      "n3": {
+        "scene": "驿站守卫来查信使换马，也顺手问假帖是谁贴的。",
+        "dialogues": [
+          [
+            "守卫",
+            "真信使照公文换马，假告示另算。"
+          ],
+          [
+            "骗子",
+            "这是江湖买卖！"
+          ]
+        ],
+        "hearsay": "可提交印记证据，也可先护脚夫撤开。",
+        "choices": [
+          {
+            "id": "tlb_z07_xixia_false_recruit_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z07_xixia_false_recruit_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z07_xixia_false_recruit_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z07_xixia_false_recruit_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "guards",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 7
+      },
+      "n4": {
+        "scene": "脚夫拿回大半押金，一品堂信使也换到马继续西行。",
+        "dialogues": [
+          [
+            "信使",
+            "我只送信，不替谁招亲。"
+          ],
+          [
+            "脚夫",
+            "以后见进宫二字，我先看印。"
+          ]
+        ],
+        "hearsay": "若骗局被记录，河西客栈将先验印后收任何报名钱。",
+        "choices": [
+          {
+            "id": "tlb_z07_xixia_false_recruit_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z07_xixia_false_recruit_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 7
+      },
+      "n5": {
+        "scene": "假帖被揭下，客栈墙上只留下一个浅印。你没有进宫，也没因一封信成了一品堂人物。",
+        "dialogues": [
+          [
+            "掌柜",
+            "过路店脚把信送到下一站，便够了。"
+          ]
+        ],
+        "hearsay": "河西后来再出现招亲帖，脚夫会先问一句：谁敢当面验印。",
+        "choices": [],
+        "zone": 7,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "招亲告示还没传明白，河西脚夫已经先交了三份押金。"
+}

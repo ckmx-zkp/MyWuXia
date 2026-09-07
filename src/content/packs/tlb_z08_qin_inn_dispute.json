@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z08_qin_inn_dispute",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z08_qin_inn_dispute.json",
+  "zone": 8,
+  "design": {
+    "title": "关中一间马棚",
+    "hook": "过路中原帮众与关西刀客为驿站最后两间马棚争执。",
+    "playerRole": "调停驿站，不替任何帮派出头",
+    "sources": {
+      "novel": [
+        {
+          "beat": "原著中各路帮众往来频繁。",
+          "use": "只取过路江湖人的摩擦。"
+        },
+        {
+          "beat": "乔峰身世风波会影响中原帮众情绪。",
+          "use": "仅作背景，不重演帮会大事。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "关中驿道上马棚、草料和床位都是稀缺资源。",
+          "use": "让弱区冲突落到实际资源。"
+        },
+        {
+          "fact": "长途商旅常依赖轮换马匹。",
+          "use": "提供按时段分配的软解。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "三帮失粮案已有事实不可推翻。",
+          "use": "本支线不另写任何丐帮唯一结局。"
+        },
+        {
+          "slot": "弱区不应强塞主角。",
+          "use": "只写一夜驿站争棚。"
+        }
+      ]
+    },
+    "echo": "改变关中驿站马棚价格与过路帮众对白。",
+    "facts": [
+      "tlb_z08_qin_inn_dispute_heard",
+      "tlb_z08_qin_inn_dispute_proof",
+      "tlb_z08_qin_inn_dispute_safe",
+      "tlb_z08_qin_inn_dispute_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "关中一间马棚",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "关中驿站只剩两间干马棚，一拨中原帮众和几名关西刀客都说自己先到。",
+        "dialogues": [
+          [
+            "帮众",
+            "我们有伤马。"
+          ],
+          [
+            "刀客",
+            "我们的货明早要赶关口。"
+          ]
+        ],
+        "hearsay": "账房记着到店时辰，但两边都没看。",
+        "choices": [
+          {
+            "id": "tlb_z08_qin_inn_dispute_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z08_qin_inn_dispute_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z08_qin_inn_dispute_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 8
+      },
+      "n1": {
+        "scene": "掌柜翻出登记木牌，显示刀客先到半刻，帮众却先付过草料钱。",
+        "dialogues": [
+          [
+            "掌柜",
+            "先到和先付，各占一头。"
+          ],
+          [
+            "帮众",
+            "那便不能只靠嗓门。"
+          ]
+        ],
+        "hearsay": "可按先到与伤马两项拆分资源。",
+        "choices": [
+          {
+            "id": "tlb_z08_qin_inn_dispute_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z08_qin_inn_dispute_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z08_qin_inn_dispute_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 8
+      },
+      "n2": {
+        "scene": "马夫提出一间棚给伤马，一间棚按先到给刀客，其余牲口加毡过夜。",
+        "dialogues": [
+          [
+            "马夫",
+            "人能挤，马伤了明日走不了。"
+          ],
+          [
+            "刀客",
+            "这话有理。"
+          ]
+        ],
+        "hearsay": "需要补一笔毡布钱。",
+        "choices": [
+          {
+            "id": "tlb_z08_qin_inn_dispute_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 8
+      },
+      "n3": {
+        "scene": "夜里又有山贼试图牵走露天牲口，反让两拨人暂时站到一处。",
+        "dialogues": [
+          [
+            "山贼",
+            "棚里棚外都一样是马。"
+          ],
+          [
+            "帮众",
+            "先护住再争。"
+          ]
+        ],
+        "hearsay": "可共同守牲口，也可把露天马转入院角。",
+        "choices": [
+          {
+            "id": "tlb_z08_qin_inn_dispute_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z08_qin_inn_dispute_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z08_qin_inn_dispute_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z08_qin_inn_dispute_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "bandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 8
+      },
+      "n4": {
+        "scene": "天亮前账房把马棚分配写明，两拨人谁也没占全便宜。",
+        "dialogues": [
+          [
+            "掌柜",
+            "下次先看牌，不先拔刀。"
+          ],
+          [
+            "刀客",
+            "这规矩可用。"
+          ]
+        ],
+        "hearsay": "记录后驿站会公开先到与伤马优先规则。",
+        "choices": [
+          {
+            "id": "tlb_z08_qin_inn_dispute_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z08_qin_inn_dispute_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 8
+      },
+      "n5": {
+        "scene": "晨雾里两拨人一前一后上路，没有谁因此成了你的仇家或盟友。",
+        "dialogues": [
+          [
+            "马夫",
+            "一夜马棚，犯不着结一世仇。"
+          ]
+        ],
+        "hearsay": "关中驿站后来把分棚规矩直接写在门板上。",
+        "choices": [],
+        "zone": 8,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "关中这一夜争的不是武林盟主，只是两间能挡风的马棚。"
+}

@@ -182,3 +182,16 @@ test('luding pack events are indexed, need no herbal knowledge to open, and rest
   assert.equal(s.p0.facts.ldj_z00_wounded_heard, true);
   assert.equal(restore(s).p0.facts.ldj_z00_wounded_heard, true);
 });
+test('tianlong pack events open without herbal knowledge except medicine checks', () => {
+  assert.ok(SIDE_EVENTS.tlb_z00_xingzilinhou);
+  const open = SIDE_EVENTS.tlb_z00_xingzilinhou.nodes.n0.choices.find(c => c.id.endsWith('_heard'));
+  assert.ok(open && !open.requires?.knowledge);
+  const poison = SIDE_EVENTS.tlb_z05_fake_xingxiu_poison.nodes.n1.choices.find(c => c.id.endsWith('_proof'));
+  assert.equal(poison?.requires?.knowledge, 2);
+  let s = at(fresh(), 'inn');
+  s = cmd(s, 'DISCOVER_EVENT', { id: 'tlb_z00_xingzilinhou' });
+  s = { ...s, p0: { ...s.p0, potential: 5 } };
+  s = cmd(s, 'CHOOSE_EVENT', { id: 'tlb_z00_xingzilinhou', choice: 'tlb_z00_xingzilinhou_heard' });
+  assert.equal(s.p0.facts.tlb_z00_xingzilinhou_heard, true);
+  assert.equal(restore(s).p0.facts.tlb_z00_xingzilinhou_heard, true);
+});

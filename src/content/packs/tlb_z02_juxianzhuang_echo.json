@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z02_juxianzhuang_echo",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z02_juxianzhuang_echo.json",
+  "zone": 2,
+  "design": {
+    "title": "聚贤帖后的茶钱",
+    "hook": "聚贤庄帖子余波传到洛阳，少林山门前有人借“契丹”二字要打一个北地商旅。",
+    "playerRole": "劝架、散银、对账，不攻少林",
+    "sources": {
+      "novel": [
+        {
+          "beat": "聚贤庄围攻乔峰是原著重大冲突。",
+          "use": "这里只写帖子余波与仇恨扩散。"
+        },
+        {
+          "beat": "少林是武林重镇。",
+          "use": "玩家只在山门外劝架，不攻寺。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "洛阳是商旅和江湖消息汇聚之地。",
+          "use": "适合以茶棚对账查传言。"
+        },
+        {
+          "fact": "群体标签在冲突后容易扩大到无关者。",
+          "use": "让一名普通北地商旅受牵连。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不能让玩家重演聚贤庄大战。",
+          "use": "只做余波降温。"
+        },
+        {
+          "slot": "少林山门必须保持不可攻入。",
+          "use": "所有路线均在门外或茶棚结束。"
+        }
+      ]
+    },
+    "echo": "改变洛阳茶棚对聚贤帖的说法与少林山门外冲突频率。",
+    "facts": [
+      "tlb_z02_juxianzhuang_echo_heard",
+      "tlb_z02_juxianzhuang_echo_proof",
+      "tlb_z02_juxianzhuang_echo_safe",
+      "tlb_z02_juxianzhuang_echo_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "聚贤帖后的茶钱",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "洛阳茶棚里，两桌人拿着不同抄本争论聚贤庄旧帖，一个北地商旅只因说话带辽音便被指成契丹细作。",
+        "dialogues": [
+          [
+            "茶博士",
+            "两张帖子连人数都写不一样。"
+          ],
+          [
+            "商旅",
+            "我来卖皮货，不来认谁的祖宗。"
+          ]
+        ],
+        "hearsay": "最早抄本只记江湖邀约，没有眼前商旅的名字。",
+        "choices": [
+          {
+            "id": "tlb_z02_juxianzhuang_echo_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z02_juxianzhuang_echo_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z02_juxianzhuang_echo_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 2
+      },
+      "n1": {
+        "scene": "茶棚账房把两份抄本摊平，发现后抄本多添了“见契丹皆可诛”一类煽动语。",
+        "dialogues": [
+          [
+            "账房",
+            "这行墨都不是一支笔写的。"
+          ],
+          [
+            "老客",
+            "有人借旧仇添火。"
+          ]
+        ],
+        "hearsay": "添字事实能用于山门前劝架。",
+        "choices": [
+          {
+            "id": "tlb_z02_juxianzhuang_echo_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z02_juxianzhuang_echo_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z02_juxianzhuang_echo_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 2
+      },
+      "n2": {
+        "scene": "一个随行脚夫愿作证商旅半月前已从关外押货南下，与聚贤庄事件无关。",
+        "dialogues": [
+          [
+            "脚夫",
+            "他一路都在车队里。"
+          ],
+          [
+            "商旅",
+            "我只求把货卖完。"
+          ]
+        ],
+        "hearsay": "付脚钱可让证人留到官差或寺门管事到场。",
+        "choices": [
+          {
+            "id": "tlb_z02_juxianzhuang_echo_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 2
+      },
+      "n3": {
+        "scene": "少林山门外几名激愤帮众围住商旅，要他解释契丹口音。",
+        "dialogues": [
+          [
+            "帮众",
+            "聚贤帖难道是假的？"
+          ],
+          [
+            "商旅",
+            "帖真假与我何干？"
+          ]
+        ],
+        "hearsay": "可以指出添字、散财息争或护人撤向官道。",
+        "choices": [
+          {
+            "id": "tlb_z02_juxianzhuang_echo_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z02_juxianzhuang_echo_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z02_juxianzhuang_echo_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z02_juxianzhuang_echo_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "beggars",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 2
+      },
+      "n4": {
+        "scene": "寺门管事只收下抄本作证据，明确不替任何一方追杀。",
+        "dialogues": [
+          [
+            "管事",
+            "寺门前不得因一句口音私斗。"
+          ],
+          [
+            "茶博士",
+            "帖子还是回茶棚比字吧。"
+          ]
+        ],
+        "hearsay": "若证实添字，山门后来会先驱散围观而非盘问口音。",
+        "choices": [
+          {
+            "id": "tlb_z02_juxianzhuang_echo_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z02_juxianzhuang_echo_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 2
+      },
+      "n5": {
+        "scene": "商旅重新挑起皮货担子下山，少林山门仍旧紧闭于江湖仇杀之外。",
+        "dialogues": [
+          [
+            "脚夫",
+            "能让一张帖子少害一个人，也算值了茶钱。"
+          ]
+        ],
+        "hearsay": "洛阳茶棚后来挂着两份抄本，提醒后来人旧帖也会被人添字。",
+        "choices": [],
+        "zone": 2,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "聚贤庄的一张帖子传到洛阳，已经比原话多出三层血债。"
+}

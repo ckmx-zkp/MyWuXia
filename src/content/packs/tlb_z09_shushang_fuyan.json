@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z09_shushang_fuyan",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z09_shushang_fuyan.json",
+  "zone": 9,
+  "design": {
+    "title": "蜀商复燕话",
+    "hook": "蜀商在茶馆把姑苏慕容复燕说成藏宝大买卖，引来山贼盯货。",
+    "playerRole": "辨传闻、护商队，不替慕容复燕",
+    "sources": {
+      "novel": [
+        {
+          "beat": "慕容氏复燕野心是原著核心秘密之一。",
+          "use": "这里只让远方商旅把它误说成发财传闻。"
+        },
+        {
+          "beat": "姑苏慕容名声遍及江湖。",
+          "use": "利用名声制造夸张谣言。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "巴蜀商道山险，商旅容易受劫。",
+          "use": "让谣言直接提高护送风险。"
+        },
+        {
+          "fact": "远地政治传闻常被商人改造成买卖故事。",
+          "use": "形成弱区特色。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "玩家不得替慕容复兴复燕。",
+          "use": "只纠正商路上的夸张传言。"
+        },
+        {
+          "slot": "不能凭传闻产生参合庄宝藏奖励。",
+          "use": "不新增物品。"
+        }
+      ]
+    },
+    "echo": "改变蜀商对姑苏慕容的说法与巴蜀护运价格。",
+    "facts": [
+      "tlb_z09_shushang_fuyan_heard",
+      "tlb_z09_shushang_fuyan_proof",
+      "tlb_z09_shushang_fuyan_safe",
+      "tlb_z09_shushang_fuyan_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "蜀商复燕话",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "成都外茶馆里，蜀商说姑苏慕容正在收天下财货复燕，谁先送货谁能分大富贵。",
+        "dialogues": [
+          [
+            "蜀商",
+            "我也是听东边客人说的。"
+          ],
+          [
+            "茶博士",
+            "东边客人又听谁说？"
+          ]
+        ],
+        "hearsay": "没有任何人拿得出慕容氏正式文书。",
+        "choices": [
+          {
+            "id": "tlb_z09_shushang_fuyan_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z09_shushang_fuyan_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z09_shushang_fuyan_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 9
+      },
+      "n1": {
+        "scene": "同行账房指出所谓“复燕认股”只是几次转述，最早来源是一名卖假路引的行脚人。",
+        "dialogues": [
+          [
+            "账房",
+            "钱是真收，文书却没人见。"
+          ],
+          [
+            "蜀商",
+            "那我这话说大了。"
+          ]
+        ],
+        "hearsay": "追溯来源可拆掉发财故事。",
+        "choices": [
+          {
+            "id": "tlb_z09_shushang_fuyan_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z09_shushang_fuyan_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z09_shushang_fuyan_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 9
+      },
+      "n2": {
+        "scene": "一队准备东去的脚夫已经交了定钱，求你陪他们去找收钱人。",
+        "dialogues": [
+          [
+            "脚夫",
+            "不求富贵，先把定钱拿回来。"
+          ],
+          [
+            "茶博士",
+            "这才是眼前事。"
+          ]
+        ],
+        "hearsay": "退钱路线比追慕容氏更合适。",
+        "choices": [
+          {
+            "id": "tlb_z09_shushang_fuyan_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 9
+      },
+      "n3": {
+        "scene": "山道上山贼拦住商队，张口就问“复燕金”藏在哪只箱里。",
+        "dialogues": [
+          [
+            "山贼",
+            "既要复国，总有金银。"
+          ],
+          [
+            "蜀商",
+            "都是我嘴快惹的。"
+          ]
+        ],
+        "hearsay": "可声明没有宝金并弃近路，也可护队撤退。",
+        "choices": [
+          {
+            "id": "tlb_z09_shushang_fuyan_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z09_shushang_fuyan_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z09_shushang_fuyan_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z09_shushang_fuyan_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "bandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 9
+      },
+      "n4": {
+        "scene": "脚夫追回部分定钱，蜀商当众承认自己没见过任何慕容文书。",
+        "dialogues": [
+          [
+            "蜀商",
+            "以后我只说听闻，不说亲见。"
+          ],
+          [
+            "账房",
+            "这便省很多祸。"
+          ]
+        ],
+        "hearsay": "记录后护运价格会回落。",
+        "choices": [
+          {
+            "id": "tlb_z09_shushang_fuyan_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z09_shushang_fuyan_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 9
+      },
+      "n5": {
+        "scene": "商队改走寻常路线出川，没人再把一车蜀货说成复燕军资。",
+        "dialogues": [
+          [
+            "茶博士",
+            "江湖大名最容易被小买卖借来吓人。"
+          ]
+        ],
+        "hearsay": "巴蜀后来再传姑苏慕容，多会加一句：谁见过真文书。",
+        "choices": [],
+        "zone": 9,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "蜀商把复燕讲成一桩能分红的买卖，山贼听得比茶客还认真。"
+}

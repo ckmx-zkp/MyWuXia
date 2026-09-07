@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z01_hanshui_testimony",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z01_hanshui_testimony.json",
+  "zone": 1,
+  "design": {
+    "title": "汉水一张药单",
+    "hook": "汉水船户把乔帮主反出中原传得满河都是，武当过客却不愿收留一个被称作契丹人的伤者。",
+    "playerRole": "送药或作证，不替乔峰定族义",
+    "sources": {
+      "novel": [
+        {
+          "beat": "乔峰身份风波在原著中引发巨大震动。",
+          "use": "这里只写汉水船户的二手误传。"
+        },
+        {
+          "beat": "乔峰的契丹身份牵动宋辽敌意。",
+          "use": "把冲突落在一个伤者能否得到药。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "荆襄水路是南北消息交汇处。",
+          "use": "使传闻沿船户快速扩散。"
+        },
+        {
+          "fact": "边地身份怀疑常影响伤者和商旅待遇。",
+          "use": "让玩家用药单和见证解决。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "玩家不能替乔峰宣布立场。",
+          "use": "只能证明眼前伤者是否参与冲突。"
+        },
+        {
+          "slot": "武当过客不是收容机构。",
+          "use": "可拒收，但不能因此把所有契丹伤者定罪。"
+        }
+      ]
+    },
+    "echo": "改变汉水客船对乔峰传闻的措辞与伤者能否获得药。",
+    "facts": [
+      "tlb_z01_hanshui_testimony_heard",
+      "tlb_z01_hanshui_testimony_proof",
+      "tlb_z01_hanshui_testimony_safe",
+      "tlb_z01_hanshui_testimony_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "汉水一张药单",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "汉水茶船靠岸时，一个腿伤汉子被放在堤边。船户说他口音像北地人，便有人把乔帮主反出中原的传闻也扣到他头上。",
+        "dialogues": [
+          [
+            "船户",
+            "我只怕惹上宋辽官司。"
+          ],
+          [
+            "伤者",
+            "我不过替商队押过一程货。"
+          ]
+        ],
+        "hearsay": "伤者身上有药铺开出的旧药单。",
+        "choices": [
+          {
+            "id": "tlb_z01_hanshui_testimony_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z01_hanshui_testimony_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z01_hanshui_testimony_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "room": "wudang-gate"
+      },
+      "n1": {
+        "scene": "药铺伙计认得药单，说此人三日前已因马摔伤，不是今日斗殴的新伤。",
+        "dialogues": [
+          [
+            "伙计",
+            "旧伤有日期，别拿新传闻往上套。"
+          ],
+          [
+            "行脚人",
+            "有纸总比猜口音强。"
+          ]
+        ],
+        "hearsay": "药单可以证明伤势来历，却不能证明伤者全部身份。",
+        "choices": [
+          {
+            "id": "tlb_z01_hanshui_testimony_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z01_hanshui_testimony_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z01_hanshui_testimony_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "room": "wudang-yard"
+      },
+      "n2": {
+        "scene": "武当过客在客栈后院说明自己不愿卷入清兵、辽兵或帮会纷争，但愿让出一间柴棚暂避风。",
+        "dialogues": [
+          [
+            "武当过客",
+            "我不收门人，也不替谁认族，只让伤者避一夜风。"
+          ],
+          [
+            "船户",
+            "这便够了。"
+          ]
+        ],
+        "hearsay": "若有人作证伤势来历，武当过客愿意让伤者停留。",
+        "choices": [
+          {
+            "id": "tlb_z01_hanshui_testimony_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "room": "wudang-hall"
+      },
+      "n3": {
+        "scene": "渡口有人暗中追问伤者是不是替乔峰传话，像个专听消息的探子。",
+        "dialogues": [
+          [
+            "探子",
+            "说一句他的去向，我便不难为你。"
+          ],
+          [
+            "伤者",
+            "我从未见过乔帮主。"
+          ]
+        ],
+        "hearsay": "不给探子消息也能通过改船或退回客栈收束。",
+        "choices": [
+          {
+            "id": "tlb_z01_hanshui_testimony_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z01_hanshui_testimony_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z01_hanshui_testimony_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z01_hanshui_testimony_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "spy",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "room": "wudang-gate"
+      },
+      "n4": {
+        "scene": "码头账房把伤者记作商队旧伤，并补了一张临时渡船凭据。",
+        "dialogues": [
+          [
+            "账房",
+            "这张纸只管过江，不管江湖上谁认谁。"
+          ],
+          [
+            "船户",
+            "写清楚，大家都省事。"
+          ]
+        ],
+        "hearsay": "若此前核过药单，之后船户会先看伤情来源而非口音。",
+        "choices": [
+          {
+            "id": "tlb_z01_hanshui_testimony_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z01_hanshui_testimony_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "room": "wudang-yard"
+      },
+      "n5": {
+        "scene": "夜船离岸，伤者靠在舱里睡去。关于乔帮主的十种传闻还在，但没有一种被你拿来替一个陌生人定罪。",
+        "dialogues": [
+          [
+            "船户",
+            "江湖人的名声太大，小人物最好还是看自己的凭据。"
+          ]
+        ],
+        "hearsay": "汉水后来多了一条规矩：先看药单，再听口音。",
+        "choices": [],
+        "zone": 1,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "一条汉水上能传十种乔帮主的说法，却没人先问伤者的血还止没止。"
+}

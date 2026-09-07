@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z10_shennong_medicine",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z10_shennong_medicine.json",
+  "zone": 10,
+  "design": {
+    "title": "瘴路抢药",
+    "hook": "神农帮南退后，瘴气山路上一批药被几拨人争抢。",
+    "playerRole": "护药救人，不重写无量山主线",
+    "sources": {
+      "novel": [
+        {
+          "beat": "神农帮与无量山线在原著前段出现。",
+          "use": "这里只写其南退余波。"
+        },
+        {
+          "beat": "段誉的无量山经历属于主角线。",
+          "use": "玩家不继承北冥等机缘。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "云贵山地瘴病使药材成为紧缺资源。",
+          "use": "让争药具有现实动机。"
+        },
+        {
+          "fact": "山路商队常依赖药农与向导。",
+          "use": "给玩家护药身份。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不得重写无量主线。",
+          "use": "神农帮只作余党和山路竞争者。"
+        },
+        {
+          "slot": "药物不是毒功奖励。",
+          "use": "所有收益仍是常规资源或事实。"
+        }
+      ]
+    },
+    "echo": "改变云贵药价、神农帮余党对白与瘴路是否开放。",
+    "facts": [
+      "tlb_z10_shennong_medicine_heard",
+      "tlb_z10_shennong_medicine_proof",
+      "tlb_z10_shennong_medicine_safe",
+      "tlb_z10_shennong_medicine_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "瘴路抢药",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "山脚药铺抱怨一批解瘴草药被堵在南路，神农帮余党和当地药农都说自己先订。",
+        "dialogues": [
+          [
+            "掌柜",
+            "病人等药，不等你们分门派。"
+          ],
+          [
+            "药农",
+            "我只认先付的定钱。"
+          ]
+        ],
+        "hearsay": "账簿里确有两边不同批次的定金。",
+        "choices": [
+          {
+            "id": "tlb_z10_shennong_medicine_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z10_shennong_medicine_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z10_shennong_medicine_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 10
+      },
+      "n1": {
+        "scene": "账簿显示神农帮订的是三成，当地药农订的是五成，另两成原本留给沿路病户。",
+        "dialogues": [
+          [
+            "掌柜",
+            "把份额看清，就不必整车抢。"
+          ],
+          [
+            "药农",
+            "账若真，我认。"
+          ]
+        ],
+        "hearsay": "核账可形成非战斗分配方案。",
+        "choices": [
+          {
+            "id": "tlb_z10_shennong_medicine_proof",
+            "text": "先辨这批药还能不能救人。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z10_shennong_medicine_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 10
+      },
+      "n2": {
+        "scene": "山路向导说前方瘴重，若一方整车夺走，另一方连过路药都没有。",
+        "dialogues": [
+          [
+            "向导",
+            "抢到药也未必带得出去。"
+          ],
+          [
+            "余党",
+            "那便按账分。"
+          ]
+        ],
+        "hearsay": "出 herbs 可先救一名高热脚夫，缓和局面。",
+        "choices": [
+          {
+            "id": "tlb_z10_shennong_medicine_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 10
+      },
+      "n3": {
+        "scene": "一名神农帮刀客仍想强取整车，称门中伤者更多。",
+        "dialogues": [
+          [
+            "刀客",
+            "我们的人命也是命。"
+          ],
+          [
+            "掌柜",
+            "所以才按账分，不是不给。"
+          ]
+        ],
+        "hearsay": "可用账簿交涉，也可护药车退至药铺。",
+        "choices": [
+          {
+            "id": "tlb_z10_shennong_medicine_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z10_shennong_medicine_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z10_shennong_medicine_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z10_shennong_medicine_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "shennong",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 10
+      },
+      "n4": {
+        "scene": "最终药车按账分成三批，并留下两成给沿路病户。",
+        "dialogues": [
+          [
+            "向导",
+            "有药能过瘴，路才不会断。"
+          ],
+          [
+            "余党",
+            "这一回按账，下一回再说。"
+          ]
+        ],
+        "hearsay": "若成功分药，云贵药价会回稳。",
+        "choices": [
+          {
+            "id": "tlb_z10_shennong_medicine_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z10_shennong_medicine_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 10
+      },
+      "n5": {
+        "scene": "药车分向三条山路，没有人因此学会神农帮毒术，也没有谁重新闯进无量主线。",
+        "dialogues": [
+          [
+            "掌柜",
+            "药是救命的，不是门派旗。"
+          ]
+        ],
+        "hearsay": "云贵后来再抢药，药铺会先把定金账簿摆出来。",
+        "choices": [],
+        "zone": 10,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "瘴气一起，神农帮的名号还没到，药价先涨了一倍。"
+}

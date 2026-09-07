@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z00_xingzilinhou",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z00_xingzilinhou.json",
+  "zone": 0,
+  "design": {
+    "title": "杏子林散场以后",
+    "hook": "无锡杏子林散场后，一个帮众家属在客栈找人，另有一只无人认领的包袱被送到药铺。",
+    "playerRole": "替家属寻人、退还包袱、护伤者，不重写 WX-01/SZ-01",
+    "sources": {
+      "novel": [
+        {
+          "beat": "杏子林大会改变乔峰处境，是原著关键节点。",
+          "use": "只写散场后的家属、伤者和遗留物，不重演大会。"
+        },
+        {
+          "beat": "姑苏慕容与太湖、燕子坞联系紧密。",
+          "use": "只让渔户说夜船传闻，不让玩家夺慕容家业。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "无锡与太湖水网使客栈、码头和渔户消息相通。",
+          "use": "让善后线自然从家属与船户生发。"
+        },
+        {
+          "fact": "大型帮会聚散后常留下伤者、行李与失散同行者。",
+          "use": "把玩家角色限定为善后跑腿。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "三帮并存规则：本游戏北丐由乔峰主持，东有洪七公、西有史火龙。",
+          "use": "任何丐帮传闻都不能写成天下只有一个丐帮。"
+        },
+        {
+          "slot": "既有 WX-01/SZ-01 不可重写。",
+          "use": "只处理杏子林和苏州主事件之后留下的小人物后果。"
+        }
+      ]
+    },
+    "echo": "改变无锡客栈寻人对白、太湖船户对燕子坞夜船的说法与包袱归还记录。",
+    "facts": [
+      "tlb_z00_xingzilinhou_heard",
+      "tlb_z00_xingzilinhou_proof",
+      "tlb_z00_xingzilinhou_safe",
+      "tlb_z00_xingzilinhou_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "杏子林散场以后",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "无锡客栈门前还留着散会后的泥脚印，一个妇人捏着半截旧布条问遍每张桌子；药铺伙计又抬来一只无人认领的包袱。",
+        "dialogues": [
+          [
+            "妇人",
+            "我家那口子只是跟着北丐帮来听话，散场以后便没回来。"
+          ],
+          [
+            "店伙",
+            "包袱里没神兵，只有换洗衣和一张买药欠条。"
+          ]
+        ],
+        "hearsay": "家属只知道失踪者最后跟着伤者往药铺方向走。",
+        "choices": [
+          {
+            "id": "tlb_z00_xingzilinhou_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z00_xingzilinhou_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z00_xingzilinhou_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "room": "inn"
+      },
+      "n1": {
+        "scene": "药铺里两个伤者已经醒了一个，认得那只包袱，却说主人曾替人挡过一棍，后来去了码头。",
+        "dialogues": [
+          [
+            "伤者",
+            "他没参与什么大计，只替我扶了一段路。"
+          ],
+          [
+            "药师",
+            "要找人就去码头，别把一场大会又扯回来。"
+          ]
+        ],
+        "hearsay": "若先问过家属，可据布条与欠条核对身份。",
+        "choices": [
+          {
+            "id": "tlb_z00_xingzilinhou_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z00_xingzilinhou_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z00_xingzilinhou_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "room": "pharmacy"
+      },
+      "n2": {
+        "scene": "太湖码头渔户说昨夜确有燕子坞方向的小船出入，也看见一个受伤帮众搭民船往苏州外港。",
+        "dialogues": [
+          [
+            "渔户",
+            "燕子坞夜里出船不稀奇，稀奇的是谁都爱说成复燕大事。"
+          ],
+          [
+            "船户",
+            "那伤者上的是民船，不是慕容家的船。"
+          ]
+        ],
+        "hearsay": "夜船传闻不能证明姑苏慕容有任何新行动。",
+        "choices": [
+          {
+            "id": "tlb_z00_xingzilinhou_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "room": "dock"
+      },
+      "n3": {
+        "scene": "背街有人抢着问包袱里是否藏有杏子林秘信，一个风波恶般的豪客又嫌旁人多嘴，横身挡路。",
+        "dialogues": [
+          [
+            "豪客",
+            "一只破包袱也值得这许多人追？"
+          ],
+          [
+            "妇人",
+            "我只找人，不争你们江湖脸面。"
+          ]
+        ],
+        "hearsay": "可以拿欠条与船户证词说明包袱只是私物；若起冲突也应立即撤离。",
+        "choices": [
+          {
+            "id": "tlb_z00_xingzilinhou_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z00_xingzilinhou_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z00_xingzilinhou_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z00_xingzilinhou_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "fengboe",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -8
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "room": "alley"
+      },
+      "n4": {
+        "scene": "府衙门前的书吏肯把失踪者记作受伤后自行搭船离城，并注明包袱已由家属认领。",
+        "dialogues": [
+          [
+            "书吏",
+            "江湖大会我不管，失踪人口总得有一条记录。"
+          ],
+          [
+            "妇人",
+            "有个去向，我便能继续找。"
+          ]
+        ],
+        "hearsay": "若包袱被核清，后来不会再被传成杏子林密信。",
+        "choices": [
+          {
+            "id": "tlb_z00_xingzilinhou_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z00_xingzilinhou_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "room": "court"
+      },
+      "n5": {
+        "scene": "客栈灯火渐低，妇人抱着包袱准备去苏州外港继续寻人；太湖渔户也不再把昨夜每条小船都说成燕子坞密使。",
+        "dialogues": [
+          [
+            "店伙",
+            "江湖大事散了，剩下的都是人家的家事。"
+          ]
+        ],
+        "hearsay": "无锡后来再提杏子林散场，会有人记得曾有家属靠一张欠条找到失踪者去向。",
+        "choices": [],
+        "room": "inn",
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "杏子林散了，人群散得快，家属找人却比开会更慢。"
+}

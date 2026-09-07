@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z04_nanyuan_grain",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z04_nanyuan_grain.json",
+  "zone": 4,
+  "design": {
+    "title": "南院粮帐",
+    "hook": "塞北辽营一份南院粮帐少了两车粮，汉人牧户却被两边抓丁。",
+    "playerRole": "送粮寻人，不替辽军统兵",
+    "sources": {
+      "novel": [
+        {
+          "beat": "萧峰后期与辽国南院大王身份相关。",
+          "use": "这里只借南院名号作为辽营行政背景。"
+        },
+        {
+          "beat": "宋辽边境矛盾贯穿原著。",
+          "use": "把压力落到牧户与粮车。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "草原军粮依赖牧道和驿运。",
+          "use": "粮帐少两车会迅速牵连民户。"
+        },
+        {
+          "fact": "边地抽丁常冲击汉人牧户与混居社区。",
+          "use": "让寻人而非战争成为目标。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "南院粮帐不能让玩家变成辽军官。",
+          "use": "玩家只是运粮脚夫或家属中间人。"
+        },
+        {
+          "slot": "乔峰身份不在此由玩家评论。",
+          "use": "避免借南院大王线代主角。"
+        }
+      ]
+    },
+    "echo": "改变塞北粮价、牧户抽丁记录与南院账房对白。",
+    "facts": [
+      "tlb_z04_nanyuan_grain_heard",
+      "tlb_z04_nanyuan_grain_proof",
+      "tlb_z04_nanyuan_grain_safe",
+      "tlb_z04_nanyuan_grain_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "南院粮帐",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "塞北营外粮棚前，账房说两车粮没到，一个汉人牧妇却哭着找被临时拉走的丈夫。",
+        "dialogues": [
+          [
+            "账房",
+            "先找粮。"
+          ],
+          [
+            "牧妇",
+            "我先找人。"
+          ]
+        ],
+        "hearsay": "粮车最后一次被看见是在西坡旧井旁。",
+        "choices": [
+          {
+            "id": "tlb_z04_nanyuan_grain_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z04_nanyuan_grain_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z04_nanyuan_grain_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 4
+      },
+      "n1": {
+        "scene": "车夫回忆西坡遇到马贼，弃下一车保另一车，后来又有营兵征走几个牧户帮拖车。",
+        "dialogues": [
+          [
+            "车夫",
+            "粮没全丢，人却被带走了。"
+          ],
+          [
+            "牧妇",
+            "那便有去处了。"
+          ]
+        ],
+        "hearsay": "失踪牧户可能在临时粮队，不一定正式从军。",
+        "choices": [
+          {
+            "id": "tlb_z04_nanyuan_grain_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z04_nanyuan_grain_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z04_nanyuan_grain_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 4
+      },
+      "n2": {
+        "scene": "账房愿意查临时役夫名册，但要求有人补齐遗失粮车的损耗说明。",
+        "dialogues": [
+          [
+            "账房",
+            "账得对上，人才找得出来。"
+          ],
+          [
+            "车夫",
+            "我认这一车损耗。"
+          ]
+        ],
+        "hearsay": "核账是非战斗寻人路线。",
+        "choices": [
+          {
+            "id": "tlb_z04_nanyuan_grain_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 4
+      },
+      "n3": {
+        "scene": "西坡果然有马贼再来抢剩下粮车。",
+        "dialogues": [
+          [
+            "马贼",
+            "粮留下，人走。"
+          ],
+          [
+            "车夫",
+            "这回再丢，账上谁都别想回家。"
+          ]
+        ],
+        "hearsay": "可护车退回营圈，不需追杀。",
+        "choices": [
+          {
+            "id": "tlb_z04_nanyuan_grain_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z04_nanyuan_grain_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z04_nanyuan_grain_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z04_nanyuan_grain_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "horsebandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 4
+      },
+      "n4": {
+        "scene": "临时役夫名册里找到牧妇丈夫姓名，注明只征三日拖车。",
+        "dialogues": [
+          [
+            "账房",
+            "人没入军籍，三日后可回。"
+          ],
+          [
+            "牧妇",
+            "有这句话就够。"
+          ]
+        ],
+        "hearsay": "留下记录后，抽丁传闻会改成临时役夫而非强征入伍。",
+        "choices": [
+          {
+            "id": "tlb_z04_nanyuan_grain_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z04_nanyuan_grain_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 4
+      },
+      "n5": {
+        "scene": "粮车补齐一半，牧妇也拿到丈夫回营日期。辽营仍有军务，玩家没有因此成了南院将领。",
+        "dialogues": [
+          [
+            "车夫",
+            "粮是粮，人是人，别再混成一笔。"
+          ]
+        ],
+        "hearsay": "塞北牧户后来会先问役期，再决定是否给粮队帮工。",
+        "choices": [],
+        "zone": 4,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "南院账上少的是两车粮，牧户家里少的却是两个壮丁。"
+}

@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z03_yanmen_witness",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z03_yanmen_witness.json",
+  "zone": 3,
+  "design": {
+    "title": "雁门旧雪",
+    "hook": "雁门关旧案有个老车夫记得一夜哭声，却被辽汉双方逼着说成各自想听的版本。",
+    "playerRole": "保存或交出有限见闻，不代萧远山定案",
+    "sources": {
+      "novel": [
+        {
+          "beat": "雁门关旧案与萧远山、乔峰身世紧密相关。",
+          "use": "只给玩家一个外围目击者的有限片段。"
+        },
+        {
+          "beat": "宋辽仇恨是原著的重要背景。",
+          "use": "让目击者遭受双方逼问。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "雁门关是边地交通与军事要口。",
+          "use": "使旧案见闻长期伴随关城传闻。"
+        },
+        {
+          "fact": "边境证词容易被不同群体政治化。",
+          "use": "让玩家选择封存或公开有限事实。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "玩家不能代萧远山完成复仇或真相揭露。",
+          "use": "目击内容只能是声音、车辙、人数等外围事实。"
+        },
+        {
+          "slot": "辽境必须独立于满清设定。",
+          "use": "本区只写宋辽汉人冲突。"
+        }
+      ]
+    },
+    "echo": "改变雁门关旧案传闻是否保留“有限目击”标签。",
+    "facts": [
+      "tlb_z03_yanmen_witness_heard",
+      "tlb_z03_yanmen_witness_proof",
+      "tlb_z03_yanmen_witness_safe",
+      "tlb_z03_yanmen_witness_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "雁门旧雪",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "雁门关茶棚里，一个老车夫被两拨人围着问旧案。他只记得当年夜里听见哭声、看见几辆急车，却说不清车上是谁。",
+        "dialogues": [
+          [
+            "老车夫",
+            "我那年只赶骡车，没见英雄脸。"
+          ],
+          [
+            "辽商",
+            "你听见几个人哭，总该记得。"
+          ]
+        ],
+        "hearsay": "目击只有声音、车辙和时辰，没有身份结论。",
+        "choices": [
+          {
+            "id": "tlb_z03_yanmen_witness_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z03_yanmen_witness_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z03_yanmen_witness_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 3
+      },
+      "n1": {
+        "scene": "老车夫从旧账册里找出当年过关的一条车费记录，日期能对上他记忆里的那夜。",
+        "dialogues": [
+          [
+            "老车夫",
+            "这能证明我在关口，不能证明我看见谁。"
+          ],
+          [
+            "茶博士",
+            "这话才稳。"
+          ]
+        ],
+        "hearsay": "账册能证明人在现场附近，不能证明事件全貌。",
+        "choices": [
+          {
+            "id": "tlb_z03_yanmen_witness_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z03_yanmen_witness_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z03_yanmen_witness_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 3
+      },
+      "n2": {
+        "scene": "一个汉人行商劝他把账页烧掉，免得两边都来逼问；辽人驿卒却主张交关城封存。",
+        "dialogues": [
+          [
+            "行商",
+            "留着是祸。"
+          ],
+          [
+            "驿卒",
+            "烧了以后，人人都能替你说。"
+          ]
+        ],
+        "hearsay": "玩家可帮助封存，也可只记口述后让老人离开。",
+        "choices": [
+          {
+            "id": "tlb_z03_yanmen_witness_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 3
+      },
+      "n3": {
+        "scene": "关城守卫前来索要账页，旁边又有人鼓动说这是足以定辽汉大仇的铁证。",
+        "dialogues": [
+          [
+            "守卫",
+            "我们只收登记物。"
+          ],
+          [
+            "围观者",
+            "既有旧账，就该把凶手都写出来！"
+          ]
+        ],
+        "hearsay": "坚持有限证词即可避免被迫下结论。",
+        "choices": [
+          {
+            "id": "tlb_z03_yanmen_witness_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z03_yanmen_witness_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z03_yanmen_witness_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z03_yanmen_witness_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "guards",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 3
+      },
+      "n4": {
+        "scene": "关城文书最终写成“车夫在关口，闻哭声、见急车，未识人物”。",
+        "dialogues": [
+          [
+            "书吏",
+            "不知道的，就写不知道。"
+          ],
+          [
+            "老车夫",
+            "这几个字我认。"
+          ]
+        ],
+        "hearsay": "若玩家守住边界，旧案传闻会保留未识人物这一句。",
+        "choices": [
+          {
+            "id": "tlb_z03_yanmen_witness_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z03_yanmen_witness_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 3
+      },
+      "n5": {
+        "scene": "老车夫赶着空车离关，旧案仍旧没有被这一页账册解决。",
+        "dialogues": [
+          [
+            "老车夫",
+            "我只愿后人别逼一个赶车的替天下断案。"
+          ]
+        ],
+        "hearsay": "雁门后来再提旧案，会有人先问一句：你说的是亲见，还是后听。",
+        "choices": [],
+        "zone": 3,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "雁门关的旧雪早化了，旧话却越说越像每个人都亲眼在场。"
+}

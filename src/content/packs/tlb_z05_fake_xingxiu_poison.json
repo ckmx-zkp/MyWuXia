@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z05_fake_xingxiu_poison",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z05_fake_xingxiu_poison.json",
+  "zone": 5,
+  "design": {
+    "title": "边市假星宿毒",
+    "hook": "辽东金国边市有人兜售“星宿毒粉”，女真猎户服后反而高热不退。",
+    "playerRole": "辨药救人，不追星宿派",
+    "sources": {
+      "novel": [
+        {
+          "beat": "星宿派毒功在原著中令人畏惧。",
+          "use": "这里只让其名号被骗子借用。"
+        },
+        {
+          "beat": "丁春秋等主角级人物不进入本支线。",
+          "use": "玩家只辨假药。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "辽东边市药材与皮货混杂交易。",
+          "use": "适合出现假药骗局。"
+        },
+        {
+          "fact": "边地语言与药名差异容易被商贩利用。",
+          "use": "让 knowledge 检定发挥作用。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "不要把任何怪药都归给星宿派。",
+          "use": "必须可通过药性判断为假冒。"
+        },
+        {
+          "slot": "女真与辽边市冲突只做地方背景。",
+          "use": "不扩展为灭国战争。"
+        }
+      ]
+    },
+    "echo": "改变辽东边市对“星宿毒”叫卖的容忍度与药价。",
+    "facts": [
+      "tlb_z05_fake_xingxiu_poison_heard",
+      "tlb_z05_fake_xingxiu_poison_proof",
+      "tlb_z05_fake_xingxiu_poison_safe",
+      "tlb_z05_fake_xingxiu_poison_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "边市假星宿毒",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "辽东边市药摊前，一个女真猎户喝下所谓解星宿毒的汤药后高热不退，摊主却要加钱卖第二包。",
+        "dialogues": [
+          [
+            "猎户妻",
+            "第一包都害成这样，还敢卖第二包？"
+          ],
+          [
+            "摊主",
+            "毒深，当然药贵。"
+          ]
+        ],
+        "hearsay": "药粉气味与普通发汗药相近。",
+        "choices": [
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z05_fake_xingxiu_poison_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 5
+      },
+      "n1": {
+        "scene": "药铺伙计取一点残粉试味，确认其中没有传闻里那些诡异药性，反倒是剂量过重的寻常烈药。",
+        "dialogues": [
+          [
+            "伙计",
+            "不是星宿奇毒，是药下重了。"
+          ],
+          [
+            "猎户妻",
+            "那人是在借名头吓钱。"
+          ]
+        ],
+        "hearsay": "辨药可阻止继续服用。",
+        "choices": [
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_proof",
+            "text": "按药性分辨这包粉，看是不是星宿剧毒。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z05_fake_xingxiu_poison_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 5
+      },
+      "n2": {
+        "scene": "边市翻译指出摊主把外地药名故意译成“星宿散”，借江湖恶名抬价。",
+        "dialogues": [
+          [
+            "翻译",
+            "原名不是这个。"
+          ],
+          [
+            "商人",
+            "名一换，价翻三倍。"
+          ]
+        ],
+        "hearsay": "翻译证词可用于官面投诉。",
+        "choices": [
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 5
+      },
+      "n3": {
+        "scene": "摊主叫来几个同伙抢回药包，怕证据落到巡市人手里。",
+        "dialogues": [
+          [
+            "摊主",
+            "买卖不成，东西还我。"
+          ],
+          [
+            "伙计",
+            "药包要留作证。"
+          ]
+        ],
+        "hearsay": "可交涉交押金，也可护人撤到巡市处。",
+        "choices": [
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z05_fake_xingxiu_poison_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z05_fake_xingxiu_poison_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "bandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 5
+      },
+      "n4": {
+        "scene": "巡市人把药摊记为冒名售药，允许猎户退钱并暂停此摊交易。",
+        "dialogues": [
+          [
+            "巡市人",
+            "我不管星宿派真假，只管你卖的是什么。"
+          ],
+          [
+            "猎户妻",
+            "这便够了。"
+          ]
+        ],
+        "hearsay": "若辨药成功，边市以后会要求写明药材本名。",
+        "choices": [
+          {
+            "id": "tlb_z05_fake_xingxiu_poison_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z05_fake_xingxiu_poison_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 5
+      },
+      "n5": {
+        "scene": "猎户退了高热，妻子带着退款离开。星宿二字仍吓人，却不再替这个摊主抬价。",
+        "dialogues": [
+          [
+            "伙计",
+            "真毒未必遇得上，假名倒天天有人卖。"
+          ]
+        ],
+        "hearsay": "辽东边市后来多了一条规矩：药名要能对上药材。",
+        "choices": [],
+        "zone": 5,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "边市越怕星宿二字，骗子越敢把寻常烈药说成奇毒。"
+}

@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z12_shenhezhuang_fragment",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z12_shenhezhuang_fragment.json",
+  "zone": 12,
+  "design": {
+    "title": "海上参合残页",
+    "hook": "东海渔户捞到几张写着参合庄字样的残页，私船又挂姑苏旗号招客。",
+    "playerRole": "送还或封存，不入还施水阁",
+    "sources": {
+      "novel": [
+        {
+          "beat": "慕容氏参合庄与还施水阁是原著核心场所。",
+          "use": "残页只能是庄务或传闻，不含斗转星移。"
+        },
+        {
+          "beat": "姑苏慕容名号在江湖极响。",
+          "use": "允许海船借旗号行骗。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "东海与太湖沿线私船常借名号招揽生意。",
+          "use": "让假旗号成为风险。"
+        },
+        {
+          "fact": "漂流文书可能被渔户打捞。",
+          "use": "提供送还或封存路线。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "玩家不得进入还施水阁。",
+          "use": "所有处理在码头、客栈或官面完成。"
+        },
+        {
+          "slot": "残页不能奖励斗转星移或慕容家秘学。",
+          "use": "内容必须是普通庄务或无法辨认。"
+        }
+      ]
+    },
+    "echo": "改变东海私船是否还能借姑苏旗号招客，以及参合庄残页的封存传闻。",
+    "facts": [
+      "tlb_z12_shenhezhuang_fragment_heard",
+      "tlb_z12_shenhezhuang_fragment_proof",
+      "tlb_z12_shenhezhuang_fragment_safe",
+      "tlb_z12_shenhezhuang_fragment_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "海上参合残页",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "东海码头渔户摊开几张湿残页，只能认出参合庄三字；旁边一艘私船正挂姑苏旗号招客，说能直送慕容家水阁。",
+        "dialogues": [
+          [
+            "渔户",
+            "纸是海里捞的，船是不是慕容家的我可不知道。"
+          ],
+          [
+            "船客",
+            "他说交钱就能进水阁。"
+          ]
+        ],
+        "hearsay": "残页上没有武学招式，只像庄务记账边角。",
+        "choices": [
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z12_shenhezhuang_fragment_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 12
+      },
+      "n1": {
+        "scene": "客栈账房辨出残页上是柴米、船租和日期，并非任何武学口诀。",
+        "dialogues": [
+          [
+            "账房",
+            "一页都是米价和船脚。"
+          ],
+          [
+            "渔户",
+            "这也能被说成秘笈？"
+          ]
+        ],
+        "hearsay": "辨明内容可压低宝物传闻。",
+        "choices": [
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z12_shenhezhuang_fragment_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z12_shenhezhuang_fragment_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 12
+      },
+      "n2": {
+        "scene": "太湖来的老船户说真去姑苏内湖的船不会在东海外港公开兜售“水阁门票”。",
+        "dialogues": [
+          [
+            "老船户",
+            "这口号太响，反倒像假的。"
+          ],
+          [
+            "船客",
+            "那我押金怎么办？"
+          ]
+        ],
+        "hearsay": "可凭船路常识拆穿假旗号。",
+        "choices": [
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 12
+      },
+      "n3": {
+        "scene": "私船见骗局要露，几个海盗爪牙便想抢走残页，免得被拿去对证。",
+        "dialogues": [
+          [
+            "海盗",
+            "海里捞的破纸，给我便算。"
+          ],
+          [
+            "渔户",
+            "越抢越说明有鬼。"
+          ]
+        ],
+        "hearsay": "可护渔户撤回客栈，也可将残页先交差役封存。",
+        "choices": [
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z12_shenhezhuang_fragment_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z12_shenhezhuang_fragment_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "pirate",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 12
+      },
+      "n4": {
+        "scene": "残页被记作普通庄务文书，私船也因冒用姑苏旗号被赶出内港。",
+        "dialogues": [
+          [
+            "差役",
+            "不论慕容家真假，冒名收钱就是另一回事。"
+          ],
+          [
+            "船客",
+            "押金能退便好。"
+          ]
+        ],
+        "hearsay": "若成功辨伪，东海船客会先查船路再信旗号。",
+        "choices": [
+          {
+            "id": "tlb_z12_shenhezhuang_fragment_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z12_shenhezhuang_fragment_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 12
+      },
+      "n5": {
+        "scene": "潮水再涨时，残页或被封存，或托可信船户送往苏州外围，不曾带玩家进入还施水阁。",
+        "dialogues": [
+          [
+            "渔户",
+            "一张米价账，差点把半码头人骗出海。"
+          ]
+        ],
+        "hearsay": "东海后来再见姑苏旗号，船客会先问：从哪条水路来。",
+        "choices": [],
+        "zone": 12,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "海上挂一面姑苏旗不难，难的是谁敢证明船真从参合庄来。"
+}

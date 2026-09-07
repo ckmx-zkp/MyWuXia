@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z06_northern_jurchen_rumor",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z06_northern_jurchen_rumor.json",
+  "zone": 6,
+  "design": {
+    "title": "黑水北岸传闻",
+    "hook": "更北女真部落传来辽军和南人互相征粮的消息，猎户担心商路断掉。",
+    "playerRole": "替猎户带口信、找失踪商队，不写满清灭辽结局",
+    "sources": {
+      "novel": [
+        {
+          "beat": "《天龙八部》时代宋辽女真关系复杂。",
+          "use": "只写北地女真部落与辽境贸易。"
+        },
+        {
+          "beat": "原著时代早于后世满清兴起。",
+          "use": "禁止把本线写成满清灭辽结局。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "女真部落与辽之间存在贡赋、贸易和冲突。",
+          "use": "让皮货商路成为现实纽带。"
+        },
+        {
+          "fact": "黑水北地交通依赖猎户和熟路商队。",
+          "use": "让寻队任务成立。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "严禁时代穿越到满清灭辽。",
+          "use": "本区只保留更北女真部落传闻。"
+        },
+        {
+          "slot": "玩家不能替任何部落发动统一战争。",
+          "use": "只找商队和传口信。"
+        }
+      ]
+    },
+    "echo": "改变黑水商路是否恢复、猎户对辽境传闻的措辞。",
+    "facts": [
+      "tlb_z06_northern_jurchen_rumor_heard",
+      "tlb_z06_northern_jurchen_rumor_proof",
+      "tlb_z06_northern_jurchen_rumor_safe",
+      "tlb_z06_northern_jurchen_rumor_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "黑水北岸传闻",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "黑水北岸的小客棚里，猎户抱怨盐商三日未到，外头却有人把这说成女真要大举南下。",
+        "dialogues": [
+          [
+            "猎户",
+            "我等的是盐，不是大军。"
+          ],
+          [
+            "商贩",
+            "越说得大，皮货越好抬价。"
+          ]
+        ],
+        "hearsay": "失踪商队最后从东林旧道出发。",
+        "choices": [
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z06_northern_jurchen_rumor_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 6
+      },
+      "n1": {
+        "scene": "猎户指出东林旧道有倒木和新脚印，像是商队被迫改道，并非遭军队围截。",
+        "dialogues": [
+          [
+            "猎户",
+            "这是车轮刮树的痕，不是军阵。"
+          ],
+          [
+            "商贩",
+            "那便别再说成开战。"
+          ]
+        ],
+        "hearsay": "路线知识可削弱战争谣言。",
+        "choices": [
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_proof",
+            "text": "把这一条可核实线索留下。",
+            "requires": {
+              "flag": "tlb_z06_northern_jurchen_rumor_heard"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z06_northern_jurchen_rumor_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 6
+      },
+      "n2": {
+        "scene": "一名回来的脚夫说商队被地方盗匪索过路钱，正困在北坡等人带路。",
+        "dialogues": [
+          [
+            "脚夫",
+            "他们缺的是熟路人。"
+          ],
+          [
+            "猎户",
+            "我能带，但要有人看住货。"
+          ]
+        ],
+        "hearsay": "可出银雇猎户，也可亲自陪走。",
+        "choices": [
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 6
+      },
+      "n3": {
+        "scene": "北坡盗匪再次拦路，只要银钱和盐袋。",
+        "dialogues": [
+          [
+            "盗匪",
+            "留下两袋，便当没见过。"
+          ],
+          [
+            "盐商",
+            "再留两袋，冬前就没盐卖了。"
+          ]
+        ],
+        "hearsay": "可散财买路或护队退回猎户熟悉的小径。",
+        "choices": [
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z06_northern_jurchen_rumor_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z06_northern_jurchen_rumor_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "bandit",
+              "danger": 2
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -6
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 6
+      },
+      "n4": {
+        "scene": "商队回到黑水边，账上只记盗匪损耗，没有任何“女真南征”字样。",
+        "dialogues": [
+          [
+            "盐商",
+            "我们被的是贼，不是大军。"
+          ],
+          [
+            "猎户",
+            "把这句话带回去。"
+          ]
+        ],
+        "hearsay": "若证词被记录，商价不会再因战争谣言暴涨。",
+        "choices": [
+          {
+            "id": "tlb_z06_northern_jurchen_rumor_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z06_northern_jurchen_rumor_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 6
+      },
+      "n5": {
+        "scene": "皮货与盐重新摆上棚台。北地政治仍远而模糊，这一趟只是商队终于回来了。",
+        "dialogues": [
+          [
+            "猎户",
+            "冬天够咸菜吃，比传谁灭谁实在。"
+          ]
+        ],
+        "hearsay": "黑水边后来再说南征，多有人先问：是不是又有商队迟到了。",
+        "choices": [],
+        "zone": 6,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "更北的猎户听见辽军两个字会皱眉，却更怕冬前最后一队盐商不来。"
+}

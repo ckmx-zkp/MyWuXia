@@ -1,0 +1,281 @@
+{
+  "schema": "jianghu-content-pack-v1",
+  "id": "tlb_z11_wanjie_valley_after",
+  "kind": "side_event",
+  "saveAs": "src/content/packs/tlb_z11_wanjie_valley_after.json",
+  "zone": 11,
+  "design": {
+    "title": "万劫谷外寻人",
+    "hook": "万劫谷外药农遇到家仆寻走失小姐，神农帮余党又在山口讨药。",
+    "playerRole": "谷外善后、寻人、护药，不重写 DL-01/DL-02",
+    "sources": {
+      "novel": [
+        {
+          "beat": "万劫谷与段誉等人的经历属于大理主线。",
+          "use": "只写谷外家仆和药农善后。"
+        },
+        {
+          "beat": "无量剑、神农帮与大理前段剧情相连。",
+          "use": "允许外围人物出现，但不重演主线。"
+        }
+      ],
+      "history": [
+        {
+          "fact": "大理山谷道路复杂，家仆与药农依赖熟路人。",
+          "use": "使寻人任务合理。"
+        },
+        {
+          "fact": "山地药材交易与地方势力摩擦频繁。",
+          "use": "让药农成为冲突中间层。"
+        }
+      ],
+      "forum": [
+        {
+          "slot": "DL-01/DL-02 已存在，不得重写。",
+          "use": "玩家不能进入核心节点替段誉救人。"
+        },
+        {
+          "slot": "渔樵耕读若出现只能撑回合并可撤。",
+          "use": "高危角色不可成为唯一击杀通关。"
+        }
+      ]
+    },
+    "echo": "改变万劫谷外药农对白、家仆是否获得小姐去向以及神农余党取药方式。",
+    "facts": [
+      "tlb_z11_wanjie_valley_after_heard",
+      "tlb_z11_wanjie_valley_after_proof",
+      "tlb_z11_wanjie_valley_after_safe",
+      "tlb_z11_wanjie_valley_after_record"
+    ],
+    "blocked": [],
+    "routes": [
+      "成功",
+      "失败补救",
+      "交涉或撤退"
+    ]
+  },
+  "event": {
+    "name": "万劫谷外寻人",
+    "start": "n0",
+    "requires": {},
+    "nodes": {
+      "n0": {
+        "scene": "大理山路药棚旁，一个万劫谷家仆举着旧灯笼找走失小姐，药农却说昨夜只见一辆空车从谷外经过。",
+        "dialogues": [
+          [
+            "家仆",
+            "我不求你进谷，只求问一条去向。"
+          ],
+          [
+            "药农",
+            "空车往东，脚印往西。"
+          ]
+        ],
+        "hearsay": "家仆明确不要求玩家进入谷内。",
+        "choices": [
+          {
+            "id": "tlb_z11_wanjie_valley_after_heard",
+            "text": "先把亲见与转述分开问清。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n1",
+            "effects": {
+              "flag": {
+                "tlb_z11_wanjie_valley_after_heard": true
+              },
+              "potential": 1
+            },
+            "outcome": "你拿到一条有限但可核实的事实。"
+          },
+          {
+            "id": "tlb_z11_wanjie_valley_after_silver",
+            "text": "先花一笔银钱稳住受牵连的人。",
+            "requires": {
+              "silver": 4
+            },
+            "cost": {
+              "silver": 4
+            },
+            "next": "n2",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "当事人得到一点时间，不必立刻冒险。"
+          }
+        ],
+        "zone": 11
+      },
+      "n1": {
+        "scene": "药农在西坡找到一只女式鞋印和折断草茎，但无法确认就是家仆所寻之人。",
+        "dialogues": [
+          [
+            "药农",
+            "只能说有人往西走。"
+          ],
+          [
+            "家仆",
+            "有方向便够。"
+          ]
+        ],
+        "hearsay": "鞋印只是线索，不是身份铁证。",
+        "choices": [
+          {
+            "id": "tlb_z11_wanjie_valley_after_proof",
+            "text": "按药农所说，辨认山口这几味草药。",
+            "requires": {
+              "knowledge": 2
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "flag": {
+                "tlb_z11_wanjie_valley_after_proof": true
+              }
+            },
+            "outcome": "后续交涉有了具体依据。"
+          }
+        ],
+        "zone": 11
+      },
+      "n2": {
+        "scene": "神农帮余党来讨解瘴药，愿拿自己见过的山路消息交换。",
+        "dialogues": [
+          [
+            "余党",
+            "昨夜西坡确有女子与两名家人走过。"
+          ],
+          [
+            "家仆",
+            "这比鞋印更有用。"
+          ]
+        ],
+        "hearsay": "可以用 herbs 或银钱换取见闻。",
+        "choices": [
+          {
+            "id": "tlb_z11_wanjie_valley_after_detour",
+            "text": "按新线索改走较稳妥的处理办法。",
+            "cost": {
+              "potential": 1
+            },
+            "next": "n3",
+            "effects": {
+              "rep": 1
+            },
+            "outcome": "你没有把小事硬推成大冲突。"
+          }
+        ],
+        "zone": 11
+      },
+      "n3": {
+        "scene": "山口遇到渔樵耕读一路人物，他们误以为玩家要闯谷，要求停步。",
+        "dialogues": [
+          [
+            "樵者",
+            "谷中事不许外人插手。"
+          ],
+          [
+            "家仆",
+            "我们只在谷外找人。"
+          ]
+        ],
+        "hearsay": "可说明边界直接退开；若比试也只能撑几回合后撤。",
+        "choices": [
+          {
+            "id": "tlb_z11_wanjie_valley_after_safe",
+            "text": "拿前面核实的事实交涉。",
+            "requires": {
+              "flag": "tlb_z11_wanjie_valley_after_proof"
+            },
+            "cost": {
+              "potential": 1
+            },
+            "next": "n4",
+            "effects": {
+              "rep": 2,
+              "flag": {
+                "tlb_z11_wanjie_valley_after_safe": true
+              }
+            },
+            "outcome": "对方失去继续纠缠的理由，事情先被压住。"
+          },
+          {
+            "id": "tlb_z11_wanjie_valley_after_clash",
+            "text": "护住同行者，只求脱身。",
+            "combat": {
+              "opponent": "disciples",
+              "danger": 3
+            },
+            "next": "n4",
+            "failNext": "n4",
+            "retreatNext": "n4",
+            "effects": {
+              "exp": 6
+            },
+            "failEffects": {
+              "hp": -8
+            },
+            "outcome": "你没有追杀，只争到一条退路。",
+            "failText": "你没有占到便宜，便立刻撤到人多或有官面见证处，事情仍能靠前面的证据收束。"
+          }
+        ],
+        "zone": 11
+      },
+      "n4": {
+        "scene": "家仆最终确认小姐已随自家人往西南亲族处暂避，并不需要玩家进谷。",
+        "dialogues": [
+          [
+            "家仆",
+            "知道她没独自落山里就好。"
+          ],
+          [
+            "药农",
+            "谷外的路也能把事办完。"
+          ]
+        ],
+        "hearsay": "若与神农余党交换过消息，药棚以后会保留一条互换见闻的规矩。",
+        "choices": [
+          {
+            "id": "tlb_z11_wanjie_valley_after_record",
+            "text": "付纸墨或路费，把结果留下可查询记录。",
+            "requires": {
+              "silver": 3
+            },
+            "cost": {
+              "silver": 3
+            },
+            "next": "n5",
+            "effects": {
+              "exp": 4,
+              "rep": 1,
+              "flag": {
+                "tlb_z11_wanjie_valley_after_record": true
+              }
+            },
+            "outcome": "这一桩小事有了可追溯的结尾。"
+          }
+        ],
+        "zone": 11
+      },
+      "n5": {
+        "scene": "家仆辞谢而去，药农重新摆好药篓。谷门仍在远处，没有因这次善后被玩家闯开。",
+        "dialogues": [
+          [
+            "药农",
+            "有些门不用进去，也能帮到门外的人。"
+          ]
+        ],
+        "hearsay": "万劫谷外后来再有人寻亲，会先去药棚问山路见闻。",
+        "choices": [],
+        "zone": 11,
+        "terminal": true
+      }
+    }
+  },
+  "opponents": {},
+  "rooms": {},
+  "activities": {},
+  "hearsay": "万劫谷里面的事人人敢猜，谷外药农只知道有人三日没回家。"
+}
