@@ -1,0 +1,46 @@
+src/game/state.js
+  s_106aca82155d0d::t_d62af3a207315c 3
+docs/gdd/09-auto-combat-and-saves.md
+  s_106aca82155d0d::t_c99b6dbb5c4bb9 28
+  s_106aca82155d0d::t_e7c74337c2e009 11,30
+  s_106aca82155d0d::t_d631c1d6edbd3c 29
+src/game/vitals.js
+  s_106aca82155d0d::t_d62af3a207315c 1-10,12-27
+  s_106aca82155d0d::t_f9022bf0fea5d7 11
+src/game/saves.js
+  s_106aca82155d0d::t_d62af3a207315c 8,34,39
+src/game/vitals.test.js
+  s_106aca82155d0d::t_8f3f4a9fb37323 1-14,16-25
+  s_106aca82155d0d::t_6f9fc49fa89778 15
+src/main.jsx
+  s_106aca82155d0d::t_0d6a0e4c324222 17,19,348-349,351,391,516,518,716,776,786,838-839
+src/game/combat.test.js
+  s_106aca82155d0d::t_8f3f4a9fb37323 37-38,43
+src/features/combat/CombatPanel.jsx
+  s_106aca82155d0d::t_758bbc2bfc9c65 5,43,52
+src/game/saves.test.js
+  s_106aca82155d0d::t_8f3f4a9fb37323 20-23
+AGENTS.md
+  s_106aca82155d0d::t_c99b6dbb5c4bb9 117
+  s_106aca82155d0d::t_e7c74337c2e009 142,174
+docs/PROGRESS.md
+  s_106aca82155d0d::t_e7c74337c2e009 26-27
+src/game/combat.js
+  s_106aca82155d0d::t_758bbc2bfc9c65 4,25,31-32,99-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4a80436589c645c225d3970ecd438c39ef69ffe6",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
