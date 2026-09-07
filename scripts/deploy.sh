@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 江湖长夜 · 构建并部署到阿里云 aliyun-prayer（nginx /srv/jianghu，端口 8082）
+# 江湖长夜：构建并部署到阿里云 aliyun-prayer（nginx /srv/jianghu，端口 8082）
 set -euo pipefail
 cd "$(dirname "$0")/.."
 npm run test
