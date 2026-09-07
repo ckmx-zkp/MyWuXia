@@ -1,0 +1,26 @@
+src/main.jsx
+  s_106aca82155d0d::t_d1ac9f39ece4fc 434-440
+  s_106aca82155d0d::t_d678024217c564 592,874
+AGENTS.md
+  s_106aca82155d0d::t_f640cf204e1855 123
+src/style.css
+  s_106aca82155d0d::t_d678024217c564 319-322
+docs/PROGRESS.md
+  s_106aca82155d0d::t_f640cf204e1855 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "6b4dd6c8c4b3ed68044f5f508a96b7c07c7bc936",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
