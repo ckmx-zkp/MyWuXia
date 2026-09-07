@@ -316,6 +316,10 @@ footer{height:150px;display:grid;grid-template-columns:82px 1fr 100px;gap:22px;p
 .set-row{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid #8b6c3866}
 .set-row span{width:52px;font-size:15px;color:#d8c184}
 .set-row small{font-size:12px;color:#8e7353}
+.set-row.admin-test>div{flex:1;min-width:0}
+.set-row.admin-test span{display:block;width:auto}
+.set-row.admin-test small{display:block;margin-top:4px;line-height:1.5}
+.set-row.admin-test .hbtn{flex:0 0 auto}
 .rep .dim{color:#6d604a;font-size:12px}
 
 /* 任务树提示 */
@@ -456,7 +460,6 @@ input{touch-action:manipulation}
   .currency span+span{padding-left:12px;border-left:1px solid #a9823d}
   .currency i,.currency i.em,.currency i.em-silver,.currency .cultivate i.em-cult{width:22px;height:22px}
   .currency b{font-size:15px}
-  .hbtn.dev{display:none}
   .audio-toggles{grid-column:1/-1;grid-row:3;gap:4px}
   .audio-toggles .hbtn{flex:1}
   header>.hbtn.reopen{grid-column:2;grid-row:1}

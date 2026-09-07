@@ -431,6 +431,13 @@ function App({ saved }) {
 
   const click = () => { play(SOUND.click, s.muteSfx); bgmSwitch(s.loc, s.muteBgm); };
   const toggleAudio = key => setS(v => ({ ...v, [key]: !v[key] }));
+  const toggleCombatMultiplier = () => {
+    click();
+    setS(v => {
+      const devMult = v.devMult === 10 ? 1 : 10;
+      return { ...v, devMult, log: [`管理员：战斗测试收益调整为 ×${devMult}。`, ...v.log].slice(0, 8) };
+    });
+  };
   const go = async i => {
     click();
     if (busy || i === s.loc) return;
@@ -578,11 +585,11 @@ function App({ saved }) {
     <header>
       <div className="brand"><small>THE LONG NIGHT OF</small><strong>江湖长夜</strong></div>
       <div className="currency"><span><i className="em em-silver" />银两 <b>{s.silver}</b></span><span className="cultivate"><i className="em em-cult" />修为 <b>{s.expTotal % 100}</b></span></div>
-      <button className="hbtn dev" title="仅用于比较自动交手的胜负收益" onClick={() => { click(); setS(v => { const nx = v.devMult === 10 ? 1 : 10; return { ...v, devMult: nx, log: [`管理员：战斗测试收益调整为 ×${nx}。`, ...v.log].slice(0, 8) }; }); }}>战斗测试 ×{s.devMult === 10 ? 10 : 1}</button>
       <div className="audio-toggles">
         <button className={`hbtn${s.muteBgm ? ' off' : ''}`} title="背景音乐" onClick={() => toggleAudio('muteBgm')}>{s.muteBgm ? '音乐关' : '音乐'}</button>
         <button className={`hbtn${s.muteSfx ? ' off' : ''}`} title="界面音效" onClick={() => toggleAudio('muteSfx')}>{s.muteSfx ? '音效关' : '音效'}</button>
         <button className={`hbtn${s.muteVoice ? ' off' : ''}`} title="剧情配音" onClick={() => toggleAudio('muteVoice')}>{s.muteVoice ? '配音关' : '配音'}</button>
+        <button className={`hbtn dev${s.devMult === 10 ? '' : ' off'}`} title="仅用于比较自动交手的胜负收益" onClick={toggleCombatMultiplier}>战斗 ×{s.devMult === 10 ? 10 : 1}</button>
       </div>
       <button className="hbtn reopen" onClick={reset}>重开</button>
     </header>
@@ -864,6 +871,7 @@ function App({ saved }) {
           <div className="set-row"><span>音乐</span><button className="hbtn" onClick={() => toggleAudio('muteBgm')}>{s.muteBgm ? '关' : '开'}</button></div>
           <div className="set-row"><span>音效</span><button className="hbtn" onClick={() => toggleAudio('muteSfx')}>{s.muteSfx ? '关' : '开'}</button></div>
           <div className="set-row"><span>配音</span><button className="hbtn" onClick={() => toggleAudio('muteVoice')}>{s.muteVoice ? '关' : '开'}</button></div>
+          <div className="set-row admin-test"><div><span>管理员战斗倍率</span><small>仅用于测试自动交手的胜负收益</small></div><button className={`hbtn dev${s.devMult === 10 ? '' : ' off'}`} onClick={toggleCombatMultiplier}>{s.devMult === 10 ? '×10 开启' : '×1 关闭'}</button></div>
           <div className="set-row"><span>存档</span><button className="hbtn" onClick={() => { setPanel(null); setSavesOpen(true); }}>存档 / 读档</button></div>
           <div className="set-row"><span>重开</span><button className="hbtn" onClick={() => { setPanel(null); reset(); }}>清空进度重开</button></div>
         </>}
