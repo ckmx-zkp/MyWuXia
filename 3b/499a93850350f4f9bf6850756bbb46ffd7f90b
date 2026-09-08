@@ -1,0 +1,22 @@
+docs/gdd/15-growth-and-jianghu-roadmap.md
+  s_106aca82155d0d::t_779808c28f13dc 1-79
+docs/PROGRESS.md
+  s_106aca82155d0d::t_779808c28f13dc 3-5
+  s_106aca82155d0d::t_3af52666115986 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "3b499a93850350f4f9bf6850756bbb46ffd7f90b",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
