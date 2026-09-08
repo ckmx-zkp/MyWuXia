@@ -1,0 +1,120 @@
+src/content/p0.js
+  s_106aca82155d0d::t_7690a7879d4d57 2,47
+src/game/p0-save.js
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 24
+src/game/p0-engine.js
+  s_106aca82155d0d::t_7690a7879d4d57 6,84-85,100-101,132,135-136,139
+scripts/audit-story-causality.mjs
+  s_106aca82155d0d::t_bed6c742658600 1-45
+server/narrative.mjs
+  s_106aca82155d0d::t_cf03b27bb145ae 46
+src/game/quest-guards.js
+  s_106aca82155d0d::t_7690a7879d4d57 1,4
+docs/gdd/11-idle-rpg-roadmap.md
+  s_106aca82155d0d::t_438549ad2aeee6 3-6
+src/game/side-events.js
+  s_106aca82155d0d::t_7690a7879d4d57 2-3,25-26,42-43,46
+  s_106aca82155d0d::t_de331639df8cc4 4,44-45
+src/game/story-director.js
+  s_106aca82155d0d::t_4f563382bac4ef 38,47
+  s_106aca82155d0d::t_ceefb78002e748 13
+  s_106aca82155d0d::t_de331639df8cc4 3,6
+  s_106aca82155d0d::t_237e954871861f 1-2,4-5,7-12,14-35,37,39-46,49-51
+  s_106aca82155d0d::t_bed6c742658600 36,48
+src/content/quest-loader.js
+  s_106aca82155d0d::t_7690a7879d4d57 2,13
+src/game/saves.js
+  s_106aca82155d0d::t_ceefb78002e748 75-78
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 11,37
+scripts/sync-quest-index.mjs
+  s_106aca82155d0d::t_7690a7879d4d57 2,6-7
+src/features/progression/ProgressionPanel.jsx
+  s_106aca82155d0d::t_879465bad5e92b 10,26,32,53-54
+src/game/story-graph.js
+  s_106aca82155d0d::t_7690a7879d4d57 1-28
+src/game/story-director.test.js
+  s_106aca82155d0d::t_ceefb78002e748 1-11,13-119,132-139
+  s_106aca82155d0d::t_09e4d5f7948d28 12,120-131
+src/content/fates.js
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 10
+src/content/validate-p0.js
+  s_106aca82155d0d::t_bed6c742658600 28-29
+docs/PROGRESS.md
+  s_106aca82155d0d::t_438549ad2aeee6 3-6
+src/game/p0.test.js
+  s_106aca82155d0d::t_ceefb78002e748 165
+  s_106aca82155d0d::t_de331639df8cc4 170-172,183,197
+docs/gdd/02-quest-system.md
+  s_106aca82155d0d::t_438549ad2aeee6 3-6
+server/narrative.test.js
+  s_106aca82155d0d::t_09e4d5f7948d28 47-61
+  s_106aca82155d0d::t_9a01daef793b19 62-63
+src/services/narrative-client.js
+  s_106aca82155d0d::t_cf03b27bb145ae 1,32-33,42-43,52,55
+src/game/city-leads.js
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 5,19,22
+src/content/story-arcs.js
+  s_106aca82155d0d::t_237e954871861f 1-2
+  s_106aca82155d0d::t_837e61e454bff4 3,5-34,36-41,43-68
+  s_106aca82155d0d::t_4f563382bac4ef 35,42
+  s_106aca82155d0d::t_aa34650e3ba270 4
+src/game/encounter-settlement.js
+  s_106aca82155d0d::t_ceefb78002e748 5,46-47
+  s_106aca82155d0d::t_7690a7879d4d57 3-4,36-38,41-42,44
+  s_106aca82155d0d::t_27c58ed45f578e 49
+package.json
+  s_106aca82155d0d::t_bed6c742658600 10
+docs/gdd/14-story-causality.md
+  s_106aca82155d0d::t_8e71c667b26103 1-73,75-86
+  s_106aca82155d0d::t_2560521301c940 74
+src/game/fate-engine.js
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 3,12
+src/main.jsx
+  s_106aca82155d0d::t_879465bad5e92b 30,419,429,461,849-850,852
+  s_106aca82155d0d::t_27c58ed45f578e 439,859
+src/content/pack-policy.js
+  s_106aca82155d0d::t_de331639df8cc4 1-10
+src/game/commands.js
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 11-12,18,43-45,97-98
+src/features/progression/CityHub.jsx
+  s_106aca82155d0d::t_879465bad5e92b 11,14,16,21,25-26,36,50,52-53,68-71,74-75
+  s_106aca82155d0d::t_cf03b27bb145ae 9,15
+  s_106aca82155d0d::t_27c58ed45f578e 51
+src/content/causal-events.js
+  s_106aca82155d0d::t_237e954871861f 1-14,17-18,21-32,35-42,44-47
+  s_106aca82155d0d::t_aa34650e3ba270 15-16,19
+  s_106aca82155d0d::t_27c58ed45f578e 33
+  s_106aca82155d0d::t_4f563382bac4ef 20,34,43
+AGENTS.md
+  s_106aca82155d0d::t_438549ad2aeee6 3-11
+src/game/memory-doc.js
+  s_106aca82155d0d::t_cf03b27bb145ae 16
+docs/gdd/10-changing-fates.md
+  s_106aca82155d0d::t_438549ad2aeee6 3-6
+docs/architecture-optimization.md
+  s_106aca82155d0d::t_438549ad2aeee6 3-6
+src/game/narrative-overlay.js
+  s_106aca82155d0d::t_de331639df8cc4 61
+src/game/world-engine.js
+  s_106aca82155d0d::t_a5ea5d6a80bb6a 9,54,97
+docs/gdd/14-pack-audit.md
+  s_106aca82155d0d::t_99b95c9cce59df 1-81
+src/content/quest-index.js
+  s_106aca82155d0d::t_e1f29ab9d6300a 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "4225c5415461750146360024ded4bbe4ba1c71bf",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
