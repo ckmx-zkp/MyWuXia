@@ -15,7 +15,7 @@ const settle = createEncounterSettlement({ ZONES, treeKey, applyEff });
 const choices = ZONES.flatMap((z, zone) => (z.trees || []).flatMap((tree, ti) => tree.nodes.flatMap((node, ni) => node.choices.flatMap((choice, ci) => choice.combat || choice.failCombat ? [{ zone, ti, ni, ci, tree, node, choice }] : []))));
 
 test('every explicit story fight references an enemy and a supported saved continuation', () => {
-  assert.equal(choices.length, 19);
+  assert.equal(choices.length, 20);
   for (const c of choices) {
     assert.ok(OPPONENTS[c.choice.combat || c.choice.failCombat], `${c.tree.id}:${c.ni}`);
     assert.ok(c.choice.ok.text && c.choice.fail.text);
@@ -31,6 +31,7 @@ test('all story battles preserve exact continuation through saves and settle a n
     const key = treeKey(c.zone, c.tree.id);
     const context = { zone: c.zone, ti: c.ti, ni: c.ni, ci: c.ci, failedCheck: !c.choice.combat };
     const before = { ...initial(), loc: c.zone, treeDone: { [key]: c.ni }, idle: false };
+    if(c.choice.id==='protect') before.training.styles['武当绵掌']=100;
     let state = startCombat(before, { opponent: c.choice.combat || c.choice.failCombat, danger: c.choice.diff, context });
     state = migrateSave(encodeSave(state), saveOptions);
     state = retreatCombat(state, settle);

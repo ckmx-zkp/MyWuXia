@@ -7,6 +7,8 @@ export const FATES = {
     dialogues: [['乔峰', '北帮押粮弟子尚未归来。先寻人，再辨是非。'], ['洪七公', '饥民等不得，老叫花却也不肯拿无凭的话定罪。'], ['史火龙', '西帮认得自己的印信。这一笔账，须三家对过。']],
     hearsay: '茶棚间传开了三帮失粮的消息，往来镖师都放慢了脚步。',
     choices: [
+      {id:'sect_truce',text:'兑现武当担保，请三帮先撤卡赈济',condition:{ref:'fact:xingzi_mediated',op:'eq',value:true,reason:'须在杏子林以师门药路担保停争'},next:'truce',effect:{flag:{three_bangs:'truce'},factionRelations:{north_east:10,north_west:10,east_west:10},npcStates:{qiaofeng:'接受药路担保，暂缓争执',hongqigong:'先行赈济，保留查账',shihuolong:'暂撤粮卡，仍待证据'}},outcome:'三帮认了山门的担保，先撤卡赈济。只有停争之约，没有未经查实的盟誓。'},
+      {id:'guard_relief',text:'先护伤者与民间粮车，不代三帮断案',condition:{ref:'fact:xingzi_protected',op:'eq',value:true,reason:'须在杏子林真正守住伤者退路'},next:'conflict_end',effect:{flag:{three_bangs:'conflict',civilian_relief:true},factionRelations:{north_east:-20,north_west:-20,east_west:-10},npcStates:{qiaofeng:'护伤者退避，三帮嫌隙未解',hongqigong:'照料饥民，尚未互认粮签',shihuolong:'保留粮卡，未参与民间护送'}},outcome:'你保住民间粮车，三帮却未能互认底账。伤者有了退路，封粮造成的药价与通行压力仍在。'},
       { id:'shelter',text:'凭回春堂与武当的安置，请证人带原簿赴会',next:'council',condition:{all:[{ref:'fact:witness_sheltered',op:'eq',value:true,reason:'须先安置证人'},{ref:'fact:medicine_wudang',op:'eq',value:true,reason:'须打通武当药路'}]},effect:{flag:{grain_evidence:true,witness_alive:true},npcStates:{grain_witness:'药路接济下带原簿赴会'}},outcome:'药铺与山门各出一人护送，证人带着原簿赴会，不必再次支付药资。' },
       { id: 'trace', text: '赴荆襄寻找押粮人', next: 'evidence', cost: 20, effect: { flag: { grain_inquiry: true } }, outcome: '你付清舟钱，循旧驿道去查交接底簿。三帮暂缓问罪，仍只肯给你片刻工夫。' },
       { id: 'mediate', text: '请三位帮主在中原对账', next: 'council', cost: 30, effect: {}, outcome: '三封请帖送出。没有实证，这场会面只能先求止争。' },
@@ -55,3 +57,6 @@ export const FATES = {
   truce_end: { name: '停争未盟', terminal: true, scene: '三帮守住停争之约，各自赈济，彼此仍有戒心。', choices: [] },
   conflict_end: { name: '江湖分途', terminal: true, scene: '三帮仍然失和。民间赈路留存，却没有三帮共同的印信。', choices: [] },
 };
+
+// Shelter proves a safe journey, not a ledger: require the separately checked record.
+FATES.dispute.choices.find(c=>c.id==='shelter').condition.all.push({ref:'fact:yanzi_ready',op:'eq',value:true,reason:'还须亲自核对太湖往来簿，接济不能代替证据'});

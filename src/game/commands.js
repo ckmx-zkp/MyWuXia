@@ -10,6 +10,7 @@ import { restAtInn } from './vitals.js';
 import { newSaveId } from './save-id.js';
 import { SIDE_EVENTS } from '../content/p0.js';
 import { reconcileStories, worldConsequences } from './story-director.js';
+import { canResolveChoice } from './quest-guards.js';
 
 export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS, ITEMS, RUMORS, ORIGINS, START_SKILLS, questReward, clamp, ability }) {
   const log = (s, text) => ({ ...s, log: [text, ...s.log].slice(0, 8) });
@@ -58,7 +59,15 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
         if (r.id === 'practice') return p0Command(s, { type:'START_ACTIVITY', id:'basic', target:'fist' }, now);
         n = immediate(s, { type:'routine', zone:s.loc, id:r.id }, r.time); break;
       }
-      case 'COMBAT': n = startCombat({ ...s, loadout: command.config.loadout }, command.config); break;
+      case 'COMBAT': {
+        if(!command.config) return s;
+        const c=command.config.context;
+        if(c && !c.kind) {
+          const tree=ZONES[c.zone]?.trees[c.ti], choice=tree?.nodes[c.ni]?.choices[c.ci];
+          if(c.zone!==s.loc || !choice || !canResolveChoice(s,`${c.zone}:${tree.id}`,c.ni,choice) || command.config.opponent!==(c.failedCheck?choice.failCombat:choice.combat)) return s;
+        }
+        n = startCombat({ ...s, loadout: command.config.loadout }, command.config); break;
+      }
       case 'RETREAT': n = levelUpLog(retreatCombat(s, settleStory), s); break;
       case 'CLOSE_COMBAT': return s.battle?.settled ? { ...s, battle: null } : s;
       case 'FATE': n = resolveFateChoice(s, command.node, command.choice); break;

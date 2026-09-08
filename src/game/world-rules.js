@@ -54,12 +54,13 @@ export function legacyRequirements(req = {}) {
     if (v === undefined) continue;
     if (k === 'flag') list.push({ ref: `fact:${v}`, op: 'eq', value: true, reason: '尚缺引荐或经历' });
     else if (k === 'sect') list.push({ ref: 'sect', op: 'eq', value: v === true ? 'wudang' : v, reason: '需拜入相应门派' });
+    else if (k === 'rank') list.push({ref:'rank',op:'gte',value:v,reason:'需先通过护道考校'});
     else if (resources[k]) list.push({ ref: `resource:${k}`, op: 'gte', value: v, reason: `需${({silver:'银两',potential:'潜能',contribution:'贡献',herbs:'青叶草',knowledge:'草木学识'})[k] || k} ${v}` });
     else throw new Error(`未知条件：${k}`);
   }
   return list.length ? { all: list } : null;
 }
-export const lessonRequirements = lesson => Object.fromEntries(['silver','potential','contribution','sect','flag'].filter(k => lesson[k] !== undefined).map(k => [k,lesson[k]]));
+export const lessonRequirements = lesson => Object.fromEntries(['silver','potential','contribution','sect','flag','rank'].filter(k => lesson[k] !== undefined).map(k => [k,lesson[k]]));
 export function normalizeEffects(effect = {}) {
   if (Array.isArray(effect)) return effect;
   return Object.entries(effect).flatMap(([k,v]) => {
@@ -82,12 +83,13 @@ export function validateEffects(effect) {
       continue;
     }
     pathFor(e.ref);
-    const settable = /^(fact:|world:|npc:|character:)/.test(e.ref) || e.ref === 'rank';
+    const settable = /^(fact:|world:|npc:|character:)/.test(e.ref) || ['rank','sect'].includes(e.ref);
     const addable = /^(resource:|relation:|faction:)/.test(e.ref);
     if ((e.op === 'set' && !settable) || (e.op === 'add' && (!addable || !Number.isFinite(e.value))) || !['set','add'].includes(e.op)) throw new Error('未知或不允许的效果操作');
     if (e.op === 'set' && !(typeof e.value === 'boolean' || typeof e.value === 'string' || Number.isFinite(e.value))) throw new Error('效果值无效');
     if (e.ref.startsWith('fact:') && typeof e.value !== 'boolean') throw new Error('事实必须为布尔值');
-    if (e.ref === 'rank' && ![0,1].includes(e.value)) throw new Error('门派阶段无效');
+    if (e.ref === 'rank' && ![0,1,2].includes(e.value)) throw new Error('门派阶段无效');
+    if (e.ref === 'sect' && e.value !== 'wudang') throw new Error('门派无效');
   }
 }
 function setPath(s, path, value) {

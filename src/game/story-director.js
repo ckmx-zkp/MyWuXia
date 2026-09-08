@@ -36,7 +36,9 @@ export function worldConsequences(s) {
     travelToll:conflict && !f.witness_sheltered && !f.family_shelter && !f.canal_shelter ? 5 : 0,
     teachingDiscount:f.fuwei_refuge || f.meizhuang_survivors ? 10 : 0,
     safeSea:!!(f.lake_passage || f.meizhuang_survivors || f.meizhuang_refuge),
-    notices:[allied?'三帮互认粮签，护送风险降低。':conflict?'三帮封粮，北行需付过路盘缠；接济关系可作保。':'三帮粮路尚未定局。',
+    notices:[allied?'三帮互认粮签，护送风险降低。':conflict?'三帮封粮，北行需付过路盘缠；接济关系可作保。':['truce','truce_end'].includes(s.fate?.node)?'三帮暂撤粮卡，各自赈济；停争并非结盟，护送仍需当心。':'三帮粮路尚未定局。',
+      f.xingzi_mediated?'你以武当人情换来会面余地。可在命运页兑现担保，先求停争。':null,
+      f.xingzi_protected?'你护住了杏子林伤者，仍未查明粮案。可先护民间粮车，也可继续汉水查账。':null,
       f.shennong_truce?'神农药路保全，药价下降、草药收购价提高。':null,
       f.fuwei_refuge?'镖户安置成，武馆愿减免十两学费。':null,
       f.meizhuang_survivors?'梅庄旧人获救，海船愿为你担保。':null].filter(Boolean),
@@ -45,7 +47,7 @@ export function worldConsequences(s) {
 export function actorStates(s) {
   return Object.entries(STORY_ARCS).filter(([id,a])=>s.treeDone[`${a.zone}:${id}`]).map(([id,a])=>({
     name:a.actor, zone:id==='DL-02' || (id==='HZ-01' && !s.p0?.facts.meizhuang_changed) ? a.zone : s.flag[`${a.zone}:${id}:complete`]?a.destination:a.zone,
-    stage:(s.p0?.facts[`${a.id}_changed`]?a.outcome:s.flag[`${a.zone}:${id}:complete`]?a.stage:'身在旧事之中，等待下一次抉择')+(s.p0?.facts[`${a.id}_returned`]?' 后续接济已落实。':s.p0?.facts[`${a.id}_informed`]?' 口信已送达，各自处理后事。':''),
+    stage:(s.flag[`${a.zone}:${id}:complete`] && s.npcStates[a.actor] || (s.p0?.facts[`${a.id}_changed`]?a.outcome:s.flag[`${a.zone}:${id}:complete`]?a.stage:'身在旧事之中，等待下一次抉择'))+(s.p0?.facts[`${a.id}_returned`]?' 后续接济已落实。':s.p0?.facts[`${a.id}_informed`]?' 口信已送达，各自处理后事。':''),
     relation:s.favor[a.actor] || 0,goal:a.motive,
   }));
 }

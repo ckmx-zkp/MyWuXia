@@ -37,26 +37,27 @@ test('new characters see no unrelated packs; completed arcs admit only relevant 
 for(const [id,a] of Object.entries(STORY_ARCS)) test(`${id}: preparation changes actual main successor, ending and persistent downstream services`,()=>{
   let s=fresh();s.loc=a.zone;s.silver=500;s.treeDone[`${a.zone}:${id}`]=a.trigger;
   const tree=ZONES[a.zone].trees.find(t=>t.id===id),ti=ZONES[a.zone].trees.indexOf(tree);
-  const alt=tree.nodes[a.decision].choices.at(-1);
+  const alt=tree.nodes[a.decision].choices.find(c=>c.id==='causal');
   assert.ok(storyChoiceReason(s,alt));
   s=cmd(s,'DISCOVER_EVENT',{id:`${a.id}_preparation`});
   assert.equal(s.p0.quests[`${a.id}_preparation`].node,'request');
   s=cmd(s,'CHOOSE_EVENT',{id:`${a.id}_preparation`,choice:'investigate'});
   const before=s.silver;
+  if(id==='SZ-01') s.p0.knowledge=3;
   s=cmd(s,'CHOOSE_EVENT',{id:`${a.id}_preparation`,choice:'provide'});
-  assert.equal(s.silver,before-20);
+  assert.equal(s.silver,before-(id==='SZ-01'?0:20));
   assert.equal(s.p0.facts[`${a.id}_ready`],true);
   s=restore(s); s.treeDone[`${a.zone}:${id}`]=a.decision;
   if(id==='WX-01') {
     assert.ok(storyChoiceReason(s,alt),'one witness alone must not solve the case');
     s.p0.facts.yanzi_ready=true;
   }
-  s=cmd(s,'STORY',{context:{zone:a.zone,ti,ni:a.decision,ci:tree.nodes[a.decision].choices.length-1}});
+  s=cmd(s,'STORY',{context:{zone:a.zone,ti,ni:a.decision,ci:tree.nodes[a.decision].choices.indexOf(alt)}});
   assert.equal(s.treeDone[`${a.zone}:${id}`],tree.nodes.length);
   assert.equal(s.p0.facts[`${a.id}_changed`],true);
   assert.ok(s.rumors.includes(a.outcome));
   const money=s.silver;
-  s=cmd(s,'STORY',{context:{zone:a.zone,ti,ni:a.decision,ci:tree.nodes[a.decision].choices.length-1}});
+  s=cmd(s,'STORY',{context:{zone:a.zone,ti,ni:a.decision,ci:tree.nodes[a.decision].choices.indexOf(alt)}});
   assert.equal(s.silver,money,'ending pays once');
   s=restore(s);s.loc=a.destination;
   s=cmd(s,'DISCOVER_EVENT',{id:`${a.id}_aftermath`});
@@ -86,6 +87,8 @@ test('two side paths join the three-bang council and alter real travel and escor
   let s=fresh();s.flag['0:WX-01:complete']=true;s=advanceFate(s,0);
   assert.equal(resolveFateChoice(s,'dispute','shelter'),s);
   s.p0.facts.witness_sheltered=true;s.p0.facts.medicine_wudang=true;
+  assert.equal(resolveFateChoice(s,'dispute','shelter'),s,'shelter alone does not produce documentary evidence');
+  s.p0.facts.yanzi_ready=true;
   s=resolveFateChoice(s,'dispute','shelter');assert.equal(s.fate.node,'council');
   s.loc=2;s=resolveFateChoice(s,'council','alliance');
   const calm=worldConsequences(s);

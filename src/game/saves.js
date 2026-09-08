@@ -8,7 +8,7 @@ import { ACTIVITIES, ROOMS } from '../content/p0.js';
 import { isSaveId } from './save-id.js';
 
 export const SAVE_KEY = 'jianghu-save-v1';
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 export const SLOT_KEYS = [1, 2, 3].map(n => `jianghu-slot-${n}`);
 const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
 const finite = (x, min = 0, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -34,7 +34,7 @@ function validBattle(b, validateContext) {
 export function migrateSave(raw, { validateContext, validateTree } = {}) {
   const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   if (!object(parsed)) throw new Error('存档内容不是有效对象。');
-  if (parsed.version !== undefined && ![1, 2, 3, 4, 5, 6, 7, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
+  if (parsed.version !== undefined && ![1, 2, 3, 4, 5, 6, 7, 8, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
   const input = parsed.version !== undefined ? parsed.state : parsed;
   if (!object(input) || !finite(input.expTotal) || !finite(input.hp, 0, 100) || !finite(input.loc, 0, 12) || !Number.isInteger(input.loc)) throw new Error('存档缺少有效的角色与区域数据。');
   const state = initial();
@@ -83,6 +83,10 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
   if (finite(input.rngState, 1, 4294967295) && Number.isInteger(input.rngState)) state.rngState = input.rngState;
   if (isSaveId(input.saveId)) state.saveId = input.saveId;
   if (input.p0 !== undefined) state.p0 = validateProgression(input.p0);
+  // Previously earned membership/exam/returned letters retain their mentor credit.
+  if((parsed.version || 1)<9 && state.p0?.sect==='wudang' && !Object.hasOwn(state.favor,'武当教习')) {
+    state.favor['武当教习']=10+(state.p0.rank>=1?10:0)+(state.p0.facts.medicine_returned?5:0);
+  }
   state.loadout = normalizeLoadout(state, input.loadout || {});
   if (input.battle) {
     if (!validBattle(input.battle, validateContext)) throw new Error('战斗存档损坏，无法安全恢复。');

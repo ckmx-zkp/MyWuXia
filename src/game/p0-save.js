@@ -10,7 +10,7 @@ export function validateProgression(p) {
   const fail = () => { throw new Error('成长与支线存档损坏，无法安全恢复。'); };
   const learned = v => object(v) && number(v.cap, 8100) && text(v.source);
   if (!object(p) || !['potential', 'contribution', 'rank', 'knowledge', 'sequence'].every(k => number(p[k]))
-    || p.rank > 1 || p.knowledge > 100 || !knownRecord(p.basics, BASICS, v => number(v, 8100)) || Object.keys(p.basics).length !== 5
+    || p.rank > 2 || p.knowledge > 100 || !knownRecord(p.basics, BASICS, v => number(v, 8100)) || Object.keys(p.basics).length !== 5
     || !knownRecord(p.styles, { ...STYLES, '纯阳无极功': true, '易筋经神髓': true }, learned) || !p.styles['基本拳脚']
     || !knownRecord(p.internals, INTERNALS, learned) || !p.internals.basic
     || !Object.hasOwn(ROOMS, p.room) || !Array.isArray(p.discovered) || !p.discovered.every(id => Object.hasOwn(ROOMS, id))
@@ -34,9 +34,12 @@ export function validateProgression(p) {
     if (a.id === 'basic' && !Object.hasOwn(BASICS, a.target)) fail();
     if (a.id === 'style' && !Object.hasOwn(p.styles, a.target)) fail();
     if (a.id === 'internal' && !Object.hasOwn(p.internals, a.target)) fail();
+    if(a.summary!==undefined && (!object(a.summary) || !number(a.summary.elapsed,28800000) || !object(a.summary.earned) || !Object.values(a.summary.earned).every(v=>Number.isFinite(v) && Math.abs(v)<=1e12) || !object(a.summary.before) || !['attack','armor','hp','mp'].every(k=>Number.isFinite(a.summary.before[k]) && a.summary.before[k]>=0))) fail();
   }
   if (p.report !== null && (!object(p.report) || !Object.hasOwn(ACTIVITIES, p.report.id) || !number(p.report.seconds, 28800)
     || !text(p.report.target) || typeof p.report.capped !== 'boolean' || typeof p.report.stopped !== 'boolean'
     || !object(p.report.earned) || !Object.values(p.report.earned).every(v => Number.isFinite(v) && Math.abs(v) <= 1e12))) fail();
+  if(p.report?.reason !== undefined && !text(p.report.reason)) fail();
+  for(const key of ['before','after']) if(p.report?.[key] !== undefined && (!object(p.report[key]) || !['attack','armor','hp','mp'].every(k=>Number.isFinite(p.report[key][k]) && p.report[key][k]>=0))) fail();
   return structuredClone(p);
 }

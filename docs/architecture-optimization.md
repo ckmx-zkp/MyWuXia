@@ -1,5 +1,9 @@
 # 江湖长夜 · 架构现状与后续
 
+## 成长篇当前增量（2026-09-08）
+
+当前 v9 兼容 v1–v8；growth-guide 复用实际战斗构造给出目标与升级反馈，活动保存可选累计报告。content/wudang.js 以现有事件契约实现入门/护道，师门阶段扩展为 0/1/2。杏子林追加调停与真实护人交手，保持旧索引；三帮后果开放不同码头活动。103 项测试通过，含三条正常倍率逐秒命令路线。范围与验证限制见 [第 15 章第八节](gdd/15-growth-and-jianghu-roadmap.md)。以下版本号保留历史背景。
+
 ## 2026-09-08 因果重构现状
 
 新增 content/story-arcs、causal-events、pack-policy；game/story-graph 适配八树显式后继，story-director 协调机会/过期并派生世界规则。commands 前后协调，encounter-settlement 结算，CityHub 展示。v8 兼容 v1–v7，旧数字游标保留。构建新增 audit-story-causality。详见 [设计与实际边界](gdd/14-story-causality.md)；以下历史建议不意味着全部已完成。

@@ -45,3 +45,10 @@ for (const [treeId, arc] of Object.entries(STORY_ARCS)) {
     ]),end:end('过期的约定已收尾。')},
   };
 }
+
+// A shipping record must be checked, not purchased. Preserve the old choice id for saves.
+Object.assign(CAUSAL_EVENTS.yanzi_preparation.nodes.arrange.choices.find(c=>c.id==='provide'), {
+  text:'核对三处船期与印泥，自己查验往来簿',cost:{},
+  requires:{ref:'resource:knowledge',op:'gte',value:3,reason:'需草木学识三点辨认印泥，可先到书肆研读'},
+  outcome:'你对照船期与印泥，剔除了抄错的一页，留下能互相核实的渡簿。盘缠买不来这份证据。',
+});

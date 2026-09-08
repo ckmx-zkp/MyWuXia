@@ -1,5 +1,6 @@
 import { PACK_EVENTS } from './side-packs.js';
 import { CAUSAL_EVENTS } from './causal-events.js';
+import { WUDANG_EVENTS } from './wudang.js';
 export const BASICS = { fist: '基本拳脚', blade: '基本兵器', internal: '基本内功', dodge: '基本轻功', parry: '基本招架' };
 export const WEAPONS = {
   hands: { name: '徒手', type: 'fist', price: 0, attack: 0 },
@@ -7,6 +8,7 @@ export const WEAPONS = {
   steel: { name: '青钢剑', type: 'blade', price: 65, attack: 5 },
 };
 export const LESSONS = {
+  chunyang: {name:'纯阳无极功入门篇',kind:'internal',target:'chunyang',basic:'internal',room:'wudang-hall',silver:0,potential:60,contribution:20,sect:true,rank:2,cap:3600},
   taizu: { name: '太祖长拳', kind: 'style', target: '太祖长拳', basic: 'fist', room: 'gym', silver: 12, potential: 10, cap: 900 },
   liuhe: { name: '六合刀', kind: 'style', target: '六合刀', basic: 'blade', room: 'gym', silver: 20, potential: 15, cap: 900 },
   luohan: { name: '罗汉伏魔功', kind: 'internal', target: 'luohan', basic: 'internal', room: 'gym', silver: 15, potential: 15, cap: 900 },
@@ -44,6 +46,7 @@ export const ACTIVITIES = {
   internal: { name: '修炼内功', seconds: 5, train: 5, text: '吐纳有节，内息沿熟悉的脉路缓缓运转。' },
 };
 export const SIDE_EVENTS = {
+  ...WUDANG_EVENTS,
   ...CAUSAL_EVENTS,
   wudang_exam: { name: '武当外门考核', version: 1, start: 'test', requires: { all: [{ ref: 'sect', op: 'eq', value: 'wudang' }, { ref: 'rank', op: 'eq', value: 0 }] }, nodes: {
     test: { room: 'wudang-hall', scene: '执事翻开名册，教习将木杖放在廊下，示意你站稳脚步。', dialogues: [['执事', '差事做得稳，还须看你能否收放自如。失手也无妨，回院修习再来。']], hearsay: '武当外门弟子可凭差事与绵掌修为参加考核。', choices: [
@@ -101,3 +104,15 @@ ROOMS.pharmacy.variants = [{ priority:20, when:{ref:'fact:medicine_returned',op:
 ROOMS.gym.variants = [{ priority:10,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['教习','药师的引荐我收到了，你若有意，可来学华山剑法。']] }];
 ROOMS.home.variants = [{ priority:10,when:{ref:'fact:medicine_mercy',op:'eq',value:true},dialogues:[['老者','听说你还分药救了拦车人的家眷。往后大家总有照应。']] },{priority:5,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['老者','多亏你护住药车，街坊们记着这份情。']]}];
 ACTIVITIES.errand = { name:'行脚差事',seconds:12,silver:8,potential:5,text:'行脚掌柜：递信、认路、照看行李，做满一趟结一趟的工钱。' };
+ACTIVITIES.grain_work = {name:'三帮联运理货',rooms:['dock'],seconds:12,silver:10,potential:6,requires:{ref:'world:grain_route_open',op:'eq',value:true,reason:'须先在三帮结盟后完成首批联运'},text:'联运执事：三家合印后货路稳了，理货的工钱与见识也比从前多一分。'};
+ACTIVITIES.relief_work = {name:'民间粥棚帮手',rooms:['dock'],seconds:20,silver:4,potential:10,requires:{ref:'world:civilian_relief',op:'eq',value:true,reason:'须先在三帮分途时保全民间赈济'},text:'粥棚管事：这里工钱不多，分药、认人、照料伤者，却能学到许多。'};
+
+SIDE_EVENTS.wudang_exam.nodes.test.choices[0].effects.push({op:'add',ref:'relation:武当教习',value:10});
+const returned=SIDE_EVENTS.medicine_return.nodes.return.choices[0];
+returned.effects=[{op:'add',ref:'resource:herbs',value:3},{op:'add',ref:'resource:potential',value:15},{op:'set',ref:'fact:medicine_returned',value:true},{op:'set',ref:'npc:shen',value:'托你联络过武当，愿继续收购草药'},{op:'add',ref:'relation:武当教习',value:5}];
+returned.outcome='你收好备药，兑现了往返的约定，武当教习记下这份信用。草药按当前药路行情收购。';
+ROOMS.pharmacy.variants.unshift({priority:40,when:{ref:'fact:shennong_truce',op:'eq',value:true},dialogues:[['沈药师','神农药路未断，青叶草按七两收，疗伤只取七两。保全药库的好处，病户都能分到。']]});
+ROOMS['wudang-hall'].variants=[{priority:30,when:{ref:'rank',op:'gte',value:2},dialogues:[['武当教习','护道之许已经交给你。纯阳入门篇可来请教，内息仍须从根基练起。']]},{priority:20,when:{ref:'rank',op:'eq',value:1},dialogues:[['武当教习','入室之后，掌法与心法都要进修。送回药路口信，再来谈护道考校。']]}];
+ROOMS['wudang-yard'].variants=[{priority:20,when:{ref:'fact:xingzi_mediated',op:'eq',value:true},dialogues:[['外门教习','你把山门人情用在了停争上。往后做事更须守信，莫让担保只剩空话。']]}];
+ROOMS.dock.variants=[{priority:30,when:{ref:'world:grain_route_open',op:'eq',value:true},dialogues:[['船夫','三印粮车已经到站，新开的联运理货在这里领差事。']]},{priority:20,when:{ref:'world:civilian_relief',op:'eq',value:true},dialogues:[['粥棚管事','三帮还在封粮，幸而民间粥棚留住了。若愿帮手，就在码头分粥。']]},{priority:10,when:{ref:'world:three_bangs',op:'eq',value:'truce'},dialogues:[['船夫','粮卡撤了，可三家的簿子还没合；先照常押车，别误当已经结盟。']]}];
+ROOMS.pharmacy.variants.unshift({priority:35,when:{all:[{ref:'world:three_bangs',op:'eq',value:'conflict'},{not:{ref:'fact:witness_sheltered',op:'eq',value:true}},{not:{ref:'fact:taoyuan_shelter',op:'eq',value:true}}]},dialogues:[['沈药师','三帮封路，进药多了盘缠，疗伤只好照眼前价收。重查粮案或打通接济，价钱才有转圜。']]});

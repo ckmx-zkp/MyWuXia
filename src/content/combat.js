@@ -53,6 +53,8 @@ const encounter = (name, style, moves, realm = '初出茅庐', goal = null) => (
   text: goal ? `不必击倒对手，撑住 ${goal} 回合便可达成交手目标；不敌时可抽身求援。` : '依照已配置的武学自动交手，不敌时可抽身脱离。',
 });
 Object.assign(OPPONENTS, {
+  wudang_mentor: encounter('武当教习', '武当绵掌', ['回风拂柳','绵里藏针'], '江湖高手', 6),
+  xingzi_guard: encounter('杏子林激愤帮众', '基本拳脚', ['乱棍封路','结阵横拦'], '初出茅庐', 6),
   thug: encounter('赌场打手', '基本拳脚', ['横臂擒拿', '短刀逼身']),
   shisong: encounter('史松', '六合刀', ['快刀截路', '横刀追魂']),
   soldiers: encounter('追兵', '军阵枪法', ['长枪封路', '横扫千军']),

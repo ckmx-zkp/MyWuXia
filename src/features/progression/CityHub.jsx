@@ -9,6 +9,7 @@ import { applyOverlay, factHash } from '../../game/narrative-overlay.js';
 import { requestNarrativeNode, characterPayload } from '../../services/narrative-client.js';
 import './progression.css';
 import { actorStates, worldConsequences } from '../../game/story-director.js';
+import GrowthGuide from './GrowthGuide.jsx';
 
 function usePersonalizedNode(state, eventId, nodeId, node, eventName) {
   const [copy, setCopy] = useState(null);
@@ -62,6 +63,7 @@ export default function CityHub({ state:s, dispatch, onStory, onQuest, onTravel,
   };
   return <section className="p0-page city-hub" aria-label="当地线索与后续">
     <h2>当地线索与后续</h2>
+    <GrowthGuide state={s} dispatch={dispatch} onTravel={onTravel} onFate={onFate}/>
     <p>{completed === 4 ? '当地初识的四桩事已了，人物旧事、来往差事与后续机缘仍可继续。' : '从眼前的事结识当地人，也可随时追寻人物旧事。'} 当前位置：{ZONES[s.loc].name}{ROOMS[room] ? ` · ${ROOMS[room].name}` : ''}。</p>
     {ROOMS[room] && <div className="p0-exits">{ROOMS[room].exits.map(id => <button key={id} disabled={busy} onClick={() => dispatch({type:'MOVE_ROOM',id})}>{ROOMS[id].name}</button>)}</div>}
     {intro >= 0 && !(s.loc === 0 && intro === 0) && <div className="p0-row"><div><b>初识当地 · {ZONES[s.loc].quests[intro].name}</b><small>{ZONES[s.loc].quests[intro].text}</small></div><button disabled={busy} onClick={() => onQuest(intro)}>循线问询</button></div>}

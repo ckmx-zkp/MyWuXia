@@ -111,7 +111,11 @@ test('weapons and basic practice affect battle while free recovery prevents a re
 });
 test('sect progression requires earned contribution, learned skill and successful exam', () => {
   let s = at(fresh(), 'wudang-gate', 1);
-  s = cmd(s, 'JOIN_SECT'); s = at(s, 'wudang-yard', 1);
+  s = cmd(s, 'JOIN_SECT');
+  assert.equal(s.p0.sect,null);
+  s.p0.facts.medicine_wudang=true;
+  s=cmd(s,'CHOOSE_EVENT',{id:'wudang_entry',choice:'letter'});
+  s = at(s, 'wudang-yard', 1);
   s = cmd(s, 'START_ACTIVITY', { id: 'duty' }); s = settleActivity(s, 201000);
   s = cmd(s, 'LEARN_SKILL', { id: 'mianzhang' }, 201000);
   assert.ok(s.p0.styles['武当绵掌']);

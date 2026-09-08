@@ -19,6 +19,7 @@ export function validateP0(events = SIDE_EVENTS) {
     assert.ok(lesson.cap > 0 && lesson.cap <= 8100 && lesson.silver >= 0 && lesson.potential > 0, `${id}: cost/cap`);
   }
   for (const [id, a] of Object.entries(ACTIVITIES)) {
+    condition(a.requires);
     assert.ok(a.seconds > 0 && a.text && a.name, `${id}: activity`);
     for (const room of a.rooms || []) assert.ok(ROOMS[room], `${id}: room`);
   }

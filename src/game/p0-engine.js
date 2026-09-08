@@ -4,6 +4,7 @@ import { normalizeLoadout, STYLES } from '../content/combat.js';
 import { lessonRequirements, transact, testCondition } from './world-rules.js';
 import { startCombat } from './combat.js';
 import { directionReason, worldConsequences } from './story-director.js';
+import { growthSnapshot } from './growth-guide.js';
 import { requirementReason, spend, sideChoiceReason, settleSideEvent, recordExperience, applyWorldEffects, atEventNode, eventReason } from './side-events.js';
 
 export const OFFLINE_CAP = 8 * 60 * 60 * 1000;
@@ -15,6 +16,7 @@ export function activityReason(s, id, target) {
   if (s.action || s.battle) return '先了结当前行动';
   if (a.rooms && !a.rooms.includes(currentRoom(s))) return '请先前往相应地点';
   if (a.sect && s.p0.sect !== 'wudang') return '需拜入武当';
+  if(a.requires && !testCondition(s,a.requires)) return requirementReason(s,a.requires);
   if (id === 'basic' && !Object.hasOwn(BASICS, target)) return '请选择基本功';
   if (id === 'style' && (!Object.hasOwn(STYLES, target) || !ownsStyle(s, target))) return '尚未学会这门武学';
   if (id === 'internal' && !Object.hasOwn(s.p0.internals, target)) return '尚未学会这门内功';
@@ -54,7 +56,13 @@ export function settleActivity(s, now, report = false) {
     if (definition.mp) { n.mp = Math.min(100, s.mp + units * definition.mp); earned.mp = n.mp - s.mp; }
     if ((a.id === 'rest' && n.hp === 100 && n.mp === 100) || (a.id === 'read' && n.p0.knowledge >= 100)) n.p0.activity = null;
   }
-  if (report && elapsed >= 1000) n.p0.report = { id: a.id, target: a.target, seconds: Math.floor(elapsed / 1000), earned, capped: now - a.settledAt > OFFLINE_CAP, stopped: !n.p0.activity };
+  const summary={elapsed:Math.min(28800000,(a.summary?.elapsed || 0)+elapsed),earned:{...a.summary?.earned},before:a.summary?.before || growthSnapshot(s)};
+  for(const [key,value] of Object.entries(earned)) summary.earned[key]=(summary.earned[key] || 0)+value;
+  if(n.p0.activity) n.p0.activity={...n.p0.activity,summary};
+  if ((report && elapsed >= 1000 && Object.values(earned).some(value=>value!==0)) || (units>0 && !n.p0.activity)) {
+    const reason=n.p0.activity?'仍在继续':definition.train?(n.p0.potential<definition.train?'潜能不足，可先谋生或担师门差事':'已达基本功或师承上限，须先演练基本功或通过考核'):'气息已平或书中所学已尽';
+    n.p0.report = { id: a.id, target: a.target, seconds: Math.floor((report?elapsed:summary.elapsed) / 1000), earned:report?earned:summary.earned, capped: now - a.settledAt > OFFLINE_CAP, stopped: !n.p0.activity, reason, before:report?growthSnapshot(s):summary.before,after:growthSnapshot(n) };
+  }
   return n;
 }
 
@@ -71,7 +79,7 @@ export function p0Command(input, command, now) {
     case 'START_ACTIVITY': {
       const reason = activityReason(s, command.id, command.target);
       if (reason) return note(s, reason);
-      return note({ ...s, p0: { ...p, activity: { id: command.id, target: command.target || '', settledAt: now, remainder: 0 } } }, ACTIVITIES[command.id].text);
+      return note({ ...s, p0: { ...p, activity: { id: command.id, target: command.target || '', settledAt: now, remainder: 0, summary:{elapsed:0,earned:{},before:growthSnapshot(s)} } } }, ACTIVITIES[command.id].text);
     }
     case 'STOP_ACTIVITY': return stop(s);
     case 'MOVE_ROOM': {
@@ -110,7 +118,7 @@ export function p0Command(input, command, now) {
     }
     case 'JOIN_SECT': {
       if (roomId !== 'wudang-gate' || p.sect) return s;
-      return recordExperience(stop({ ...s, p0: { ...p, sect: 'wudang' } }), 'wudang', 'entry', 'join', 'success', '你向道童执礼，记入武当外门名册。');
+      return p0Command(s, {type:'DISCOVER_EVENT',id:'wudang_entry'}, now);
     }
     case 'EXAM': {
       s = p0Command(s, { type: 'DISCOVER_EVENT', id: 'wudang_exam' }, now);
