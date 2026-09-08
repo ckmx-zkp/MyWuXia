@@ -27,6 +27,7 @@ import { vitalStats, needsInnRest } from './game/vitals.js';
 import FatePanel from './features/fates/FatePanel.jsx';
 import { routinesForZone, routineReward } from './content/routines.js';
 import { syncMemory } from './services/narrative-client.js';
+import { storyNode, storyChoiceReason, storyNext } from './game/story-graph.js';
 
 /* ================= 世界数据 ================= */
 
@@ -415,7 +416,7 @@ function App({ saved }) {
     click();
     setStory({ zone: s.loc, ti, ni });
     setOutcome(null);
-    playDialogues(ZONES[s.loc].trees[ti].nodes[ni].dialogues, s.muteVoice, 0);
+    playDialogues(storyNode(s,ZONES[s.loc].trees[ti],ni).dialogues, s.muteVoice, 0);
   };
   /* 剧情抉择：检定（能力不足走软失败，主线不断），结算回响（docs/gdd/07） */
   const choose = c => {
@@ -425,7 +426,7 @@ function App({ saved }) {
     const t = ZONES[zone].trees[ti];
     if (!canResolveChoice(sRef.current, treeKey(zone, t.id), ni, c)) return;
     if (sRef.current.action || sRef.current.battle) return;
-    const ci = t.nodes[ni].choices.indexOf(c);
+    const ci = t.nodes[ni].choices.findIndex(choice=>choice.id===c.id);
     const ok = !c.diff || ability(sRef.current) >= c.diff;
     if (c.combat || (!ok && c.failCombat)) {
       setCombatSetup({ opponent: c.combat || c.failCombat, place: t.where, danger: c.diff || z.danger, context: { zone, ti, ni, ci, failedCheck: !c.combat } });
@@ -435,7 +436,7 @@ function App({ saved }) {
     play(ok ? SOUND.quest : SOUND.click, s.muteSfx);
     if (eff.voice) playVoice(eff.voice, s.muteVoice);
     dispatch({ type: 'STORY', context: { zone, ti, ni, ci } });
-    setOutcome(eff.text + (ni === t.nodes.length - 1 ? `\n\n${t.reward.text}` : ''));
+    setOutcome(eff.text + (storyNext(t,ni,c,ok) === t.nodes.length && !c.ending ? `\n\n${t.reward.text}` : ''));
   };
 
   const reset = () => {
@@ -457,7 +458,7 @@ function App({ saved }) {
   };
 
   const st = story ? ZONES[story.zone].trees[story.ti] : null;
-  const stNode = st ? st.nodes[story.ni] : null;
+  const stNode = st ? storyNode(s,st,story.ni) : null;
 
   return <main className="app">
     {!creating && /失败|损坏/.test(saveNotice) && <button className="save-alert" role="status" onClick={() => setSavesOpen(true)}>{saveNotice} · 查看存档</button>}
@@ -845,14 +846,17 @@ function App({ saved }) {
           {stNode.choices.map((c, ci) => {
             const noSilver = c.cost?.silver && s.silver < c.cost.silver;
             const noItem = c.cost?.item && !((s.items[c.cost.item] || 0) > 0);
-            return <button key={ci} disabled={noSilver || noItem} onClick={() => choose(c)}>
+            const reason=storyChoiceReason(s,c);
+            return <button key={ci} disabled={noSilver || noItem || !!reason} onClick={() => choose(c)}>
               {c.text}
+              {reason && <small>{reason}</small>}
               {c.combat ? <small>{OPPONENTS[c.combat].realm} · 危险度 {OPPONENTS[c.combat].danger} · 自动交手 / 可脱身</small> : c.diff ? <small>需能力 {c.diff}（你 {ab}）</small> : null}
               {c.failCombat && <small>失手将触发自动交手，可撤离</small>}
               {c.cost?.silver ? <small>银两 -{c.cost.silver}</small> : null}
               {c.cost?.item ? <small>消耗 {ITEMS[c.cost.item].name} ×1{noItem ? '（没有）' : ''}</small> : null}
             </button>;
           })}
+          <button onClick={() => { stopVoice(); setStory(null); setOutcome(null); }}>暂且离开，先作准备</button>
         </div>}
       </div>
     </div>}

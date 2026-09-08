@@ -1,4 +1,5 @@
 import { PACK_EVENTS } from './side-packs.js';
+import { CAUSAL_EVENTS } from './causal-events.js';
 export const BASICS = { fist: '基本拳脚', blade: '基本兵器', internal: '基本内功', dodge: '基本轻功', parry: '基本招架' };
 export const WEAPONS = {
   hands: { name: '徒手', type: 'fist', price: 0, attack: 0 },
@@ -43,6 +44,7 @@ export const ACTIVITIES = {
   internal: { name: '修炼内功', seconds: 5, train: 5, text: '吐纳有节，内息沿熟悉的脉路缓缓运转。' },
 };
 export const SIDE_EVENTS = {
+  ...CAUSAL_EVENTS,
   wudang_exam: { name: '武当外门考核', version: 1, start: 'test', requires: { all: [{ ref: 'sect', op: 'eq', value: 'wudang' }, { ref: 'rank', op: 'eq', value: 0 }] }, nodes: {
     test: { room: 'wudang-hall', scene: '执事翻开名册，教习将木杖放在廊下，示意你站稳脚步。', dialogues: [['执事', '差事做得稳，还须看你能否收放自如。失手也无妨，回院修习再来。']], hearsay: '武当外门弟子可凭差事与绵掌修为参加考核。', choices: [
       { id: 'test', text: '行礼，请教习考校绵掌', requires: { all: [{ ref: 'resource:contribution', op: 'gte', value: 10, reason: '需贡献十点，可在练功院洒扫' }, { ref: 'style:武当绵掌', op: 'gte', value: 100, reason: '需绵掌心得一百，先请教并修炼' }] }, combat: { opponent: 'student', danger: 25 }, next: 'end', failNext: 'retry', retreatNext: 'retry', effects: [{ op: 'add', ref: 'resource:potential', value: 30 }, { op: 'add', ref: 'resource:exp', value: 60 }, { op: 'set', ref: 'rank', value: 1 }, { op: 'teaching', ref: '武当绵掌', value: 3600 }], outcome: '考核通过，晋为入室弟子。绵掌教学上限提高至三千六百，得潜能三十。', failText: '教习收势指出你运劲未稳，回院修养练习后仍可再试。' },

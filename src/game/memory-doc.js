@@ -13,7 +13,7 @@ export function buildMemoryDocument({ saveId, name, loc, worldTime = 0, facts = 
   const npcLine = Object.entries(npcs).filter(([, value]) => value).map(([id, value]) => `${id}：${String(value).slice(0, 80)}`).join('；');
   const summary = [
     `名号${name || '无名行人'}，独立江湖行人，并非原著主角替身。`,
-    factList.length ? `已知事实：${factList.join('、')}。` : '尚无长久事实。',
+    factList.length ? `已知事实：${factList.map(key=>facts[key]===true?key:`${key}=${JSON.stringify(facts[key])}`).join('、')}。` : '尚无长久事实。',
     npcLine ? `人物印象：${npcLine}。` : '',
     recent.length ? `近事：${recent.map(entry => entry.text).join(' / ')}` : '尚未留下经历。',
   ].filter(Boolean).join('');

@@ -44,6 +44,23 @@ test('generated copy is cached per save and fact hash, and model cannot add choi
   assert.equal(api.memory(other).document.name, '别号');
 });
 
+test('main state values and canonical text changes invalidate narrative cache', async () => {
+  const store = bindDatabase(openDatabase(':memory:'));
+  let calls = 0;
+  const api = createNarrativeService({ store, completeChat: async () => {
+    calls++; return { parsed: { scene: '静室之中，旧事有了新的说法。' }, model: 'fake' };
+  } });
+  const request = { saveId: newSaveId(), eventId: 'test_event', nodeId: 'visit', template,
+    character: { name: '行人', facts: { 'npc:乔峰': '查证' } } };
+  const first = await api.personalize(request);
+  assert.equal((await api.personalize(request)).source, 'cache');
+  const changed = await api.personalize({ ...request, character: { ...request.character, facts: { 'npc:乔峰': '会审' } } });
+  assert.notEqual(first.hash, changed.hash);
+  const revised = await api.personalize({ ...request, template: { ...template, scene: '新编的会审场景。' } });
+  assert.notEqual(first.hash, revised.hash);
+  assert.equal(calls, 3);
+});
+
 test('partial model copy keeps template choice ids', async () => {
   const store = bindDatabase(openDatabase(':memory:'));
   const api = createNarrativeService({ store, completeChat: async () => ({ parsed: { scene: '只改了场景' }, model: 'fake' }) });

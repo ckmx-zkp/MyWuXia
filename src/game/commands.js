@@ -8,12 +8,14 @@ import { claimIdleRewards } from './training.js';
 import { initial } from './state.js';
 import { restAtInn } from './vitals.js';
 import { newSaveId } from './save-id.js';
+import { SIDE_EVENTS } from '../content/p0.js';
+import { reconcileStories, worldConsequences } from './story-director.js';
 
 export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS, ITEMS, RUMORS, ORIGINS, START_SKILLS, questReward, clamp, ability }) {
   const log = (s, text) => ({ ...s, log: [text, ...s.log].slice(0, 8) });
   const immediate = (s, action, seconds) => tick({ ...advanceFate(s, seconds), idle:false, p0: s.p0 ? { ...s.p0, activity:null } : s.p0, action: { ...action, left:1, total:1 } });
   const resume = s => s.action && s.action.type !== 'combat' ? immediate(s, s.action, s.action.left || 0) : s;
-  return function reduce(input, command, now) {
+  function reduce(input, command, now) {
     if (command.type === 'LOAD') return resume(p0Command(beginProgression(command.state, true), { type: 'RESUME' }, now));
     if (command.type === 'RESET') return beginProgression({ ...initial(), saveId: newSaveId() });
     if (command.type === 'ENSURE_SAVE_ID') return input.saveId ? input : { ...input, saveId: newSaveId() };
@@ -38,6 +40,9 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
       case 'MULTIPLIER': return log({ ...s, devMult: s.devMult === 10 ? 1 : 10 }, `管理员：战斗测试收益调整为 ×${s.devMult === 10 ? 1 : 10}。`);
       case 'TRAVEL': {
         if (busy || !LINKS[s.loc].includes(command.to)) return s;
+        const toll = [1,2,8].includes(command.to) ? worldConsequences(s).travelToll : 0;
+        if(s.silver<toll) return log(s,`粮路封卡，需盘缠 ${toll} 两；可谋生或建立民间接济作保。`);
+        s={...s,silver:s.silver-toll};
         n = immediate(s, { type:'travel', to:command.to }, 10); break;
       }
       case 'QUEST': {
@@ -89,5 +94,6 @@ export function createGameReducer({ tick, settleStory, levelUpLog, ZONES, LINKS,
     }
     if (n.p0 && (n.action || n.battle)) n = { ...n, idle: false, p0: { ...n.p0, activity: null } };
     return n;
-  };
+  }
+  return (input,command,now) => reconcileStories(reduce(reconcileStories(input,SIDE_EVENTS),command,now),SIDE_EVENTS);
 }

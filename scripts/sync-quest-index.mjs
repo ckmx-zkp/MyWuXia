@@ -1,8 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { compileStory } from '../src/game/story-graph.js';
 const ids = ['YZ-01', 'FZ-01', 'JX-01', 'SZ-01', 'HZ-01', 'WX-01', 'DL-01', 'DL-02'];
 const index = {};
 for (const id of ids) {
-  const { default: tree } = await import(`../src/content/quests/${id}.js`);
+  const { default: source } = await import(`../src/content/quests/${id}.js`);
+  const tree = compileStory(source);
   index[id] = { id, name: tree.name, where: tree.where,
     nodes: tree.nodes.map(n => ({ choices: n.choices.map(c => ({ ...(c.combat ? { combat: c.combat } : {}), ...(c.failCombat ? { failCombat: c.failCombat } : {}) })) })) };
 }

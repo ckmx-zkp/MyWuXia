@@ -1,5 +1,9 @@
 # 江湖长夜 · 架构现状与后续
 
+## 2026-09-08 因果重构现状
+
+新增 content/story-arcs、causal-events、pack-policy；game/story-graph 适配八树显式后继，story-director 协调机会/过期并派生世界规则。commands 前后协调，encounter-settlement 结算，CityHub 展示。v8 兼容 v1–v7，旧数字游标保留。构建新增 audit-story-causality。详见 [设计与实际边界](gdd/14-story-causality.md)；以下历史建议不意味着全部已完成。
+
 > 2026-09-08：P0-A/B/C 已接入；P1 支线个人文案走 `server/` MiniMax 代理。当前 v7 存档含 `saveId`。旧任务树与三帮命运保留适配，批量迁移与原著树覆盖仍属 P1。
 
 ## 当前执行链

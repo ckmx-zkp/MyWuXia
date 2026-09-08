@@ -7,6 +7,7 @@ export const FATES = {
     dialogues: [['乔峰', '北帮押粮弟子尚未归来。先寻人，再辨是非。'], ['洪七公', '饥民等不得，老叫花却也不肯拿无凭的话定罪。'], ['史火龙', '西帮认得自己的印信。这一笔账，须三家对过。']],
     hearsay: '茶棚间传开了三帮失粮的消息，往来镖师都放慢了脚步。',
     choices: [
+      { id:'shelter',text:'凭回春堂与武当的安置，请证人带原簿赴会',next:'council',condition:{all:[{ref:'fact:witness_sheltered',op:'eq',value:true,reason:'须先安置证人'},{ref:'fact:medicine_wudang',op:'eq',value:true,reason:'须打通武当药路'}]},effect:{flag:{grain_evidence:true,witness_alive:true},npcStates:{grain_witness:'药路接济下带原簿赴会'}},outcome:'药铺与山门各出一人护送，证人带着原簿赴会，不必再次支付药资。' },
       { id: 'trace', text: '赴荆襄寻找押粮人', next: 'evidence', cost: 20, effect: { flag: { grain_inquiry: true } }, outcome: '你付清舟钱，循旧驿道去查交接底簿。三帮暂缓问罪，仍只肯给你片刻工夫。' },
       { id: 'mediate', text: '请三位帮主在中原对账', next: 'council', cost: 30, effect: {}, outcome: '三封请帖送出。没有实证，这场会面只能先求止争。' },
       { id: 'north', text: '公开支持北帮，承担护粮之责', next: 'conflict', effect: { flag: { backed_north: true }, favor: { '乔峰': 10 }, factionRelations: { north_east: -30, north_west: -30, east_west: 0 } }, outcome: '乔峰谢你仗义，洪七公与史火龙却不肯接受未审先判。三帮各设粮卡，争端愈烈。' },

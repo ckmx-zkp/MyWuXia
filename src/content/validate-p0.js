@@ -25,6 +25,8 @@ export function validateP0(events = SIDE_EVENTS) {
   for (const [id, w] of Object.entries(WEAPONS)) assert.ok(w.name && w.price >= 0 && w.attack >= 0 && ['fist', 'blade'].includes(w.type), id);
   for (const [id, event] of Object.entries(events)) {
     condition(event.requires);
+    condition(event.expiresWhen);
+    if(event.window) assert.ok(Number.isInteger(event.window) && event.window>0 && event.nodes[event.timeout]?.terminal,`${id}: invalid opportunity window`);
     assert.ok(event.nodes[event.start], `${id}: entry`);
     const seen = new Set(), visit = nodeId => {
       if (seen.has(nodeId)) return;

@@ -1,5 +1,6 @@
 import { FATES } from '../content/fates.js';
 import { applyEff } from './effects.js';
+import { conditionReason } from './world-rules.js';
 
 export function fateChoiceReason(state, choice) {
   const node = FATES[state.fate?.node];
@@ -8,6 +9,7 @@ export function fateChoiceReason(state, choice) {
   if (node.window && state.worldTime - state.fate.enteredAt >= node.window) return '约期已过';
   if (node.zones && !node.zones.includes(state.loc)) return '尚未抵达会面地点';
   if (state.silver < (choice.cost || 0)) return `需银两 ${choice.cost}`;
+  const reason=conditionReason(state,choice.condition); if(reason) return reason;
   if (Object.entries(choice.requires || {}).some(([k, v]) => state.flag[k] !== v)) return '需要账簿与在场证人';
   return '';
 }

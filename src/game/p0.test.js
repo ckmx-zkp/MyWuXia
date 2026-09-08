@@ -162,10 +162,14 @@ test('xiaoao pack events appear by zone, write numbered facts, and restore', () 
   assert.equal(Object.keys(PACK_EVENTS).every(id => SIDE_EVENTS[id]), true);
   assert.ok(Object.keys(PACK_EVENTS).length >= 13);
   let s = at(fresh(), 'dock');
+  s.flag['0:FZ-01:complete']=true;
   s = cmd(s, 'DISCOVER_EVENT', { id: 'xajh_z00_fuwei_waybill' });
   assert.equal(s.p0.quests.xajh_z00_fuwei_waybill.node, 'n0');
   s = { ...s, loc: 2 };
   s = cmd(s, 'DISCOVER_EVENT', { id: 'xajh_z02_songshan_post' });
+  assert.equal(s.p0.quests.xajh_z02_songshan_post,undefined);
+  // Accepted pre-director saves can finish their existing contract.
+  s.p0.quests.xajh_z02_songshan_post={node:'n0',pending:null,done:false};
   s = { ...s, p0: { ...s.p0, knowledge: 5, potential: 10 } };
   s = cmd(s, 'CHOOSE_EVENT', { id: 'xajh_z02_songshan_post', choice: 'xajh_z02_post_compared' });
   assert.equal(s.p0.facts.xajh_z02_post_compared, true);
@@ -176,6 +180,7 @@ test('luding pack events are indexed, need no herbal knowledge to open, and rest
   const open = SIDE_EVENTS.ldj_z00_yangzhou_afterparty.nodes.n0.choices.find(c => c.id === 'ldj_z00_wounded_heard');
   assert.ok(open && !open.requires?.knowledge);
   let s = at(fresh(), 'inn');
+  s.flag['0:YZ-01:complete']=true;
   s = cmd(s, 'DISCOVER_EVENT', { id: 'ldj_z00_yangzhou_afterparty' });
   s = { ...s, p0: { ...s.p0, potential: 5 } };
   s = cmd(s, 'CHOOSE_EVENT', { id: 'ldj_z00_yangzhou_afterparty', choice: 'ldj_z00_wounded_heard' });
@@ -189,6 +194,7 @@ test('tianlong pack events open without herbal knowledge except medicine checks'
   const poison = SIDE_EVENTS.tlb_z05_fake_xingxiu_poison.nodes.n1.choices.find(c => c.id.endsWith('_proof'));
   assert.equal(poison?.requires?.knowledge, 2);
   let s = at(fresh(), 'inn');
+  s.flag['0:WX-01:complete']=true;
   s = cmd(s, 'DISCOVER_EVENT', { id: 'tlb_z00_xingzilinhou' });
   s = { ...s, p0: { ...s.p0, potential: 5 } };
   s = cmd(s, 'CHOOSE_EVENT', { id: 'tlb_z00_xingzilinhou', choice: 'tlb_z00_xingzilinhou_heard' });

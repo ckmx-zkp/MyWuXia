@@ -6,6 +6,7 @@ import { nextRandom } from './random.js';
 import { applyEff } from './effects.js';
 import { earnTraining } from './training.js';
 import { routinesForZone, routineReward } from '../content/routines.js';
+import { worldConsequences } from './story-director.js';
 
 export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FAC, FAC_DEFAULT, levelUpLog }) {
   const treeKey = (zone, id) => `${zone}:${id}`;
@@ -50,7 +51,7 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
       return n;
     }
     const roll = rng();
-    if (roll < 0.45) {
+    if (roll < 0.45 && !(to===12 && worldConsequences(s).safeSea)) {
       const event = Math.floor(roll * 1000) % (ROAD.length + 1);
       if (event === 0) return startCombat({ ...s, action: null }, { opponent: 'bandit', danger: ZONES[to].danger,
         place: `${ZONES[s.loc].name}至${ZONES[to].name}途中`, context: { kind: 'travel', to } });
@@ -93,7 +94,7 @@ export function createWorldEngine({ ability, questReward, clamp, ITEMS, ROAD, FA
       if (a.left <= 0) {
         const routine = a.type === 'routine' && routinesForZone(ZONES[a.zone]).find(x => x.id === a.id);
         const opponent = a.type === 'quest' ? QUEST_COMBATS[ZONES[a.zone].quests[a.idx].name] : routine?.opponent;
-        if (opponent) return startCombat({ ...n, action: null }, { opponent, danger: ZONES[a.zone].danger,
+        if (opponent) return startCombat({ ...n, action: null }, { opponent, danger: routine?.id==='escort' ? worldConsequences(n).escortDanger : ZONES[a.zone].danger,
           place: a.type === 'quest' ? ZONES[a.zone].quests[a.idx].name : routine.name,
           context: a.type === 'quest' ? { kind: 'quest', zone: a.zone, idx: a.idx } : { kind: 'routine', zone: a.zone, id: a.id } });
         const random = nextRandom(n.rngState);

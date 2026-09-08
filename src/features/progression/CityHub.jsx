@@ -6,23 +6,24 @@ import { currentRoom } from '../../game/p0-engine.js';
 import { sideChoiceReason, atEventNode } from '../../game/side-events.js';
 import { chooseDialogue, testCondition } from '../../game/world-rules.js';
 import { applyOverlay, factHash } from '../../game/narrative-overlay.js';
-import { requestNarrativeNode } from '../../services/narrative-client.js';
+import { requestNarrativeNode, characterPayload } from '../../services/narrative-client.js';
 import './progression.css';
+import { actorStates, worldConsequences } from '../../game/story-director.js';
 
 function usePersonalizedNode(state, eventId, nodeId, node, eventName) {
-  const [overlay, setOverlay] = useState(null);
-  const [source, setSource] = useState('template');
-  const hash = factHash({ name: state.name, loc: state.loc, facts: state.p0?.facts, journal: state.p0?.journal });
+  const [copy, setCopy] = useState(null);
+  const hash = factHash(characterPayload(state));
+  const copyKey=`${state.saveId}:${eventId}:${nodeId}:${hash}`;
   useEffect(() => {
     let live = true;
     requestNarrativeNode(state, eventId, nodeId, node, eventName).then(result => {
       if (!live) return;
-      setOverlay(result.overlay);
-      setSource(result.source || 'template');
+      setCopy({key:copyKey,overlay:result.overlay,source:result.source || 'template'});
     });
     return () => { live = false; };
   }, [state.saveId, eventId, nodeId, hash, node, eventName]);
-  return { view: applyOverlay(node, overlay), personalized: source === 'generated' || source === 'cache' };
+  const current=copy?.key===copyKey?copy:null;
+  return { view: applyOverlay(node, current?.overlay), personalized: current?.source === 'generated' || current?.source === 'cache' };
 }
 
 function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, destination, room }) {
@@ -32,6 +33,7 @@ function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, des
   const lines = personalized ? view.dialogues : chooseDialogue(s, node);
   return <section className="p0-event">
     <h3>{event.name} · {progress ? '继续此事' : '新线索'}{personalized ? ' · 此番见闻因人而异' : ''}</h3>
+    {event.window && progress && <small>会面余 {Math.max(0,event.window-(s.worldTime-(progress.startedAt ?? s.worldTime)))} 息 · 错过仍可善后</small>}
     {!atEventNode(here, node) ? <><p>{view.hearsay}</p>{destination(zone, node.room)}</> : !progress ? <><p>{view.hearsay}</p><button disabled={busy} onClick={() => dispatch({ type: 'DISCOVER_EVENT', id })}>问清此事</button></> : <>
       <p>{view.scene}</p>{lines.map(([who, text], i) => <p key={i}><b>{who}：</b>{text}</p>)}
       <div className="p0-choices">{view.choices.filter(c => testCondition(s, c.visibleWhen)).map(c => {
@@ -45,6 +47,10 @@ function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, des
 export default function CityHub({ state:s, dispatch, onStory, onQuest, onTravel, onLegacy, onFate, onRoutine }) {
   const { stories, events, intro, completed } = cityLeads(s), busy = !!s.action || !!s.battle;
   const room = currentRoom(s);
+  const [showAll,setShowAll]=useState(false);
+  const localEvents=events.filter(e=>e.zone===s.loc || e.progress || e.event.role==='consequence');
+  const primary=localEvents.filter(e=>e.progress || e.event.role==='preparation');
+  const secondary=localEvents.filter(e=>!primary.includes(e));
   const destination = (zone, targetRoom) => {
     if (zone !== s.loc) {
       const route = routeBetween(s.loc,zone);
@@ -59,9 +65,14 @@ export default function CityHub({ state:s, dispatch, onStory, onQuest, onTravel,
     <p>{completed === 4 ? '当地初识的四桩事已了，人物旧事、来往差事与后续机缘仍可继续。' : '从眼前的事结识当地人，也可随时追寻人物旧事。'} 当前位置：{ZONES[s.loc].name}{ROOMS[room] ? ` · ${ROOMS[room].name}` : ''}。</p>
     {ROOMS[room] && <div className="p0-exits">{ROOMS[room].exits.map(id => <button key={id} disabled={busy} onClick={() => dispatch({type:'MOVE_ROOM',id})}>{ROOMS[id].name}</button>)}</div>}
     {intro >= 0 && !(s.loc === 0 && intro === 0) && <div className="p0-row"><div><b>初识当地 · {ZONES[s.loc].quests[intro].name}</b><small>{ZONES[s.loc].quests[intro].text}</small></div><button disabled={busy} onClick={() => onQuest(intro)}>循线问询</button></div>}
-    {events.filter(e => e.zone === s.loc || e.progress).map(({id,event,progress,node,zone}) => (
+    <div className="p0-echo"><b>当地变化</b>{worldConsequences(s).notices.map(text=><p key={text}>{text}</p>)}</div>
+    <h3>正在牵挂的人与事</h3>
+    {primary.length===0 && <p>眼前没有待赴的约。可从人物主线结识当地人，或安排谋生与修炼。</p>}
+    {primary.map(({id,event,progress,node,zone}) => (
       <SideEventCard key={id} s={s} id={id} event={event} progress={progress} node={node} zone={zone} busy={busy} dispatch={dispatch} destination={destination} room={room} />
     ))}
+    {secondary.length>0 && <details onToggle={e=>setShowAll(e.currentTarget.open)}><summary>人物来信与后续机会 · {secondary.length}</summary>{showAll && secondary.map(({id,event,progress,node,zone})=><SideEventCard key={id} s={s} id={id} event={event} progress={progress} node={node} zone={zone} busy={busy} dispatch={dispatch} destination={destination} room={room}/>)}</details>}
+    <details><summary>人物去向与约定</summary>{actorStates(s).map(a=><div className="p0-event" key={a.name}><b>{a.name} · {ZONES[a.zone].name} · 交情 {a.relation}</b><p>{a.stage}</p><small>{a.goal}</small></div>)}</details>
     {s.p0.journal.length > 0 && <p className="p0-echo" role="status">近事：{s.p0.journal.at(-1).text}</p>}
     <details className="city-stories"><summary>人物与江湖主线 · 本区 {stories.filter(t => t.zone === s.loc).length} 条可继续</summary>
     {stories.filter(t => t.zone === s.loc).map(t => <div className="p0-row" key={t.id}><div><b>{t.where} · {t.name}</b><small>{t.speaker}：{t.text}</small><small>{t.count ? `已走过 ${t.count}/${t.total} 段，继续后事` : '可独立介入，不必先清完四项历练'}</small></div><button disabled={busy} onClick={() => onStory(t.index,t.count)}>继续探访</button></div>)}

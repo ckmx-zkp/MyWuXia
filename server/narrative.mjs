@@ -43,7 +43,7 @@ export function createNarrativeService({ store, completeChat, model = 'MiniMax-M
       const canon = extractTemplate(template);
       if (!canon.scene || !canon.hearsay) throw new Error('invalid_template');
       const document = this.remember(saveId, character);
-      const hash = factHash({ name: character.name, loc: character.loc, facts: character.facts, journal: character.journal });
+      const hash = factHash({ name: character.name, loc: character.loc, facts: {...character.facts,template:JSON.stringify(canon)}, journal: character.journal });
       const cached = store.loadGenerated(saveId, event, node, hash);
       if (cached?.overlay) return { source: 'cache', overlay: cached.overlay, hash };
       if (!completeChat) return { source: 'template', overlay: null, hash };

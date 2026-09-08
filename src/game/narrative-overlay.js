@@ -58,7 +58,7 @@ export function applyOverlay(node, overlay) {
 }
 
 export function factHash({ name = '', loc = 0, facts = {}, journal = [] } = {}) {
-  const known = Object.keys(facts).filter(key => facts[key]).sort().join(',');
+  const known = Object.keys(facts).sort().map(key=>`${key}:${JSON.stringify(facts[key])}`).join(',');
   const recent = journal.slice(-8).map(entry => `${entry.eventId}:${entry.nodeId}:${entry.choiceId}:${entry.result}`).join('|');
   return fnv1a(`${name}|${loc}|${known}|${recent}`);
 }

@@ -3,6 +3,7 @@ import { beginProgression, trainingCap, ownsStyle } from './progression.js';
 import { normalizeLoadout, STYLES } from '../content/combat.js';
 import { lessonRequirements, transact, testCondition } from './world-rules.js';
 import { startCombat } from './combat.js';
+import { directionReason, worldConsequences } from './story-director.js';
 import { requirementReason, spend, sideChoiceReason, settleSideEvent, recordExperience, applyWorldEffects, atEventNode, eventReason } from './side-events.js';
 
 export const OFFLINE_CAP = 8 * 60 * 60 * 1000;
@@ -80,8 +81,8 @@ export function p0Command(input, command, now) {
     }
     case 'DISCOVER_EVENT': {
       const event = SIDE_EVENTS[command.id];
-      if (!event || !atEventNode({ ...s, p0: { ...p, room: roomId } }, event.nodes[event.start]) || eventReason(s, event) || p.quests[command.id]) return s;
-      return recordExperience(stop({ ...s, p0: { ...p, quests: { ...p.quests, [command.id]: { node: event.start, pending: null, done: false } } } }), command.id, event.start, 'discover', 'discovered', event.nodes[event.start].hearsay);
+      if (!event || directionReason(s,command.id,event) || !atEventNode({ ...s, p0: { ...p, room: roomId } }, event.nodes[event.start]) || eventReason(s, event) || p.quests[command.id]) return s;
+      return recordExperience(stop({ ...s, p0: { ...p, quests: { ...p.quests, [command.id]: { node: event.start, pending: null, done: false, startedAt:s.worldTime } } } }), command.id, event.start, 'discover', 'discovered', event.nodes[event.start].hearsay);
     }
     case 'CHOOSE_EVENT': {
       const reason = sideChoiceReason({ ...s, p0: { ...p, room: roomId } }, command.id, command.choice);
@@ -96,7 +97,8 @@ export function p0Command(input, command, now) {
       return settleSideEvent(s, context, true);
     }
     case 'LEARN_SKILL': {
-      const lesson = LESSONS[command.id];
+      const baseLesson = LESSONS[command.id];
+      const lesson = baseLesson && {...baseLesson,silver:Math.max(0,baseLesson.silver-worldConsequences(s).teachingDiscount)};
       if (!lesson || lesson.room !== roomId) return note(s, '请先找到传授此功的师傅。');
       const kind = lesson.kind === 'style' ? 'styles' : 'internals';
       if (p[kind][lesson.target]) return note(s, '此功已经学过。');
@@ -127,14 +129,14 @@ export function p0Command(input, command, now) {
     case 'EQUIP_LOADOUT': return stop({ ...s, loadout: normalizeLoadout(s, command.loadout) });
     case 'SELL_HERBS': {
       if (roomId !== 'pharmacy' || p.materials.herbs < 1) return s;
-      return applyWorldEffects(s, { herbs: -1, silver: testCondition(s, { ref: 'fact:medicine_complete', op: 'eq', value: true }) ? 5 : 3 });
+      return applyWorldEffects(s, { herbs: -1, silver: worldConsequences(s).herbPrice });
     }
     case 'BUY_MEDICINE': {
-      if (roomId !== 'pharmacy' || s.silver < 10) return s;
-      return { ...s, silver: s.silver - 10, hp: Math.min(100, s.hp + 30) };
+      if (roomId !== 'pharmacy' || s.silver < worldConsequences(s).medicinePrice) return s;
+      return { ...s, silver: s.silver - worldConsequences(s).medicinePrice, hp: Math.min(100, s.hp + 30) };
     }
     case 'INN_REST': {
-      if (roomId !== 'inn' || s.silver < 5) return s;
+      if (roomId !== 'inn' || s.silver < 5 || s.hp===100 && s.mp===100) return s;
       return stop({ ...s, silver: s.silver - 5, hp: 100, mp: 100 });
     }
     default: return s;

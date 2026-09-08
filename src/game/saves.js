@@ -8,7 +8,7 @@ import { ACTIVITIES, ROOMS } from '../content/p0.js';
 import { isSaveId } from './save-id.js';
 
 export const SAVE_KEY = 'jianghu-save-v1';
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 export const SLOT_KEYS = [1, 2, 3].map(n => `jianghu-slot-${n}`);
 const object = x => x !== null && typeof x === 'object' && !Array.isArray(x);
 const finite = (x, min = 0, max = 1e12) => typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max;
@@ -34,7 +34,7 @@ function validBattle(b, validateContext) {
 export function migrateSave(raw, { validateContext, validateTree } = {}) {
   const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
   if (!object(parsed)) throw new Error('存档内容不是有效对象。');
-  if (parsed.version !== undefined && ![1, 2, 3, 4, 5, 6, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
+  if (parsed.version !== undefined && ![1, 2, 3, 4, 5, 6, 7, SAVE_VERSION].includes(parsed.version)) throw new Error('存档版本不受支持，请使用相应版本的游戏。');
   const input = parsed.version !== undefined ? parsed.state : parsed;
   if (!object(input) || !finite(input.expTotal) || !finite(input.hp, 0, 100) || !finite(input.loc, 0, 12) || !Number.isInteger(input.loc)) throw new Error('存档缺少有效的角色与区域数据。');
   const state = initial();
@@ -72,6 +72,10 @@ export function migrateSave(raw, { validateContext, validateTree } = {}) {
     state.fate = structuredClone(f);
   }
   if ((state.treeDone['0:WX-01'] || 0) >= QUEST_INDEX['WX-01'].nodes.length) state.flag['0:WX-01:complete'] = true;
+  for(const [key,count] of Object.entries(state.treeDone)) {
+    const tree=QUEST_INDEX[key.split(':')[1]];
+    if(tree && count===tree.nodes.length) state.flag[`${key}:complete`]=true;
+  }
   for (const k of ['rumors', 'log']) if (Array.isArray(input[k])) state[k] = input[k].filter(text).slice(0, k === 'log' ? 8 : 500);
   if (Array.isArray(input.letters)) state.letters = input.letters.filter(v => object(v) && text(v.from) && text(v.text)).slice(0, 500);
   if (Array.isArray(input.visited)) state.visited = [...new Set(input.visited.filter(v => Number.isInteger(v) && v >= 0 && v < 13))];

@@ -1,4 +1,5 @@
 import { ZONES } from './world.js';
+import { compileStory } from '../game/story-graph.js';
 const loaders = {
   'YZ-01': () => import('./quests/YZ-01.js'), 'FZ-01': () => import('./quests/FZ-01.js'),
   'JX-01': () => import('./quests/JX-01.js'), 'SZ-01': () => import('./quests/SZ-01.js'),
@@ -9,7 +10,7 @@ const pending = new Map();
 export function loadZoneQuests(zone) {
   if (!ZONES[zone]) return Promise.reject(new Error('区域不存在。'));
   if (!pending.has(zone)) pending.set(zone, Promise.all((ZONES[zone].trees || []).map(t => loaders[t.id]()))
-    .then(trees => { ZONES[zone].trees = trees.map(t => t.default); })
+    .then(trees => { ZONES[zone].trees = trees.map(t => compileStory(t.default)); })
     .catch(error => { pending.delete(zone); throw error; }));
   return pending.get(zone);
 }

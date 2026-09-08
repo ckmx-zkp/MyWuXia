@@ -7,6 +7,7 @@ import { trainingCap } from '../../game/progression.js';
 import { INTERNALS } from '../../game/training.js';
 import { STYLES } from '../../content/combat.js';
 import './progression.css';
+import { worldConsequences } from '../../game/story-director.js';
 
 const rewardNames = { silver: '银两', potential: '潜能', herbs: '青叶草', contribution: '贡献', knowledge: '草木学识', hp: '气血', mp: '内力', training: '修炼心得' };
 export function OfflineReport({ state, dispatch }) {
@@ -22,12 +23,13 @@ export function OfflineReport({ state, dispatch }) {
 export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', onLegacy, onSpar, onTown }) {
   const p = s.p0, roomId = currentRoom(s), room = ROOMS[roomId];
   const busy = !!s.action || !!s.battle;
+  const consequences=worldConsequences(s);
   const act = (id, target) => dispatch({ type: 'START_ACTIVITY', id, target });
   const activityButton = (id, target, label) => {
     const reason = activityReason(s, id, target);
     return <span className="p0-activity-choice"><button disabled={!!reason} title={reason || ACTIVITIES[id].name} onClick={() => act(id, target)}>{label || ACTIVITIES[id].name}</button>{reason && <small>{reason}</small>}</span>;
   };
-  const lessons = Object.entries(LESSONS).filter(([, l]) => l.room === roomId);
+  const lessons = Object.entries(LESSONS).filter(([, l]) => l.room === roomId).map(([id,l])=>[id,{...l,silver:Math.max(0,l.silver-consequences.teachingDiscount)}]);
   return <div className="p0-page">
     <div className="chapter"><small>{mode === '门派' ? p.sect ? `武当 · ${p.rank ? '入室弟子' : '外门弟子'}` : '散人 · 自在行侠' : '临安与武当'}<span> · 潜能 {p.potential} · 贡献 {p.contribution}</span></small><h1>{mode === '江湖' ? room?.name || '江湖行路' : mode}</h1></div>
     {p.activity && <div className="p0-activity" role="status"><span>{ACTIVITIES[p.activity.id].name} · {BASICS[p.activity.target] || INTERNALS[p.activity.target]?.name || p.activity.target}</span><button disabled={busy} onClick={() => dispatch({ type: 'STOP_ACTIVITY' })}>收功</button></div>}
@@ -48,8 +50,8 @@ export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', 
       {roomId === 'wudang-gate' && !p.sect && <button disabled={busy} onClick={() => dispatch({ type: 'JOIN_SECT' })}>向道童执礼入门</button>}
 
       <div className="p0-actions">{Object.entries(ACTIVITIES).filter(([, a]) => a.rooms?.includes(roomId)).map(([id, a]) => <div key={id}>{activityButton(id)}<small>{Object.entries(a).filter(([k, v]) => rewardNames[k] && typeof v === 'number').map(([k, v]) => `${rewardNames[k]} +${v}`).join(' · ')} / {a.seconds} 秒</small></div>)}</div>
-      {roomId === 'inn' && <button disabled={busy || s.silver < 5} onClick={() => dispatch({ type: 'INN_REST' })}>投宿 · 五两</button>}
-      {roomId === 'pharmacy' && <div className="p0-actions"><button disabled={busy || s.silver < 10} onClick={() => dispatch({ type: 'BUY_MEDICINE' })}>药师疗伤 · 十两</button><button disabled={busy || !p.materials.herbs} onClick={() => dispatch({ type: 'SELL_HERBS' })}>售出一份青叶草 · {readWorld(s,'fact:medicine_complete') ? '五' : '三'}两</button></div>}
+      {roomId === 'inn' && <button disabled={busy || s.silver < 5 || s.hp===100 && s.mp===100} onClick={() => dispatch({ type: 'INN_REST' })}>投宿 · 五两</button>}
+      {roomId === 'pharmacy' && <div className="p0-actions"><button disabled={busy || s.silver < consequences.medicinePrice} onClick={() => dispatch({ type: 'BUY_MEDICINE' })}>药师疗伤 · {consequences.medicinePrice}两</button><button disabled={busy || !p.materials.herbs} onClick={() => dispatch({ type: 'SELL_HERBS' })}>售出一份青叶草 · {consequences.herbPrice}两</button></div>}
       {roomId === 'smith' && Object.entries(WEAPONS).filter(([id]) => id !== 'hands').map(([id, w]) => <div className="p0-row" key={id}><span>{w.name} · 攻击 +{w.attack}</span><button disabled={busy || p.weapons.includes(id) || s.silver < w.price} onClick={() => dispatch({ type: 'BUY_WEAPON', id })}>{p.weapons.includes(id) ? '已购得' : `购买 · ${w.price}两`}</button></div>)}
       {lessons.length > 0 && <><h2>请教学艺</h2>{lessons.map(([id, l]) => {
         const learned = p[l.kind === 'style' ? 'styles' : 'internals'][l.target];

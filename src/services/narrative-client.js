@@ -1,4 +1,4 @@
-import { applyOverlay, extractTemplate, factHash } from '../game/narrative-overlay.js';
+import { applyOverlay, extractTemplate, factHash, mergeOverlay } from '../game/narrative-overlay.js';
 
 function timed(ms) {
   const controller = new AbortController();
@@ -29,8 +29,8 @@ export function characterPayload(state) {
     name: state.name,
     loc: state.loc,
     worldTime: state.worldTime,
-    facts: state.p0?.facts || {},
-    npcs: state.p0?.npcs || {},
+    facts: { ...(state.p0?.facts || {}),...Object.fromEntries(Object.entries(state.flag || {}).map(([key,value])=>[`world:${key}`,value])),...Object.fromEntries(Object.entries(state.npcStates || {}).map(([key,value])=>[`character:${key}`,value])) },
+    npcs: { ...state.npcStates,...state.p0?.npcs },
     journal: (state.p0?.journal || []).slice(-12),
   };
 }
@@ -39,7 +39,8 @@ const pending = new Map();
 
 export async function requestNarrativeNode(state, eventId, nodeId, node, eventName) {
   if (!state.saveId || !node || node.terminal) return { source: 'template', overlay: null, node };
-  const hash = factHash({ name: state.name, loc: state.loc, facts: state.p0?.facts, journal: state.p0?.journal });
+  const character=characterPayload(state);
+  const hash = factHash(character);
   const key = `${state.saveId}:${eventId}:${nodeId}:${hash}`;
   if (pending.has(key)) return pending.get(key);
   const work = postJson('/api/narrative/node', {
@@ -48,10 +49,10 @@ export async function requestNarrativeNode(state, eventId, nodeId, node, eventNa
     nodeId,
     eventName,
     hash,
-    character: characterPayload(state),
+    character,
     template: extractTemplate(node),
   }).then(data => {
-    const overlay = data?.overlay || null;
+    const overlay = mergeOverlay(extractTemplate(node),data?.overlay);
     return { source: data?.source || 'template', overlay, node: applyOverlay(node, overlay) };
   }).finally(() => pending.delete(key));
   pending.set(key, work);
