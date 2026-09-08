@@ -1,0 +1,92 @@
+src/game/story-graph.js
+  s_106aca82155d0d::t_a87c371e90c0ea 14-23
+src/game/growth-guide.js
+  s_106aca82155d0d::t_1df906bbd165e6 1-36
+docs/PROGRESS.md
+  s_106aca82155d0d::t_ad4ea5de3593b3 3,5
+src/features/progression/CityHub.jsx
+  s_106aca82155d0d::t_1df906bbd165e6 12,66
+src/features/progression/ProgressionPanel.jsx
+  s_106aca82155d0d::t_1df906bbd165e6 11-13,22-23,38,47-50,58-59
+src/game/story-director.js
+  s_106aca82155d0d::t_d73a5725e08b58 39-41,50
+src/game/p0.test.js
+  s_106aca82155d0d::t_dbca67a8bcb624 114-118
+src/game/world-rules.js
+  s_106aca82155d0d::t_deb3204c9508cb 57,63,86,91-92
+src/game/p0-engine.js
+  s_106aca82155d0d::t_deb3204c9508cb 121
+  s_106aca82155d0d::t_4cf3b8ada4ebef 59-61,64,82
+  s_106aca82155d0d::t_538f88ee2d30d2 62
+  s_106aca82155d0d::t_1df906bbd165e6 7,63,65
+  s_106aca82155d0d::t_dbca67a8bcb624 19
+src/content/p0.js
+  s_106aca82155d0d::t_deb3204c9508cb 3,11,49
+  s_106aca82155d0d::t_dbca67a8bcb624 107-108,117-118
+  s_106aca82155d0d::t_d73a5725e08b58 109-116
+src/content/causal-events.js
+  s_106aca82155d0d::t_a87c371e90c0ea 48-54
+src/game/encounters.test.js
+  s_106aca82155d0d::t_dbca67a8bcb624 18,34
+src/game/story-director.test.js
+  s_106aca82155d0d::t_dbca67a8bcb624 40,46,48,55,60
+  s_106aca82155d0d::t_ad4ea5de3593b3 90-91
+src/content/fates.js
+  s_106aca82155d0d::t_ad4ea5de3593b3 60-62
+  s_106aca82155d0d::t_a87c371e90c0ea 10-11
+src/game/p0-save.js
+  s_106aca82155d0d::t_d73a5725e08b58 42-43
+  s_106aca82155d0d::t_4cf3b8ada4ebef 37
+  s_106aca82155d0d::t_deb3204c9508cb 13
+src/game/saves.js
+  s_106aca82155d0d::t_5aa2105c5793c0 86-89
+  s_106aca82155d0d::t_d73a5725e08b58 11,37
+docs/architecture-optimization.md
+  s_106aca82155d0d::t_2ad3c28a4bee2b 3-5
+  s_106aca82155d0d::t_3e327157ffca66 6
+src/content/wudang.js
+  s_106aca82155d0d::t_deb3204c9508cb 1-17
+src/game/growth-journey.test.js
+  s_106aca82155d0d::t_fb9fc56f681be7 1-42,45-60,62-90,100-101,108-113,115-125,132
+  s_106aca82155d0d::t_5aa2105c5793c0 61,91-99
+  s_106aca82155d0d::t_6a87f312cf9619 43-44,114,126-131
+  s_106aca82155d0d::t_4cf3b8ada4ebef 102-107
+src/game/encounter-settlement.js
+  s_106aca82155d0d::t_d73a5725e08b58 42,47
+src/content/combat.js
+  s_106aca82155d0d::t_deb3204c9508cb 56
+  s_106aca82155d0d::t_a87c371e90c0ea 57
+docs/gdd/11-idle-rpg-roadmap.md
+  s_106aca82155d0d::t_2ad3c28a4bee2b 3-5
+  s_106aca82155d0d::t_0c0bac54c52670 6
+src/content/validate-p0.js
+  s_106aca82155d0d::t_6a87f312cf9619 22
+src/game/commands.js
+  s_106aca82155d0d::t_178d266e7f2224 13,62-70
+docs/gdd/15-growth-and-jianghu-roadmap.md
+  s_106aca82155d0d::t_77bf9db4bc1c39 124
+  s_106aca82155d0d::t_2ad3c28a4bee2b 116-117
+  s_106aca82155d0d::t_ad4ea5de3593b3 5,37-38,82-115,118-123,125
+AGENTS.md
+  s_106aca82155d0d::t_ad4ea5de3593b3 3-11
+src/features/progression/GrowthGuide.jsx
+  s_106aca82155d0d::t_1df906bbd165e6 1-22
+src/content/quest-index.js
+  s_106aca82155d0d::t_f7cee99a70a554 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "af856442e72a9d90ecb403d7425df09f271b7ba0",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
