@@ -1,5 +1,6 @@
 import { BASICS, WEAPONS } from '../content/p0.js';
 import { SKILLS } from '../content/martial.js';
+import { DEFAULT_INTENT } from '../content/goals.js';
 
 export const styleFamily = name => /剑|刀|棒|六脉/.test(name) ? 'blade' : 'fist';
 export const ownsStyle = (s, name) => !s.p0 ? SKILLS.some(k => k.name === name && Math.floor(s.expTotal / 100) + 1 >= k.lv) || s.bonusSkill?.name === name
@@ -20,6 +21,6 @@ export function beginProgression(s, legacy = false) {
   return { ...s, idle: false, p0: { potential: 40, basics: Object.fromEntries(Object.keys(BASICS).map(k => [k, legacy ? 8100 : 100])), styles, internals,
     room: s.loc === 1 ? 'wudang-gate' : 'gate', discovered: ['gate'], materials: { herbs: 0 }, knowledge: 0,
     weapon: legacy || s.bonusSkill?.name === '落叶剑法' ? 'practice' : 'hands', weapons: ['hands', 'practice'], sect: null, contribution: 0, rank: 0,
-    activity: null, report: null, quests: {}, facts: {}, npcs: {}, journal: [], sequence: 0 } };
+    intent: {...DEFAULT_INTENT}, activity: null, report: null, quests: {}, facts: {}, npcs: {}, journal: [], sequence: 0 } };
 }
 export const equippedWeapon = s => WEAPONS[s.p0?.weapon] || WEAPONS.hands;

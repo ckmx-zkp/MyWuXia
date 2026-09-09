@@ -3,12 +3,14 @@ import { availableStyles, normalizeLoadout, STYLES, OPPONENTS, STRATEGIES, BREAT
 import './combat.css';
 import { availableInternals, pairing, mastery } from '../../game/training.js';
 import { vitalStats } from '../../game/vitals.js';
+import { tacticalAdvice } from '../../game/tactics.js';
 
 export function LoadoutEditor({ state, value, onChange, disabled = false }) {
   const config = normalizeLoadout(state, value);
   const pair = pairing(state, config);
   const change = (key, val) => onChange({ ...config, [key]: val });
   return <div className="loadout-editor">
+    <details><summary>搭配的战术用途</summary>{tacticalAdvice(state,config).map(text=><p key={text}>{text}</p>)}</details>
     <label>主修武学<select disabled={disabled} value={config.style} onChange={e => change('style', e.target.value)}>
       {availableStyles(state).map(name => <option key={name} value={name}>{name} · {mastery(state.training?.styles?.[name])}重</option>)}
     </select><small>{STYLES[config.style].moves.join(' · ')}；强招每隔两次行动自动施展。</small></label>

@@ -9,15 +9,6 @@ function asText(value) {
   return String(value);
 }
 
-function messageTexts(message) {
-  const texts = [asText(message.content)];
-  if (Array.isArray(message.reasoning_details)) {
-    for (const detail of message.reasoning_details) texts.push(asText(detail?.text || detail));
-  }
-  texts.push(asText(message.reasoning_content));
-  return [...new Set(texts.filter(Boolean))];
-}
-
 export function parseModelJson(text) {
   if (typeof text !== 'string' || !text.trim()) return null;
   const stripped = text.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/```json\s*|```/g, '').trim();
@@ -44,7 +35,7 @@ export function parseModelJson(text) {
   return null;
 }
 
-export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MODEL, fetchImpl = fetch, timeoutMs = 25000 } = {}) {
+export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MODEL, fetchImpl = fetch, timeoutMs = 60000 } = {}) {
   return async function completeChat(messages) {
     if (!key) throw new Error('missing_key');
     const controller = new AbortController();
@@ -57,7 +48,7 @@ export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MO
           model,
           messages,
           temperature: 0.8,
-          max_completion_tokens: 2200,
+          max_completion_tokens: 8192,
           reasoning_split: true,
         }),
         signal: controller.signal,
@@ -65,13 +56,12 @@ export function createMinimaxChat({ key, base = DEFAULT_BASE, model = DEFAULT_MO
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error?.message || payload.base_resp?.status_msg || `minimax_${response.status}`);
       const message = payload.choices?.[0]?.message || {};
-      const candidates = messageTexts(message);
-      const parsed = candidates.map(parseModelJson).find(Boolean);
+      const content = asText(message.content);
+      const parsed = payload.choices?.[0]?.finish_reason === 'length' ? null : parseModelJson(content);
       if (!parsed) {
-        const preview = candidates[0]?.replace(/\s+/g, ' ').slice(0, 180) || 'empty';
-        throw new Error(`invalid_model_json:${preview}`);
+        throw new Error(`invalid_model_json:finish=${payload.choices?.[0]?.finish_reason || 'unknown'},content_chars=${content.length}`);
       }
-      return { parsed, model: payload.model || model, raw: candidates[0] || '' };
+      return { parsed, model: payload.model || model, raw: content };
     } finally {
       clearTimeout(timer);
     }

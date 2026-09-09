@@ -1,6 +1,7 @@
 import { ACTIVITIES, BASICS, ROOMS, SIDE_EVENTS, WEAPONS } from '../content/p0.js';
 import { STYLES } from '../content/combat.js';
 import { INTERNALS } from './training.js';
+import { GOAL_FOCUS, LEARNING_PATH, DEFAULT_INTENT } from '../content/goals.js';
 
 const object = x => x && typeof x === 'object' && !Array.isArray(x);
 const number = (x, max = 1e12) => Number.isFinite(x) && Number.isInteger(x) && x >= 0 && x <= max;
@@ -41,5 +42,6 @@ export function validateProgression(p) {
     || !object(p.report.earned) || !Object.values(p.report.earned).every(v => Number.isFinite(v) && Math.abs(v) <= 1e12))) fail();
   if(p.report?.reason !== undefined && !text(p.report.reason)) fail();
   for(const key of ['before','after']) if(p.report?.[key] !== undefined && (!object(p.report[key]) || !['attack','armor','hp','mp'].every(k=>Number.isFinite(p.report[key][k]) && p.report[key][k]>=0))) fail();
-  return structuredClone(p);
+  if(p.intent!==undefined && (!object(p.intent) || !Object.hasOwn(GOAL_FOCUS,p.intent.focus) || !Object.hasOwn(LEARNING_PATH,p.intent.school))) fail();
+  return structuredClone({...p,intent:p.intent || DEFAULT_INTENT});
 }

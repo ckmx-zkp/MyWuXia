@@ -3,6 +3,7 @@ import { nextRandom } from './random.js';
 import { pairing, earnTraining } from './training.js';
 import { vitalStats } from './vitals.js';
 import { equippedWeapon, styleFamily } from './progression.js';
+import { combatTraits } from './tactics.js';
 
 export const MAX_ROUNDS = 60;
 function draw(battle) {
@@ -41,6 +42,7 @@ export function startCombat(state, { opponent = 'student', danger = 20, place = 
     battle.player.speed += Math.sqrt(state.p0.basics.dodge) * 0.15;
   }
   battle.player.recoveryBonus = bonuses.recovery;
+  battle.player.traits = combatTraits(state,loadout);
   battle.player.armorBonus = bonuses.armor + (state.p0 ? Math.min(0.15, Math.sqrt(state.p0.basics.parry) / 600) : 0);
   battle.log.push(`主修${loadout.style} ${bonuses.styleLevel}重，${bonuses.inner.name} ${bonuses.innerLevel}重，${bonuses.compatible ? '招气相合' : '各循其法'}。`);
   return { ...state, rngState: random.seed, loadout, battle, action: { type: 'combat' }, fx: null };
@@ -49,7 +51,7 @@ function strike(battle, actor, target, isEnemy) {
   const style = STYLES[actor.loadout.style];
   const plan = STRATEGIES[actor.loadout.strategy];
   const breath = BREATHS[actor.loadout.breath];
-  const cost = Math.round(actor.maxMp * (actor.loadout.strategy === 'aggressive' ? 0.26 : 0.2));
+  const cost = Math.round(actor.maxMp * ((actor.loadout.strategy === 'aggressive' ? 0.26 : 0.2)*(1-(actor.traits?.economy || 0))+(actor.traits?.penetration?0.05:0)));
   actor.cooldown = Math.max(0, actor.cooldown - 1);
   if (actor.mp < actor.maxMp * plan.threshold || (actor.cooldown === 0 && actor.mp < cost)) {
     const gained = Math.min(actor.maxMp - actor.mp, Math.ceil(actor.maxMp * (breath.recovery + (actor.recoveryBonus || 0))));
@@ -64,15 +66,17 @@ function strike(battle, actor, target, isEnemy) {
   const foot = FOOTWORK[target.loadout.footwork];
   const defense = STRATEGIES[target.loadout.strategy];
   const roll = draw(battle);
-  const dodge = Math.min(0.3, foot.dodge + Math.max(-0.03, (target.speed - actor.speed) / 500));
+  const dodge = Math.min(0.3, foot.dodge + (target.traits?.evasion || 0) + Math.max(-0.03, (target.speed - actor.speed) / 500));
   if (roll < dodge) {
     battle.log.push(`${actor.name}使出一招「${move}」，${target.name}侧身避开，招式落在空处。`);
     return;
   }
   const parried = roll < dodge + Math.max(0, STYLES[target.loadout.style].parry + defense.guard);
-  const armor = Math.min(0.5, BREATHS[target.loadout.breath].armor + foot.armor + (target.armorBonus || 0));
+  const armor = Math.max(0,Math.min(0.5, BREATHS[target.loadout.breath].armor + foot.armor + (target.armorBonus || 0))-(special?actor.traits?.penetration || 0:0));
   const damage = Math.max(1, Math.round(actor.attack * (special ? style.power * 1.5 : 0.8) * plan.damage
-    * (0.85 + draw(battle) * 0.3) * (1 - armor) * (parried ? 0.45 : 1)));
+    * (0.85 + draw(battle) * 0.3) * (1 - armor) * (parried ? 0.45 : 1) * (special?1-(target.traits?.protection || 0):1)));
+  if(special && actor.traits?.penetration) battle.log.push(`${actor.name}运劲透甲，强招更耗内力。`);
+  if(special && target.traits?.protection) battle.log.push(`${target.name}以拳掌合护体内息，卸去一分强劲。`);
   target.hp = Math.max(0, target.hp - damage);
   battle.log.push(`${actor.name}使出一招「${move}」，${parried ? `${target.name}招架卸去大半力道，仍` : `${target.name}`}${damage > target.maxHp * 0.16 ? '受了重创' : '受伤后退'}（气血 -${damage}）。`);
 }

@@ -8,7 +8,7 @@ function pathFor(ref) {
   if (kind === 'quest' && /^\d+:[0-3]$/.test(key)) return ['done',parts[0],parts[1]];
   const maps = { fact: ['p0', 'facts'], world: ['flag'], npc: ['p0', 'npcs'], character: ['npcStates'], relation: ['favor'], faction: ['factionRelations'], style: ['training', 'styles'], internal: ['training', 'internals'], basic: ['p0', 'basics'], item: ['items'], tree: ['treeDone'] };
   if (maps[kind] && safe(key)) return [...maps[kind], key];
-  const fields = { sect: ['p0', 'sect'], rank: ['p0', 'rank'], zone: ['loc'], room: ['p0', 'room'] };
+  const fields = { fate:['fate','node'], sect: ['p0', 'sect'], rank: ['p0', 'rank'], zone: ['loc'], room: ['p0', 'room'] };
   if (fields[ref]) return fields[ref];
   throw new Error(`未知世界查询：${ref}`);
 }

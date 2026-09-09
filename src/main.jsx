@@ -16,6 +16,7 @@ import SavePanel from './features/saves/SavePanel.jsx';
 import { SAVE_KEY, readSave, writeSave, clearAutoSave } from './game/saves.js';
 import { initial } from './game/state.js';
 import { SKILLS, START_SKILLS } from './content/martial.js';
+import { ORIGINS } from './content/creation.js';
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
@@ -58,12 +59,6 @@ const ITEMS = {
 
 
 /* ================= 开局：出身 / 家传武学 ================= */
-const ORIGINS = [
-  { id: 'hunter', name: '猎户之子', text: '山林长大，筋骨结实。', apply: { hp: 15 }, desc: '气血 +15' },
-  { id: 'trader', name: '商贾子弟', text: '算盘打得好，盘缠也足。', apply: { silver: 150 }, desc: '银两 +150' },
-  { id: 'soldier', name: '行伍弃卒', text: '军中厮杀过，拳脚带杀气。', apply: { ab: 6, hp: 5 }, desc: '能力 +6 · 气血 +5' },
-  { id: 'scholar', name: '落魄书生', text: '读万卷书，胸中自有江湖。', apply: { exp: 120 }, desc: '历练 +120' },
-];
 
 const ALLOC_POINTS = 5;
 const ALLOC_STATS = [['hp', '根骨', '气血 +5 / 点'], ['ab', '臂力', '能力 +2 / 点'], ['exp', '悟性', '历练 +15 / 点']];

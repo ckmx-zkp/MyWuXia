@@ -6,7 +6,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createNarrativeService } from './narrative.mjs';
-import { parseModelJson } from './minimax.mjs';
+import { parseModelJson, createMinimaxChat } from './minimax.mjs';
 import { newSaveId } from '../src/game/save-id.js';
 
 const template = {
@@ -94,4 +94,18 @@ test('model json parser accepts fenced objects', () => {
   assert.equal(parseModelJson('```json\n{"scene":"a"}\n```\nchoices: {"accept":{}}').scene, 'a');
   assert.equal(parseModelJson('prefix {"scene":"b","hearsay":"c"} trailing {').scene, 'b');
   assert.equal(parseModelJson('not json'), null);
+});
+
+test('model adapter budgets reasoning and accepts final content only', async () => {
+  let request;
+  const chat=createMinimaxChat({key:'test-only',fetchImpl:async(url,options)=>{
+    request=JSON.parse(options.body);
+    return {ok:true,json:async()=>({choices:[{finish_reason:'stop',message:{content:'{"scene":"最终正文"}',reasoning_details:[{text:'{"scene":"思考草稿"}'}]}}]})};
+  }});
+  assert.equal((await chat([])).parsed.scene,'最终正文');
+  assert.equal(request.max_completion_tokens,8192);
+  for(const [finish,content] of [['length','{"scene":"截断之前的草稿"}'],['stop','']]) {
+    const invalid=createMinimaxChat({key:'test-only',fetchImpl:async()=>({ok:true,json:async()=>({choices:[{finish_reason:finish,message:{content,reasoning_details:[{text:'{"scene":"不能上屏的思考"}'}]}}]})})});
+    await assert.rejects(invalid([]),/invalid_model_json/);
+  }
 });

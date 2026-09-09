@@ -11,6 +11,7 @@ import { worldConsequences } from '../../game/story-director.js';
 import { trainingAdvice } from '../../game/growth-guide.js';
 import { SECT_RANKS } from '../../content/wudang.js';
 import { availableStyles } from '../../content/combat.js';
+import { tacticalAdvice } from '../../game/tactics.js';
 
 const rewardNames = { silver: '银两', potential: '潜能', herbs: '青叶草', contribution: '贡献', knowledge: '草木学识', hp: '气血', mp: '内力', training: '修炼心得' };
 export function OfflineReport({ state, dispatch }) {
@@ -48,6 +49,7 @@ export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', 
       <label>主修武功<select value={s.loadout.style} disabled={busy} onChange={e=>dispatch({type:'EQUIP_LOADOUT',loadout:{...s.loadout,style:e.target.value}})}>{availableStyles(s).map(id=><option key={id}>{id}</option>)}</select></label>
       <label>主修内功<select value={s.loadout.internal} disabled={busy} onChange={e=>dispatch({type:'EQUIP_LOADOUT',loadout:{...s.loadout,internal:e.target.value}})}>{Object.keys(p.internals).map(id=><option key={id} value={id}>{INTERNALS[id].name}</option>)}</select></label>
       {[['styles',s.loadout.style],['internals',s.loadout.internal]].map(([kind,id])=>{const a=trainingAdvice(s,kind,id);return <p key={kind}><b>{INTERNALS[id]?.name || id} · {a.level}重</b><br/>{a.text}<br/>{a.effect}</p>;})}
+      <details><summary>这套武学能做什么</summary>{tacticalAdvice(s).map(text=><p key={text}>{text}</p>)}</details>
       <h2>江湖经历</h2>{p.journal.slice(-8).reverse().map(j => <p key={j.id}>{j.text}</p>)}
     </> : <>
       {room && <><p className="p0-scene">{room.scene}</p>{chooseDialogue(s,room).map(([name, text]) => <p key={name}><b>{name}：</b>{text}</p>)}
@@ -60,7 +62,7 @@ export default function ProgressionPanel({ state: s, dispatch, mode = '江湖', 
 
       <div className="p0-actions">{Object.entries(ACTIVITIES).filter(([, a]) => a.rooms?.includes(roomId)).map(([id, a]) => <div key={id}>{activityButton(id)}<small>{Object.entries(a).filter(([k, v]) => rewardNames[k] && typeof v === 'number').map(([k, v]) => `${rewardNames[k]} +${v}`).join(' · ')} / {a.seconds} 秒</small></div>)}</div>
       {roomId === 'inn' && <button disabled={busy || s.silver < 5 || s.hp===100 && s.mp===100} onClick={() => dispatch({ type: 'INN_REST' })}>投宿 · 五两</button>}
-      {roomId === 'pharmacy' && <div className="p0-actions"><button disabled={busy || s.silver < consequences.medicinePrice} onClick={() => dispatch({ type: 'BUY_MEDICINE' })}>药师疗伤 · {consequences.medicinePrice}两</button><button disabled={busy || !p.materials.herbs} onClick={() => dispatch({ type: 'SELL_HERBS' })}>售出一份青叶草 · {consequences.herbPrice}两</button></div>}
+      {ROOMS[roomId]?.facility === 'pharmacy' && <div className="p0-actions"><button disabled={busy || s.silver < consequences.medicinePrice} onClick={() => dispatch({ type: 'BUY_MEDICINE' })}>药师疗伤 · {consequences.medicinePrice}两</button><button disabled={busy || !p.materials.herbs} onClick={() => dispatch({ type: 'SELL_HERBS' })}>售出一份青叶草 · {consequences.herbPrice}两</button></div>}
       {roomId === 'smith' && Object.entries(WEAPONS).filter(([id]) => id !== 'hands').map(([id, w]) => <div className="p0-row" key={id}><span>{w.name} · 攻击 +{w.attack}</span><button disabled={busy || p.weapons.includes(id) || s.silver < w.price} onClick={() => dispatch({ type: 'BUY_WEAPON', id })}>{p.weapons.includes(id) ? '已购得' : `购买 · ${w.price}两`}</button></div>)}
       {lessons.length > 0 && <><h2>请教学艺</h2>{lessons.map(([id, l]) => {
         const learned = p[l.kind === 'style' ? 'styles' : 'internals'][l.target];

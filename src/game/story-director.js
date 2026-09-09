@@ -29,16 +29,18 @@ export function reconcileStories(s,events) {
 }
 export function worldConsequences(s) {
   const f=s.p0?.facts || {}, allied=['alliance','alliance_end'].includes(s.fate?.node), conflict=['conflict','conflict_end'].includes(s.fate?.node);
+  const clinic=s.loc===1 && s.p0?.room==='hanshui-clinic', hanshuiSafe=f.hanshui_joint || f.hanshui_staged;
   return {
-    medicinePrice:f.taoyuan_shelter || f.shennong_truce ? 7 : conflict && !f.witness_sheltered ? 15 : 10,
+    medicinePrice:clinic && (hanshuiSafe || f.hanshui_relief) ? (f.hanshui_joint?6:f.hanshui_staged?8:9) : f.taoyuan_shelter || f.shennong_truce ? 7 : conflict && !f.witness_sheltered ? 15 : 10,
     herbPrice:f.shennong_truce ? 7 : f.medicine_complete ? 5 : 3,
-    escortDanger:allied || f.witness_sheltered ? 15 : conflict ? 45 : 25,
+    escortDanger:s.loc===1 && hanshuiSafe ? (f.hanshui_joint?10:20) : allied || f.witness_sheltered ? 15 : conflict ? 45 : 25,
     travelToll:conflict && !f.witness_sheltered && !f.family_shelter && !f.canal_shelter ? 5 : 0,
     teachingDiscount:f.fuwei_refuge || f.meizhuang_survivors ? 10 : 0,
     safeSea:!!(f.lake_passage || f.meizhuang_survivors || f.meizhuang_refuge),
     notices:[allied?'三帮互认粮签，护送风险降低。':conflict?'三帮封粮，北行需付过路盘缠；接济关系可作保。':['truce','truce_end'].includes(s.fate?.node)?'三帮暂撤粮卡，各自赈济；停争并非结盟，护送仍需当心。':'三帮粮路尚未定局。',
-      f.xingzi_mediated?'你以武当人情换来会面余地。可在命运页兑现担保，先求停争。':null,
-      f.xingzi_protected?'你护住了杏子林伤者，仍未查明粮案。可先护民间粮车，也可继续汉水查账。':null,
+      f.xingzi_mediated && s.fate?.node==='dispute'?'你以武当人情换来会面余地。可在命运页兑现担保，先求停争。':null,
+      f.xingzi_protected && s.fate?.node==='dispute'?'你护住了杏子林伤者，仍未查明粮案。可先护民间粮车，也可继续汉水查账。':null,
+      f.hanshui_joint?'汉水共同底账已立：当地护送危险度十，诊棚疗伤六两，渡口开放联运核货。':f.hanshui_staged?'汉水分段交接已立：当地护送危险度二十，诊棚疗伤八两，渡口开放交接差事。':f.hanshui_relief?'汉水民间接济已立：诊棚疗伤九两，开放分药帮手；三帮关系与正渡风险仍按原约。':null,
       f.shennong_truce?'神农药路保全，药价下降、草药收购价提高。':null,
       f.fuwei_refuge?'镖户安置成，武馆愿减免十两学费。':null,
       f.meizhuang_survivors?'梅庄旧人获救，海船愿为你担保。':null].filter(Boolean),

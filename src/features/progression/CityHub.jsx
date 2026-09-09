@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { cityLeads, routeBetween, roomRoute } from '../../game/city-leads.js';
 import { ZONES } from '../../content/world.js';
 import { ROOMS } from '../../content/p0.js';
@@ -24,16 +24,19 @@ function usePersonalizedNode(state, eventId, nodeId, node, eventName) {
     return () => { live = false; };
   }, [state.saveId, eventId, nodeId, hash, node, eventName]);
   const current=copy?.key===copyKey?copy:null;
-  return { view: applyOverlay(node, current?.overlay), personalized: current?.source === 'generated' || current?.source === 'cache' };
+  return { view: applyOverlay(node, current?.overlay), source:current?.source || 'loading', personalized: current?.source === 'generated' || current?.source === 'cache' };
 }
 
 function SideEventCard({ s, id, event, progress, node, zone, busy, dispatch, destination, room }) {
   const nodeId = progress?.node || event.start;
-  const { view, personalized } = usePersonalizedNode(s, id, nodeId, node, event.name);
+  const hash=factHash(characterPayload(s));
+  const contextualNode=useMemo(()=>({...node,dialogues:chooseDialogue(s,node)}),[node,hash]);
+  const { view, personalized, source } = usePersonalizedNode(s, id, nodeId, contextualNode, event.name);
   const here = { ...s, p0: { ...s.p0, room } };
   const lines = personalized ? view.dialogues : chooseDialogue(s, node);
   return <section className="p0-event">
     <h3>{event.name} · {progress ? '继续此事' : '新线索'}{personalized ? ' · 此番见闻因人而异' : ''}</h3>
+    <small role="status">{source==='loading'?'正在整理此番见闻，可直接继续行动。':source==='generated'?'此番见闻已依你的经历写就。':source==='cache'?'重读此前为你记下的见闻。':'现按原有见闻继续，不影响行动。'}</small>
     {event.window && progress && <small>会面余 {Math.max(0,event.window-(s.worldTime-(progress.startedAt ?? s.worldTime)))} 息 · 错过仍可善后</small>}
     {!atEventNode(here, node) ? <><p>{view.hearsay}</p>{destination(zone, node.room)}</> : !progress ? <><p>{view.hearsay}</p><button disabled={busy} onClick={() => dispatch({ type: 'DISCOVER_EVENT', id })}>问清此事</button></> : <>
       <p>{view.scene}</p>{lines.map(([who, text], i) => <p key={i}><b>{who}：</b>{text}</p>)}

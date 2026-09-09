@@ -1,5 +1,15 @@
 # 江湖长夜：项目总览
 
+## 17. 自主成长与汉水 P0 / P1（2026-09-09，当前增量）
+
+- 当前存档 v10 接受 v1–v9；p0.intent 保存四种成长方向和散人/武当道路。推荐复用城市导演，期限与已接约定优先，终局/拒绝/过期不重推。
+- 第二章汉水药粮以三帮前章终局为入口，新增渡口/账房/诊棚。共同底账、分段交接和民间接济改变当地疗伤价格、护送危险度与日常差事；失败补药不补发正渡成功。规范见 docs/gdd/16-free-growth-and-hanshui.md。
+- tactics 在开战冻结护人/穿甲/续航/闪避特性；旧战斗无 traits 保留旧行为。家传出身数据移入 content/creation.js，与 CREATE 验收共用。
+- 码头帮工每十五秒十二两、四潜能；行脚每十二秒八两、五潜能。修炼和倍率语义不变。
+- 轻后端继续只润色 SIDE_EVENTS，包括汉水；新增稳定角色上下文、条件对白模板及生成/缓存/回退提示。本机未配置密钥时 llm=off，线上真实启用须运行 scripts/verify-narrative.mjs 验证 generated/cache，不能只凭 health 声明。
+- 当前 184 项自动测试，含 72 条四出身/三种子/散人武当/三结局命令路线。完整浏览器长程与长期经济模拟不冒充完成；第 10.1 节自动交付继续适用。
+
+
 ## 16. 成长篇 P0 / P1（2026-09-08，当前增量）
 
 - 当前 v9 兼容 v1–v8，历史版本描述以本节与 docs/gdd/15-growth-and-jianghu-roadmap.md 第八节为准。
@@ -217,10 +227,10 @@
 程序决定事实、奖励、后继与战斗；MiniMax 只改写允许的字面。契约见 `docs/gdd/13-agent-workflow.md`。
 
 - 前端：`CityHub` 打开支线节点时 `POST /api/narrative/node`；标题「此番见闻因人而异」表示 `generated` 或 `cache`。失败回退 packs / `p0.js` 静态 JSON。
-- 服务：`server/` 监听 `127.0.0.1:8083`。国内官方 `https://api.minimax.cn/v1/chat/completions`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 读 `content` 与 `reasoning_details`。密钥仅 `Key.txt`（`MINIMAX_API_KEY=`），不进 Git、不进浏览器。
+- 服务：`server/` 监听 `127.0.0.1:8083`。国内官方 `https://api.minimax.cn/v1/chat/completions`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 分离思考，仅解析最终 `content`。密钥仅 `Key.txt`（`MINIMAX_API_KEY=`），不进 Git、不进浏览器。
 - 存储：按 `saveId` 隔离记忆与节点缓存。本机 Node 22+ 用 SQLite；线上 Node 20 用 `/srv/jianghu-api/data/jianghu.json`。
 - 合并：`src/game/narrative-overlay.js`。可改 `scene` / `dialogues` / `hearsay` / `choices[id].text|outcome|failText`。缺字段用模板补。`next` / `combat` / `effects` / 新选项 id 一律丢弃。
-- 本地：`npm run api` + `npm run dev`（Vite 代理 `/api`）。线上 nginx `location /api/` → 8083，读超时 45 秒。`JIANGHU_LLM=0` 或停 API 即全站静态文案。
+- 本地：`npm run api` + `npm run dev`（Vite 代理 `/api`）。线上 nginx `location /api/` → 8083，读超时 75 秒。`JIANGHU_LLM=0` 或停 API 即全站静态文案。
 - 未接入：原著树弹窗、客栈打听、战斗战报。热路径不挂 MCP。
 
 ---

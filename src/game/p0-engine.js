@@ -5,6 +5,7 @@ import { lessonRequirements, transact, testCondition } from './world-rules.js';
 import { startCombat } from './combat.js';
 import { directionReason, worldConsequences } from './story-director.js';
 import { growthSnapshot } from './growth-guide.js';
+import { GOAL_FOCUS, LEARNING_PATH } from '../content/goals.js';
 import { requirementReason, spend, sideChoiceReason, settleSideEvent, recordExperience, applyWorldEffects, atEventNode, eventReason } from './side-events.js';
 
 export const OFFLINE_CAP = 8 * 60 * 60 * 1000;
@@ -76,6 +77,10 @@ export function p0Command(input, command, now) {
   if (s.action || s.battle) return note(s, '先了结当前行动，再作安排。');
   const stop = value => ({ ...value, p0: { ...value.p0, activity: null } });
   switch (command.type) {
+    case 'SET_GOAL': {
+      if(!Object.hasOwn(GOAL_FOCUS,command.focus) || !Object.hasOwn(LEARNING_PATH,command.school)) return s;
+      return {...s,p0:{...p,intent:{focus:command.focus,school:command.school}}};
+    }
     case 'START_ACTIVITY': {
       const reason = activityReason(s, command.id, command.target);
       if (reason) return note(s, reason);
@@ -136,11 +141,11 @@ export function p0Command(input, command, now) {
     }
     case 'EQUIP_LOADOUT': return stop({ ...s, loadout: normalizeLoadout(s, command.loadout) });
     case 'SELL_HERBS': {
-      if (roomId !== 'pharmacy' || p.materials.herbs < 1) return s;
+      if (ROOMS[roomId]?.facility !== 'pharmacy' || p.materials.herbs < 1) return s;
       return applyWorldEffects(s, { herbs: -1, silver: worldConsequences(s).herbPrice });
     }
     case 'BUY_MEDICINE': {
-      if (roomId !== 'pharmacy' || s.silver < worldConsequences(s).medicinePrice) return s;
+      if (ROOMS[roomId]?.facility !== 'pharmacy' || s.silver < worldConsequences(s).medicinePrice) return s;
       return { ...s, silver: s.silver - worldConsequences(s).medicinePrice, hp: Math.min(100, s.hp + 30) };
     }
     case 'INN_REST': {

@@ -1,6 +1,7 @@
 import { PACK_EVENTS } from './side-packs.js';
 import { CAUSAL_EVENTS } from './causal-events.js';
 import { WUDANG_EVENTS } from './wudang.js';
+import { HANSHUI_EVENTS } from './hanshui.js';
 export const BASICS = { fist: '基本拳脚', blade: '基本兵器', internal: '基本内功', dodge: '基本轻功', parry: '基本招架' };
 export const WEAPONS = {
   hands: { name: '徒手', type: 'fist', price: 0, attack: 0 },
@@ -36,7 +37,7 @@ export const ROOMS = {
   'wudang-hall': { ...room('武当静室', ['wudang-yard'], '香灰平整，案边放着外门考核的名册。', [['执事', '绵掌练熟、差事做稳，便可来试一试身手。']], 'exam'), zone: 1 },
 };
 export const ACTIVITIES = {
-  work: { name: '码头帮工', rooms: ['dock'], seconds: 15, silver: 6, potential: 4, text: '船夫：把这几篓货稳稳搬进棚，工钱不会少你。' },
+  work: { name: '码头帮工', rooms: ['dock'], seconds: 15, silver: 12, potential: 4, text: '船夫：把这几篓货稳稳搬进棚，工钱不会少你。帮工偏挣盘缠，行脚偏积见识。' },
   herbs: { name: '城郊采药', rooms: ['outskirts'], seconds: 20, herbs: 1, potential: 3, text: '采药人：只采认得的青叶草，留根，来年还能长。' },
   duty: { name: '武当洒扫', rooms: ['wudang-yard'], seconds: 20, potential: 6, contribution: 2, sect: true, text: '执事：扫净石阶，再替师兄弟提一桶水。' },
   read: { name: '研读草木小录', rooms: ['bookshop'], seconds: 20, knowledge: 1, text: '书肆老人：读懂一页，再翻下一页。' },
@@ -46,6 +47,7 @@ export const ACTIVITIES = {
   internal: { name: '修炼内功', seconds: 5, train: 5, text: '吐纳有节，内息沿熟悉的脉路缓缓运转。' },
 };
 export const SIDE_EVENTS = {
+  ...HANSHUI_EVENTS,
   ...WUDANG_EVENTS,
   ...CAUSAL_EVENTS,
   wudang_exam: { name: '武当外门考核', version: 1, start: 'test', requires: { all: [{ ref: 'sect', op: 'eq', value: 'wudang' }, { ref: 'rank', op: 'eq', value: 0 }] }, nodes: {
@@ -104,8 +106,17 @@ ROOMS.pharmacy.variants = [{ priority:20, when:{ref:'fact:medicine_returned',op:
 ROOMS.gym.variants = [{ priority:10,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['教习','药师的引荐我收到了，你若有意，可来学华山剑法。']] }];
 ROOMS.home.variants = [{ priority:10,when:{ref:'fact:medicine_mercy',op:'eq',value:true},dialogues:[['老者','听说你还分药救了拦车人的家眷。往后大家总有照应。']] },{priority:5,when:{ref:'fact:medicine_complete',op:'eq',value:true},dialogues:[['老者','多亏你护住药车，街坊们记着这份情。']]}];
 ACTIVITIES.errand = { name:'行脚差事',seconds:12,silver:8,potential:5,text:'行脚掌柜：递信、认路、照看行李，做满一趟结一趟的工钱。' };
+
+ROOMS['wudang-gate'].exits.push('hanshui-wharf');
+ROOMS['hanshui-wharf']={...room('汉水渡口',['wudang-gate','hanshui-ledger','hanshui-clinic'],'药船泊在木桩旁，船户捧着三帮的路引等候交接。',[['渡口船户','先前结了什么约，今夜就按什么约办。']]),zone:1};
+ROOMS['hanshui-ledger']={...room('汉水账房',['hanshui-wharf'],'三份交接册摊在桌上，页角留着深浅不一的印泥。',[['交接执事','凭证须当面核实，不能只听一面之词。']]),zone:1};
+ROOMS['hanshui-clinic']={...room('汉水诊棚',['hanshui-wharf'],'药师洗净空碗，给尚未领药的人家留着名页。',[['汉水药师','药送到之后，还得有下一趟。']],'pharmacy'),zone:1};
+ROOMS['hanshui-clinic'].variants=[{priority:30,when:{ref:'fact:hanshui_joint',op:'eq',value:true},dialogues:[['汉水药师','三家的更正底账已存好，正渡按册放船。']]},{priority:20,when:{ref:'fact:hanshui_staged',op:'eq',value:true},dialogues:[['汉水药师','各帮守一段，见证人核交接，未结盟也能把药送来。']]},{priority:10,when:{ref:'fact:hanshui_relief',op:'eq',value:true},dialogues:[['汉水药师','船户和病户自己接上了药，帮里的旧怨仍由他们去理。']]}];
 ACTIVITIES.grain_work = {name:'三帮联运理货',rooms:['dock'],seconds:12,silver:10,potential:6,requires:{ref:'world:grain_route_open',op:'eq',value:true,reason:'须先在三帮结盟后完成首批联运'},text:'联运执事：三家合印后货路稳了，理货的工钱与见识也比从前多一分。'};
 ACTIVITIES.relief_work = {name:'民间粥棚帮手',rooms:['dock'],seconds:20,silver:4,potential:10,requires:{ref:'world:civilian_relief',op:'eq',value:true,reason:'须先在三帮分途时保全民间赈济'},text:'粥棚管事：这里工钱不多，分药、认人、照料伤者，却能学到许多。'};
+ACTIVITIES.hanshui_joint_work={name:'汉水联运核货',rooms:['hanshui-wharf'],seconds:12,silver:10,potential:6,requires:{ref:'fact:hanshui_joint',op:'eq',value:true,reason:'须完成汉水共同底账联运'},text:'执事：照更正底账逐批核货，三家共同付清工钱。'};
+ACTIVITIES.hanshui_staged_work={name:'汉水分段交接',rooms:['hanshui-wharf'],seconds:15,silver:8,potential:8,requires:{ref:'fact:hanshui_staged',op:'eq',value:true,reason:'须落实汉水分段见证交接'},text:'船户：逐段核对收据，到了交界便与见证人点清。'};
+ACTIVITIES.hanshui_relief_work={name:'汉水诊棚分药',rooms:['hanshui-clinic'],seconds:20,silver:4,potential:12,requires:{ref:'fact:hanshui_relief',op:'eq',value:true,reason:'须先建立汉水民间接济'},text:'药师：按户分药，记清药性与剂量，所得潜能多于工钱。'};
 
 SIDE_EVENTS.wudang_exam.nodes.test.choices[0].effects.push({op:'add',ref:'relation:武当教习',value:10});
 const returned=SIDE_EVENTS.medicine_return.nodes.return.choices[0];

@@ -1,6 +1,6 @@
 # 江湖长夜：P1 之后的 Agent 工作流、输入输出、MCP 与 Tools
 
-> 2026-09-08 现行约定（随 `a9cebf2` 后的官方入口修复落地）。国内 OpenAI 兼容入口 `https://api.minimax.cn/v1`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 把思考放到 `reasoning_details`。  
+> 2026-09-09 现行约定：汉水接入与真实生成复验见 [第 16 章](16-free-growth-and-hanshui.md)。国内 OpenAI 兼容入口 `https://api.minimax.cn/v1`，默认 `MiniMax-M2.5-highspeed`，`reasoning_split` 把思考放到 `reasoning_details`。
 > 不替代 `07` 文案铁律与 `11` 阶段边界。AGENTS.md 5.7 为总览摘要。
 
 ## 一、为何要从「一次补全」升级为 Agent
@@ -50,7 +50,7 @@ flowchart LR
 2. 程序读取记忆文档与节点模板（权威，不经模型）。
 3. 命中 `generated_nodes` 缓存则直接返回。
 4. 否则调用 MiniMax：`POST https://api.minimax.cn/v1/chat/completions`，`reasoning_split: true`，`max_completion_tokens`。
-5. 从 `message.content` 取 JSON；若空再扫 `reasoning_details[].text`。
+5. 只从最终 `message.content` 取 JSON；正文为空或 finish_reason=length 时回退模板，禁止使用思考草稿。
 6. `mergeOverlay`：选项 id / next / combat / effects 以模板为准；字面缺失则保留模板。
 7. 写入缓存。失败则 `source: template`，游戏不中断。
 
@@ -139,11 +139,11 @@ POST https://api.minimax.cn/v1/chat/completions
 Authorization: Bearer <Key.txt 中的 MINIMAX_API_KEY>
 model: MiniMax-M2.5-highspeed
 reasoning_split: true
-max_completion_tokens: 2200
+max_completion_tokens: 8192
 ```
 
 - Token Plan 的 `sk-cp-` 走国内站；国际站 `api.minimax.io` 会报 invalid api key。
-- M2.x **不能关闭 thinking**。必须读 `content`，并用 `reasoning_details` 作后备解析。
+- M2.x **不能关闭 thinking**。只读最终 `content`，不以 `reasoning_details` 作后备正文。预算不足可能只产思考，因此使用 8192 token 预算，模型/浏览器/nginx 超时分别 60/65/75 秒。
 - `temperature` 合法区间 [0, 2]。
 - 密钥只在 `Key.txt` / `JIANGHU_KEY_PATH`，永不进前端与 MCP 资源正文。
 

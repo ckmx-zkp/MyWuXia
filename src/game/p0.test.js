@@ -27,10 +27,10 @@ test('life work, teaching, training and persistent combat form a resource loop',
   s.p0.potential = 0;
   s = cmd(s, 'START_ACTIVITY', { id: 'work' });
   s = settleActivity(s, 61000);
-  assert.equal(s.silver, 24); assert.equal(s.p0.potential, 16);
+  assert.equal(s.silver, 48); assert.equal(s.p0.potential, 16);
   s = at(cmd(s, 'STOP_ACTIVITY', {}, 61000), 'gym');
   s = cmd(s, 'LEARN_SKILL', { id: 'taizu' }, 61000);
-  assert.ok(s.p0.styles['太祖长拳']); assert.equal(s.silver, 12); assert.equal(s.p0.potential, 6);
+  assert.ok(s.p0.styles['太祖长拳']); assert.equal(s.silver, 36); assert.equal(s.p0.potential, 6);
   s = cmd(s, 'START_ACTIVITY', { id: 'style', target: '太祖长拳' }, 61000);
   s = settleActivity(s, 71000);
   assert.equal(s.training.styles['太祖长拳'], 5); assert.equal(s.p0.potential, 1); assert.equal(s.p0.activity, null);
@@ -42,10 +42,10 @@ test('life work, teaching, training and persistent combat form a resource loop',
 test('offline settlement preserves fractions, caps elapsed time and cannot pay the same interval twice', () => {
   const active = cmd(at(fresh(), 'dock'), 'START_ACTIVITY', { id: 'work' });
   const first = settleActivity(active, 10000), second = settleActivity(first, 16000);
-  assert.equal(second.silver - active.silver, 6);
+  assert.equal(second.silver - active.silver, 12);
   assert.equal(settleActivity(second, 16000).silver, second.silver);
   const offline = cmd(active, 'RESUME', {}, 1000 + 2 * OFFLINE_CAP);
-  assert.equal(offline.silver - active.silver, OFFLINE_CAP / 15000 * 6);
+  assert.equal(offline.silver - active.silver, OFFLINE_CAP / 15000 * 12);
   assert.ok(offline.p0.report.capped);
   assert.equal(cmd(restore(offline), 'RESUME', {}, 1000 + 2 * OFFLINE_CAP).silver, offline.silver);
   const back = settleActivity(offline, 0);
@@ -55,7 +55,7 @@ test('switching activities settles the old target and training stops at basic or
   let s = at(fresh(), 'dock');
   s = cmd(s, 'START_ACTIVITY', { id: 'work' });
   s = cmd(s, 'START_ACTIVITY', { id: 'basic', target: 'fist' }, 16000);
-  assert.equal(s.silver, initial().silver + 6);
+  assert.equal(s.silver, initial().silver + 12);
   s = settleActivity(s, 36000);
   assert.equal(s.p0.basics.fist, 120);
   s = cmd(s, 'START_ACTIVITY', { id: 'style', target: '基本拳脚' }, 36000);
