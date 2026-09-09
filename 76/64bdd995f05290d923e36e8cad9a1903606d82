@@ -1,0 +1,109 @@
+src/game/growth-guide.js
+  s_106aca82155d0d::t_8a42b2707b93b3 8,41-46
+  s_106aca82155d0d::t_8c2dc9feb4edeb 4-7,27,37-40,47-56,61-68
+  s_106aca82155d0d::t_ed6cadb762abac 57-60
+  s_c40701e4446788::t_e09746e9b920a0 69
+src/game/free-growth.test.js
+  s_106aca82155d0d::t_a606b89b65e20d 1-122
+server/narrative.mjs
+  s_106aca82155d0d::t_f094caa9eabe73 18
+src/features/progression/CityHub.jsx
+  s_106aca82155d0d::t_4300ac633ddb82 1,27,32-34,39
+src/game/story-director.js
+  s_106aca82155d0d::t_4300ac633ddb82 32,34,36,41-43
+src/game/hanshui-journey.test.js
+  s_106aca82155d0d::t_cdf1b055507cc9 1-61
+src/services/narrative-client.js
+  s_106aca82155d0d::t_ed4dc7229858c5 11
+  s_106aca82155d0d::t_4300ac633ddb82 2-3,24-25,30-34,39,51,63
+src/game/world-rules.js
+  s_106aca82155d0d::t_5d98e8586b0531 11
+src/game/saves.js
+  s_106aca82155d0d::t_8c2dc9feb4edeb 11,38
+  s_106aca82155d0d::t_2f416b84baae10 23-24
+src/features/progression/ProgressionPanel.jsx
+  s_106aca82155d0d::t_4300ac633ddb82 65
+  s_106aca82155d0d::t_8a42b2707b93b3 14,52
+server/narrative.test.js
+  s_106aca82155d0d::t_ed4dc7229858c5 9
+  s_106aca82155d0d::t_66be425306880c 98-111
+src/content/goals.js
+  s_106aca82155d0d::t_5d98e8586b0531 1-3
+src/main.jsx
+  s_106aca82155d0d::t_4e7ef3749ec3ec 19
+src/content/combat.js
+  s_106aca82155d0d::t_5d98e8586b0531 58
+src/game/progression.js
+  s_106aca82155d0d::t_8c2dc9feb4edeb 3,24
+src/game/p0-engine.js
+  s_106aca82155d0d::t_8c2dc9feb4edeb 8,80-83,144,148
+src/game/p0-save.js
+  s_106aca82155d0d::t_8c2dc9feb4edeb 4,45-46
+src/game/tactics.js
+  s_106aca82155d0d::t_2f416b84baae10 1-10,12-20
+  s_106aca82155d0d::t_4e7ef3749ec3ec 11
+src/features/combat/CombatPanel.jsx
+  s_106aca82155d0d::t_2f416b84baae10 6,13
+src/content/creation.js
+  s_106aca82155d0d::t_4e7ef3749ec3ec 1-6
+scripts/patch-nginx-api.py
+  s_106aca82155d0d::t_66be425306880c 2,6-15,18,24-41
+src/content/hanshui.js
+  s_106aca82155d0d::t_5d98e8586b0531 1-41
+scripts/verify-narrative.mjs
+  s_106aca82155d0d::t_ed4dc7229858c5 19
+  s_106aca82155d0d::t_f094caa9eabe73 1-18,20-31
+src/game/p0.test.js
+  s_106aca82155d0d::t_ed6cadb762abac 30,33,45,48,58
+src/content/p0.js
+  s_106aca82155d0d::t_ed6cadb762abac 40
+  s_106aca82155d0d::t_2f416b84baae10 117-119
+  s_106aca82155d0d::t_5d98e8586b0531 4,50,109-114
+server/minimax.mjs
+  s_106aca82155d0d::t_ed4dc7229858c5 38,51,59-60,62,64
+src/game/combat.js
+  s_106aca82155d0d::t_2f416b84baae10 6,45,54,69,75,77-79
+src/features/progression/GrowthGuide.jsx
+  s_106aca82155d0d::t_8c2dc9feb4edeb 8,12,16-17,25
+  s_106aca82155d0d::t_ed6cadb762abac 6,21
+docs/gdd/16-free-growth-and-hanshui.md
+  s_106aca82155d0d::t_821cb59f872f98 1-82
+AGENTS.md
+  s_106aca82155d0d::t_23d5d9a036c303 3-12,230,233
+docs/PROGRESS.md
+  s_106aca82155d0d::t_c409cffb824e56 3-12,26
+docs/architecture-optimization.md
+  s_106aca82155d0d::t_92151e9b959e3a 3-7
+docs/gdd/13-agent-workflow.md
+  s_106aca82155d0d::t_0eaaebbeeb850e 3,53,142,146
+docs/gdd/15-growth-and-jianghu-roadmap.md
+  s_106aca82155d0d::t_d535a90accb5ef 3-4
+src/game/growth-journey.test.js
+  s_106aca82155d0d::t_ffe79063947732 12-13
+src/game/journey-harness.js
+  s_106aca82155d0d::t_042f022b419f53 1-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "7664bdd995f05290d923e36e8cad9a1903606d82",
+  "prompts": {},
+  "sessions": {
+    "s_106aca82155d0d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07a56-e2fb-7451-a47e-33286b6f2192",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    },
+    "s_c40701e4446788": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a07ffe-a000-7941-a7d8-d40f3c0f5962",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "kunpeng2.zhang <kunpeng2.zhang@ly.com>"
+    }
+  }
+}
