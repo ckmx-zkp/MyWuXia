@@ -6,6 +6,17 @@ import { join } from 'node:path';
 const run = (command, args, options = {}) => execFileSync(command, args, { stdio: 'inherit', ...options });
 const npmCli = process.env.npm_execpath;
 if (!npmCli) throw new Error('请使用 npm run deploy 启动发布。');
+// Standalone HTML releases preserve the live site and API, including unrelated work.
+const assetArg = process.argv.find(arg => arg.startsWith('--asset='));
+const asset = assetArg?.slice('--asset='.length);
+if (assetArg && (!asset || !/^[a-z0-9][a-z0-9-]*\.html$/.test(asset))) {
+  throw new Error('独立发布只接受 public/ 下的 HTML 文件名。');
+}
+if (asset && !existsSync(join('public', asset))) throw new Error(`缺少独立页面：${asset}`);
+if (asset === 'salvage-v1.html') {
+  run(process.execPath, ['scripts/build-salvage.mjs']);
+  run(process.execPath, ['--test', 'scripts/salvage.test.mjs']);
+}
 const host = resolveDeployHost();
 console.log(`部署主机：${host}`);
 run(process.execPath, [npmCli, 'test']);
@@ -15,7 +26,12 @@ const short = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { encoding: 
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
 const release = `${stamp}-${short}`;
 run('ssh', ['-o', 'BatchMode=yes', host, `mkdir -p /srv/jianghu-releases/${release}`]);
-run('scp', ['-o', 'BatchMode=yes', '-rq', 'dist/.', `${host}:/srv/jianghu-releases/${release}/`]);
+if (asset) {
+  run('ssh', ['-o', 'BatchMode=yes', host, `test -s /srv/jianghu/index.html && cp -a /srv/jianghu/. /srv/jianghu-releases/${release}/`]);
+  run('scp', ['-o', 'BatchMode=yes', join('dist', asset), `${host}:/srv/jianghu-releases/${release}/${asset}`]);
+} else {
+  run('scp', ['-o', 'BatchMode=yes', '-rq', 'dist/.', `${host}:/srv/jianghu-releases/${release}/`]);
+}
 
 const remote = `set -euo pipefail
 release="/srv/jianghu-releases/$1"
@@ -39,15 +55,18 @@ fi
 trap rollback ERR
 mv -Tf /srv/jianghu-next-link /srv/jianghu
 curl --fail --silent --show-error http://127.0.0.1:8082/ > /dev/null
+curl --fail --silent --show-error "http://127.0.0.1:8082/$2" > /dev/null
 if [ -n "$previous" ]; then
   ln -sfn "$previous" /srv/jianghu-previous
 fi
 trap - ERR
 echo "Release: $release; previous: $previous"
 `;
-run('ssh', ['-o', 'BatchMode=yes', host, 'bash', '-s', '--', release], { input: remote, stdio: ['pipe', 'inherit', 'inherit'] });
-deployApi(host);
-console.log(`已部署: http://47.108.114.17:8082/ （域名: http://wuxia.47.108.114.17.sslip.io:8082/ ）`);
+run('ssh', ['-o', 'BatchMode=yes', host, 'bash', '-s', '--', release, asset || 'index.html'], { input: remote, stdio: ['pipe', 'inherit', 'inherit'] });
+if (asset) {
+  run('ssh', ['-o', 'BatchMode=yes', host, `curl --fail --silent --show-error http://127.0.0.1:8082/${asset} > /dev/null`]);
+} else deployApi(host);
+console.log(`已部署: http://47.108.114.17:8082/${asset || ''} （域名: http://wuxia.47.108.114.17.sslip.io:8082/${asset || ''} ）`);
 
 function sshConfigHosts() {
   const path = join(homedir(), '.ssh', 'config');
